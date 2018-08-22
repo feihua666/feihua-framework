@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>feihua-framework-base-service</artifactId>
+        <groupId>feihua</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>feihua-framework-base-service-impl</artifactId>
+    <packaging>jar</packaging>
+
+
+    <properties>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-service-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-mybatis-orm-datasource</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <!-- 抓取国家统计区域用 -->
+        <dependency>
+            <groupId>org.htmlparser</groupId>
+            <artifactId>htmlparser</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

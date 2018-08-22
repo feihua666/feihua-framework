@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+
+		 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <description>Shiro config</description>
+
+    <!-- Shiro生命周期处理器-->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="shiroSecurityManager"/>
+    </bean>
+
+    <import resource="classpath:applicationContext-jedis.xml"/>
+    <import resource="classpath:applicationContext-shiro-cacheManager.xml"/>
+    <import resource="classpath:applicationContext-shiro-sessionManager.xml"/>
+    <import resource="classpath:applicationContext-shiro-realm.xml"/>
+    <import resource="classpath:applicationContext-shiro-securityManager.xml"/>
+    <import resource="classpath:applicationContext-shiro-filter.xml"/>
+</beans>

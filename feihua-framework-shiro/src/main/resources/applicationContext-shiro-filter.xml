@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd">
+
+    <!-- 安全认证过滤器 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean" depends-on="shiroSecurityManager">
+        <property name="loginUrl" value="${shiro.url.login}"/>
+        <property name="successUrl" value="${shiro.url.successUrl}"/>
+        <property name="unauthorizedUrl" value="${shiro.url.unauthorizedUrl}"/>
+        <property name="filters">
+            <util:map>
+                <entry key="logout" value-ref="logoutFilter"/>
+                <entry key="captcha" value-ref="shiroCaptchaFilter"/>
+                <entry key="qrCode" value-ref="shiroQRcodeFilter"/>
+                <entry key="qrCodeCheck" value-ref="shiroQRcodeCheckFilter"/>
+                <entry key="userSession" value-ref="userSessionFilter"/>
+                <entry key="authc" value-ref="shiroFormAuthenticationFilter"/>
+            </util:map>
+        </property>
+        <property name="securityManager" ref="shiroSecurityManager"/>
+        <property name="filterChainDefinitionMap" ref="filterChainDefinitionSectionMetaSource"/>
+        <property name="filterChainDefinitions">
+            <ref bean="shiroFilterChainDefinitions"/>
+        </property>
+    </bean>
+
+    <bean id="logoutFilter" class="com.feihua.framework.shiro.ShiroLogoutFilter">
+        <!-- 退出成功后再重定向到登出url会无限循环 -->
+        <!--<property name="redirectUrl" value="${shiro.url.logout}"/>-->
+    </bean>
+    <bean id="shiroCaptchaFilter" class="com.feihua.framework.shiro.ShiroCaptchaFilter"/>
+    <bean id="shiroQRcodeFilter" class="com.feihua.framework.shiro.ShiroQRcodeFilter"/>
+    <bean id="shiroQRcodeCheckFilter" class="com.feihua.framework.shiro.ShiroQRcodeCheckFilter"/>
+    <bean id="userSessionFilter" class="com.feihua.framework.shiro.UserSessionFilter"/>
+
+    <bean id="shiroFormAuthenticationFilter" class="com.feihua.framework.shiro.ShiroFormAuthenticationFilter">
+        <property name="loginUrlHtml" value="${shiro.url.login.html}"/>
+    </bean>
+    <bean name="shiroFilterChainDefinitions" class="java.lang.String">
+        <constructor-arg>
+            <value>
+                /*.css = anon
+                ${shiro.url.logout} = logout
+                /captcha = captcha
+                /qrCode = qrCode
+                /qrCodeCheck = qrCodeCheck
+                /login = authc
+                /** = userSession,perms
+            </value>
+        </constructor-arg>
+    </bean>
+    <!-- 自定义 filterchain -->
+    <bean id="filterChainDefinitionSectionMetaSource" class="com.feihua.framework.shiro.FilterChainDefinitionSectionMetaSource">
+        <!-- 这里也可以自定义shiro原始的方式 -->
+        <property name="filterChainDefinitions">
+            <value>
+            </value>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>feihua-framework</artifactId>
+        <groupId>feihua</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <description>这是一个web项目基础库，如果要写web项目请依赖该库</description>
+    <artifactId>feihua-framework-rest</artifactId>
+    <packaging>jar</packaging>
+
+    <properties>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+        </dependency>
+        <!-- servlet 包 -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- framework shiro 包 -->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-shiro</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-jdbc-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-exception</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

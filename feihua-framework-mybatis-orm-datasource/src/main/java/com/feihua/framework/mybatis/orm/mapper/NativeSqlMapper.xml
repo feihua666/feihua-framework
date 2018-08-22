@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.feihua.framework.mybatis.orm.mapper.NativeSqlMapper">
+
+  <select id="selectByNativeSqlForList" resultType="java.util.Map">
+   ${nativeSql}
+  </select>
+  <select id="selectByNativeSqlForOne" resultType="java.util.Map">
+    ${nativeSql}
+  </select>
+  <insert id="insertByNativeSql">
+    ${nativeSql}
+  </insert>
+  <update id="updateByNativeSql">
+    ${nativeSql}
+  </update>
+  <delete id="deleteByNativeSql">
+    ${nativeSql}
+  </delete>
+</mapper>

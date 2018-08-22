@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 項目自定义的Realm -->
+    <bean id="realm" class="com.feihua.framework.shiro.realms.Realm">
+        <!--<property name="accountService" ref="accountService"/>-->
+        <!-- cache 总开关 -->
+        <property name="cachingEnabled" value="true"/>
+        <property name="authorizationCachingEnabled" value="true"/>
+        <property name="authenticationCachingEnabled" value="true"/>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="com.feihua.framework.shiro.utils.ShiroUtils.setAccountService" />
+        <property name="arguments" ref="accountService"/>
+    </bean>
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="com.feihua.framework.shiro.utils.ShiroUtils.setRealm" />
+        <property name="arguments" ref="realm"/>
+    </bean>
+</beans>

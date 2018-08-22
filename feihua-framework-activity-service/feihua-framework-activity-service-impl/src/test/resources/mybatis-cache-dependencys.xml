@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dependencies>
+    <!-- statement mapper引用或mapper方法引用 observer为查询方法引用 -->
+    <statements>
+        <!-- statement id 可配置方法，也可以配置到mapper -->
+        <statement id="com.feihua.framework.base.mapper.BaseUserInfoPoMapper">
+            <observer id="com.feihua.framework.base.mapper.BaseUserAccountPoMapper.searchUsersMultiTable" />
+        </statement>
+        <statement id="com.feihua.framework.base.mapper.BaseUserMobilePoMapper">
+            <observer id="com.feihua.framework.base.mapper.BaseUserAccountPoMapper.searchUsersMultiTable" />
+        </statement>
+    </statements>
+</dependencies>

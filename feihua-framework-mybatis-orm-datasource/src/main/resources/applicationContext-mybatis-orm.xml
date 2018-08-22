@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <description>orm Configuration</description>
+
+    <import resource="classpath:applicationContext-datasource-default.xml"/>
+    <bean id="multipleDataSource" class="com.feihua.framework.mybatis.orm.MultipleDataSource">
+        <property name="defaultTargetDataSource" ref="dataSourceDefault"/>
+        <!--请自行配置一个以该id的map，以支持默认数据源-->
+        <!--
+            <util:map id="multipleDataSourceMap">
+        key 对应 MultipleDataSource 中的枚举
+        <entry key="dataSourceDefault" value-ref="dataSourceDefault"/>
+        下面可以添加多个数据源
+    </util:map>
+        -->
+        <property name="targetDataSources" ref="multipleDataSourceMap">
+        </property>
+    </bean>
+    <!-- MyBatis begin -->
+    <bean id="mysqlSessionFactory" class="com.feihua.framework.mybatis.orm.SqlSessionBeanFactory">
+        <property name="dataSource" ref="multipleDataSource"/>
+        <property name="mapperLocations" value="classpath:com/feihua/framework/mybatis/orm/mapper/NativeSqlMapper.xml,${mapperLocations}"/>
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <property name="plugins">
+            <array>
+                <bean class="com.feihua.framework.mybatis.orm.interceptor.CacheInterceptor">
+                    <property name="properties">
+                        <value>
+                            dependency=mybatis-cache-dependencys.xml
+                            cacheEnabled=true
+                        </value>
+                    </property>
+                </bean>
+                <!-- 分页插件或其他插件，OrderBy 一定要在分页插件下面（主要是为了避免 count 也被增加排序） -->
+
+                <bean class="com.github.pagehelper.PageInterceptor">
+                    <!-- 这里的几个配置主要演示如何使用，如果不理解，一定要去掉下面的配置 -->
+                    <!--<property name="properties">
+                        <value>
+                            helperDialect=mysql
+                        </value>
+                    </property>-->
+                    <property name="properties">
+                        <value>
+                            autoRuntimeDialect=true
+                            closeConn=true
+                        </value>
+                    </property>
+                </bean>
+                <!-- 分页插件或其他插件，OrderBy 一定要在分页插件下面（主要是为了避免 count 也被增加排序） -->
+                <bean class="tk.mybatis.orderbyhelper.OrderByHelper"/>
+            </array>
+        </property>
+    </bean>
+    <!-- 扫描basePackage下所有接口 -->
+    <bean id="mapperScannerConfigurer" class="com.feihua.framework.mybatis.orm.MyMapperScannerConfigurer">
+        <property name="mybasePackage"  value="com.feihua.framework.mybatis.orm.mapper,${mapperScannerConfigurer.basePackage}"/>
+        <property name="basePackage"  value="com.feihua.framework.mybatis.orm.mapper,${mapperScannerConfigurer.basePackage}"/>
+        <property name="sqlSessionFactoryBeanName" value="mysqlSessionFactory"/>
+        <!--这个一定不要设成true 到 目前（2018年7月18日 17:29:51） 这玩意害人-->
+        <property name="processPropertyPlaceHolders" value="false"/>
+    </bean>
+    <!-- 定义事务 -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="multipleDataSource"/>
+    </bean>
+    <!-- 配置 Annotation 驱动，扫描@Transactional注解的类定义事务  -->
+    <tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+
+</beans>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <description>orm Configuration</description>
+
+
+
+    <!-- 数据源配置, 使用 bonecp druid 数据库连接池 -->
+    <bean id="dataSourceDefault" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${default.jdbc.driver}"/>
+        <property name="url" value="${default.jdbc.url}"/>
+        <property name="username" value="${default.jdbc.username}"/>
+        <property name="password" value="${default.jdbc.password}"/>
+        <property name="initialSize" value="${default.jdbc.initialSize}"/>
+        <property name="minIdle" value="${default.jdbc.minIdle}"/>
+        <!-- <property name="maxIdle" value="${default.jdbc.maxIdle}"/> -->
+        <property name="maxActive" value="${default.jdbc.maxActive}"/>
+        <property name="maxWait" value="${default.jdbc.maxWait}"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${default.jdbc.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${default.jdbc.minEvictableIdleTimeMillis}"/>
+        <property name="validationQuery" value="${default.jdbc.testSql}"/>
+        <property name="testWhileIdle" value="${default.jdbc.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${default.jdbc.testOnBorrow}"/>
+        <property name="testOnReturn" value="${default.jdbc.testOnReturn}"/>
+    </bean>
+
+</beans>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <modules>
+        <module>feihua-wechat-service-api</module>
+        <module>feihua-wechat-service-impl</module>
+    </modules>
+    <parent>
+        <artifactId>feihua-framework</artifactId>
+        <groupId>feihua</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>feihua-wechat-service</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-jedis</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-common</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-jdbc-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

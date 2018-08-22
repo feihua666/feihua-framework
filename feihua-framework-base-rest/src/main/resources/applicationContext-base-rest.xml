@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+>
+
+    <bean class="com.feihua.utils.spring.SpringContextHolder"/>
+    <!-- 线程任务 -->
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="5"/>
+        <property name="maxPoolSize" value="500"/>
+        <property name="WaitForTasksToCompleteOnShutdown" value="true"/>
+    </bean>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper">
+        <!-- 处理responseBody 里面日期类型 默认为时间戳-->
+        <property name="dateFormat">
+            <bean class="java.text.SimpleDateFormat">
+                <constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss"/>
+            </bean>
+        </property>
+        <!-- 为null字段时不显示 -->
+        <property name="serializationInclusion">
+            <value type="com.fasterxml.jackson.annotation.JsonInclude.Include">ALWAYS</value>
+        </property>
+        <property name="timeZone" value="GMT+8"/>
+    </bean>
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource"
+          p:basenames="classpath:i18n/messages" p:useCodeAsDefaultMessage="true"/>
+<!--    <bean id="propertiesMessage" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:i18n/messages_zh_CN.properties</value>
+            </list>
+        </property>
+    </bean>-->
+
+    <bean id="localeChangeInterceptor" class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor"/>
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+        <!-- 必须将区域解析器的Bean名称设置为localeResolver，这样DispatcherServlet才能自动侦测到它。请注意，每DispatcherServlet只能注册一个区域解析器。-->
+        <property name="defaultLocale" value="zh"/>
+    </bean>
+    <bean id="cookieLocaleResolver" class="org.springframework.web.servlet.i18n.CookieLocaleResolver">
+        <property name="cookieName" value="locale"/>
+        <property name="cookieMaxAge" value="94608000"/>
+        <property name="defaultLocale" value="zh" />
+    </bean>
+
+    <import resource="classpath:applicationContext-shiro.xml"/>
+</beans>
