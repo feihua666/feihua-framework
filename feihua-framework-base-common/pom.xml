@@ -6,7 +6,7 @@
     <parent>
         <artifactId>feihua-framework</artifactId>
         <groupId>feihua</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0.2018-08-22</version>
     </parent>
     <description>基础类库，为了名项目相互依赖，特抽出共性</description>
     <artifactId>feihua-framework-base-common</artifactId>
