@@ -14,6 +14,7 @@ public interface NativeSqlMapper {
     Map<String, Object> selectByNativeSqlForOne(@Param("nativeSql") String sql);
     int insertByNativeSql(@Param("nativeSql") String sql);
     int updateByNativeSql(@Param("nativeSql") String sql);
+    int updateByNativeSqlWithParam(@Param("nativeSql") String sql, @Param("p") Map<String, Object> map);
     int deleteByNativeSql(@Param("nativeSql") String sql);
 
     List<Map<String, Object>> selectByNativeSqlForList(@Param("nativeSql") String sql, @Param("p") Map<String, Object> map);

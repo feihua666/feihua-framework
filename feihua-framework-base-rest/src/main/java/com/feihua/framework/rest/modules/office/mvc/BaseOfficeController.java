@@ -1,10 +1,13 @@
 package com.feihua.framework.rest.modules.office.mvc;
 
 
+import com.feihua.framework.base.modules.area.api.ApiBaseAreaPoService;
+import com.feihua.framework.base.modules.area.dto.BaseAreaDto;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.framework.base.modules.office.dto.SearchOfficesConditionDto;
 import com.feihua.framework.base.modules.office.po.BaseOfficePo;
+import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.modules.office.dto.AddOfficeFormDto;
@@ -17,6 +20,7 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +32,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 机构树接口
@@ -43,6 +49,8 @@ public class BaseOfficeController extends BaseController {
 
     @Autowired
     private ApiBaseOfficePoService apiBaseOfficePoService;
+    @Autowired
+    private ApiBaseAreaPoService apiBaseAreaPoService;
 
     /**
      * 单资源，添加机构
@@ -212,7 +220,7 @@ public class BaseOfficeController extends BaseController {
     @RepeatFormValidator
     @RequiresPermissions("base:office:search")
     @RequestMapping(value = "/offices",method = RequestMethod.GET)
-    public ResponseEntity searchOffices(SearchOfficesConditionDto dto){
+    public ResponseEntity searchOffices(SearchOfficesConditionDto dto, boolean includeParent, boolean includeArea){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -222,6 +230,39 @@ public class BaseOfficeController extends BaseController {
         PageResultDto<BaseOfficeDto> list = apiBaseOfficePoService.searchOfficesDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){
+
+            //区域和父级
+            if(includeArea || includeParent){
+                Map<String,BaseOfficeDto> officeDtoMap = new HashMap<>();
+                BaseOfficeDto officeDto = null;
+
+                //区域
+                Map<String,BaseAreaDto> areaDtoMap = new HashMap<>();
+                BaseAreaDto areaDto = null;
+                for (BaseOfficeDto _officeDto : list.getData()) {
+                    if(includeArea && StringUtils.isNotEmpty(_officeDto.getAreaId())){
+                        areaDto = apiBaseAreaPoService.selectByPrimaryKey(_officeDto.getAreaId());
+                        if (areaDto != null) {
+                            areaDtoMap.put(_officeDto.getAreaId(),areaDto);
+                        }
+                    }
+
+                    if(includeParent && StringUtils.isNotEmpty(_officeDto.getParentId())){
+                        officeDto = apiBaseOfficePoService.selectByPrimaryKey(_officeDto.getParentId());
+                        if (officeDto != null) {
+                            officeDtoMap.put(_officeDto.getParentId(),officeDto);
+                        }
+                    }
+                }
+                if (!areaDtoMap.isEmpty()) {
+                    resultData.addData("area",areaDtoMap);
+                }
+                if (!officeDtoMap.isEmpty()) {
+                    resultData.addData("parent",officeDtoMap);
+                }
+            }
+
+
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);

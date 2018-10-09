@@ -1,11 +1,15 @@
 package com.feihua.framework.rest.modules.dict.mvc;
 
 
+import com.feihua.framework.base.modules.area.api.ApiBaseAreaPoService;
+import com.feihua.framework.base.modules.area.dto.BaseAreaDto;
 import com.feihua.framework.base.modules.dict.api.ApiBaseDictPoService;
 import com.feihua.framework.base.modules.dict.dto.BaseDictDto;
 import com.feihua.framework.base.modules.dict.dto.SearchDictsConditionDto;
 import com.feihua.framework.base.modules.dict.dto.SelectDictsConditionDto;
 import com.feihua.framework.base.modules.dict.po.BaseDictPo;
+import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
+import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -48,7 +52,10 @@ public class BaseDictController extends BaseController {
 
     @Autowired
     private ApiBaseDictPoService apiBaseDictPoService;
-
+    @Autowired
+    private ApiBaseAreaPoService apiBaseAreaPoService;
+    @Autowired
+    private ApiBaseOfficePoService apiBaseOfficePoService;
     /**
      * 单资源，添加字典
      * @param addDictFormDto
@@ -61,6 +68,22 @@ public class BaseDictController extends BaseController {
         logger.info("添加字典开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         ResponseJsonRender resultData=new ResponseJsonRender();
+        // 检查
+        BaseDictPo baseDictPoCheckCondition = new BaseDictPo();
+        baseDictPoCheckCondition.setParentId(addDictFormDto.getParentId());
+        baseDictPoCheckCondition.setType(addDictFormDto.getType());
+        baseDictPoCheckCondition.setDelFlag(BasePo.YesNo.N.name());
+        List dblist = apiBaseDictPoService.selectListSimple(baseDictPoCheckCondition);
+        if (dblist != null && !dblist.isEmpty()) {
+            // 添加失败
+            resultData.setCode(ResponseCode.E409_100001.getCode());
+            resultData.setMsg(ResponseCode.E409_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("添加字典结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+        }
+
+
         // 表单值设置
         BaseDictPo baseDictPo = new BaseDictPo();
         baseDictPo.setValue(addDictFormDto.getValue());
@@ -146,6 +169,23 @@ public class BaseDictController extends BaseController {
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         logger.info("字典id:{}",id);
         ResponseJsonRender resultData=new ResponseJsonRender();
+        // 检查
+        BaseDictPo baseDictPoCheckCondition = new BaseDictPo();
+        baseDictPoCheckCondition.setParentId(updateDictFormDto.getParentId());
+        baseDictPoCheckCondition.setType(updateDictFormDto.getType());
+        baseDictPoCheckCondition.setDelFlag(BasePo.YesNo.N.name());
+        List<BaseDictPo> dblist = apiBaseDictPoService.selectListSimple(baseDictPoCheckCondition);
+        if (dblist != null && !dblist.isEmpty() && !dblist.get(0).getId().equals(id)) {
+            // 添加失败
+            resultData.setCode(ResponseCode.E409_100001.getCode());
+            resultData.setMsg(ResponseCode.E409_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("更新字典结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+        }
+
+
+
         // 表单值设置
         BaseDictPo baseDictPo = new BaseDictPo();
         // id
@@ -261,7 +301,7 @@ public class BaseDictController extends BaseController {
     @RepeatFormValidator
     @RequiresPermissions("base:dict:search")
     @RequestMapping(value = "/dicts",method = RequestMethod.GET)
-    public ResponseEntity searchDicts(SearchDictsConditionDto dto){
+    public ResponseEntity searchDicts(SearchDictsConditionDto dto, boolean includeParent,boolean includeOffice,boolean includeArea){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -271,6 +311,52 @@ public class BaseDictController extends BaseController {
         PageResultDto<BaseDictDto> list = apiBaseDictPoService.searchDictsDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){
+            //机构和区域、父级
+            if (includeOffice || includeArea || includeParent) {
+                // 父级
+                Map<String,BaseDictDto> parentDtoMap = new HashMap<>();
+                BaseDictDto parentDto = null;
+
+                //区域
+                Map<String,BaseAreaDto> areaDtoMap = new HashMap<>();
+                BaseAreaDto areaDto = null;
+
+                //机构
+                Map<String,BaseOfficeDto> officeDtoMap = new HashMap<>();
+                BaseOfficeDto officeDto = null;
+                for (BaseDictDto dictDto : list.getData()) {
+                    if(includeArea && StringUtils.isNotEmpty(dictDto.getDataAreaId())){
+                        areaDto = apiBaseAreaPoService.selectByPrimaryKey(dictDto.getDataAreaId());
+                        if (areaDto != null) {
+                            areaDtoMap.put(dictDto.getDataAreaId(),areaDto);
+                        }
+                    }
+
+                    if(includeOffice && StringUtils.isNotEmpty(dictDto.getDataOfficeId())){
+                        officeDto = apiBaseOfficePoService.selectByPrimaryKey(dictDto.getDataOfficeId());
+                        if (officeDto != null) {
+                            officeDtoMap.put(dictDto.getDataOfficeId(),officeDto);
+                        }
+                    }
+
+                    if(includeParent && StringUtils.isNotEmpty(dictDto.getParentId())){
+                        parentDto = apiBaseDictPoService.selectByPrimaryKey(dictDto.getParentId());
+                        if (parentDto != null) {
+                            parentDtoMap.put(dictDto.getParentId(),parentDto);
+                        }
+                    }
+                }
+                if (!areaDtoMap.isEmpty()) {
+                    resultData.addData("area",areaDtoMap);
+                }
+                if (!officeDtoMap.isEmpty()) {
+                    resultData.addData("office",officeDtoMap);
+                }
+                if (!parentDtoMap.isEmpty()) {
+                    resultData.addData("parent",parentDtoMap);
+                }
+            }
+
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);

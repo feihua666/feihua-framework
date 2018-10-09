@@ -147,14 +147,13 @@ public class PublicPlatformController extends SuperController {
     public String getAuthUserInfo(String code,String state,@PathVariable String which,String redirectUrl) {
         // 根据code获取accessToken
         AuthorizeAccessToken authorizeAccessToken = PublicUtils.getAuthorizeAccessToken(code,which);
-        // 根据accessToken获取用户信息
-        WeixinUserPo userPo = PublicUtils.getAuthorizeWeixinUser(authorizeAccessToken);
+
         // 获取到后，把openid放到session里
-        SecurityUtils.getSubject().getSession().setAttribute("publickplatform_openid_"+which,userPo.getOpenid());
+        SecurityUtils.getSubject().getSession().setAttribute("publickplatform_openid_"+which,authorizeAccessToken.getOpenid());
 
         // 根据openid查询是否存在数据
         WeixinUserPo weixinUserPoCondition = new WeixinUserPo();
-        weixinUserPoCondition.setOpenid(userPo.getOpenid());
+        weixinUserPoCondition.setOpenid(authorizeAccessToken.getOpenid());
         weixinUserPoCondition.setType(DictEnum.WeixinType.publicplatform.name());
         weixinUserPoCondition.setWhich(which);
         weixinUserPoCondition.setDelFlag(BasePo.YesNo.N.name());
@@ -162,6 +161,9 @@ public class PublicPlatformController extends SuperController {
         WeixinUserPo weixinUserPoDb = apiWeixinUserPoService.selectOneSimple(weixinUserPoCondition);
         // 如果库里没有，插入
         if (weixinUserPoDb == null) {
+            // 根据accessToken获取用户信息
+            WeixinUserPo userPo = PublicUtils.getAuthorizeWeixinUser(authorizeAccessToken);
+
             apiWeixinUserPoService.preInsert(userPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(userPo);
 

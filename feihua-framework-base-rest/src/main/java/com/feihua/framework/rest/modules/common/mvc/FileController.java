@@ -3,15 +3,18 @@ package com.feihua.framework.rest.modules.common.mvc;
 import com.feihua.framework.base.modules.file.po.BaseFilePo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
+import com.feihua.framework.utils.AliOssClientHelper;
 import com.feihua.framework.utils.FileHelper;
 import com.feihua.utils.graphic.ImageUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.utils.http.httpServletResponse.ResponseUtils;
 import com.feihua.utils.io.FileUtils;
+import com.feihua.utils.properties.PropertiesUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +22,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +42,9 @@ public class FileController extends BaseController{
 
     private static Logger logger = LoggerFactory.getLogger(FileController.class);
 
+
+    @Autowired(required = false)
+    private AliOssClientHelper aliOssClientHelper;
 
     @RequiresPermissions("user")
     @RequestMapping(value = "/upload/file",method = RequestMethod.POST)
@@ -65,7 +73,27 @@ public class FileController extends BaseController{
                 if(StringUtils.isEmpty(fileType)){
                     fileType = DictEnum.FileType.file_type_upload.name();
                 }
-                String resultPath = FileHelper.saveToDisk(file.getInputStream(),file.getOriginalFilename(),path);
+                String resultPath;
+                InputStream inputStream = file.getInputStream();
+                // 如果启用压缩
+                if(PropertiesUtils.getBoolean("file.image.compress")){
+                    //
+                    if(StringUtils.containsAny(originalFileExtention,"jpg","bmp","png","jpeg")){
+                        BufferedImage image = ImageIO.read(inputStream);
+                        inputStream = ImageUtils.compressImage(image,ImageUtils.IMAGE_TYPE_JPEG,Float.parseFloat(PropertiesUtils.getProperty("file.image.quality")));
+                    }else{
+                        logger.debug("image compress can only support extention jpg,bmp,png,jpeg");
+                    }
+
+                }
+
+                // 如果开启阿里oss上传
+                if (PropertiesUtils.getBoolean("file.alioss")) {
+                    resultPath = aliOssClientHelper.getAbsolutePath(aliOssClientHelper.uploadFile(path,file.getOriginalFilename(),inputStream,null));
+                }else{
+                    resultPath = FileHelper.saveToDisk(inputStream,file.getOriginalFilename(),path);
+                }
+
 
                 //保存到数据库
                 BaseFilePo baseFilePo = new BaseFilePo();
@@ -113,7 +141,7 @@ public class FileController extends BaseController{
 
         try {
             //判断是否为图片访问
-            if(StringUtils.endsWithAny(realPath.toLowerCase(),"jpg","bmp","png")){
+            if(StringUtils.endsWithAny(realPath.toLowerCase(),"jpg","bmp","png","jpeg")){
                 // 如果切割文件不存在，切割
                 if(!FileUtils.exists(realPath)){
                     // 提取切割参数
@@ -135,7 +163,7 @@ public class FileController extends BaseController{
                     //是图片
                     if (image != null) {
                         image = ImageUtils.zoomImage(image,width,height);
-                        ImageUtils.outPutImage(image,realPath);
+                        ImageUtils.outPutImage(image,ImageUtils.IMAGE_TYPE_JPEG,realPath);
                         //contentType = "image/*";
                     }else{
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);

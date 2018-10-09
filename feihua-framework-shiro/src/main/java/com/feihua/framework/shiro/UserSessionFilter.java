@@ -36,6 +36,10 @@ public class UserSessionFilter extends AccessControlFilter {
     public static final String REFRESH_SHIROUSER_INFO_FLAG_KEY = "refresh_shirouser_info_flag_key";
     // 踢出用户
     public static final String USER_KICKOUT_KEY = "user_kickout_key";
+    // 踢出用户值，被踢出，一般为强制用户下线
+    public static final String USER_KICKOUT_VALUE_KICKOUT = "kickout";
+    // 踢出用户值，被踢出，一般为用户自己在另一客户端登录
+    public static final String USER_KICKOUT_VALUE_ANOTHER = "another";
 
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
@@ -49,14 +53,20 @@ public class UserSessionFilter extends AccessControlFilter {
         Subject subject = getSubject(request,response);
         Session session = subject.getSession();
         // 如果已经设置了踢出，则直接踢出
-        if("true".equals(session.getAttribute(USER_KICKOUT_KEY))){
-            session.removeAttribute(USER_KICKOUT_KEY);
-            subject.logout();
+
+        if(USER_KICKOUT_VALUE_ANOTHER.equals(session.getAttribute(USER_KICKOUT_KEY)) || USER_KICKOUT_VALUE_KICKOUT.equals(session.getAttribute(USER_KICKOUT_KEY))){
+            //session.removeAttribute(USER_KICKOUT_KEY);
+            //subject.logout();
+            httpServletResponse.setStatus(HttpStatus.SC_UNAUTHORIZED);
             if(RequestUtils.isAjaxRequest(httpServletRequest)){
                 Map<String,Object> rMap = new HashMap<>();
-                rMap.put("code", ResponseCode.E401_100003.getCode());
-                rMap.put("msg",ResponseCode.E401_100003.getMsg());
-                httpServletResponse.setStatus(HttpStatus.SC_UNAUTHORIZED);
+                if(USER_KICKOUT_VALUE_ANOTHER.equals(session.getAttribute(USER_KICKOUT_KEY))){
+                    rMap.put("code", ResponseCode.E401_100003.getCode());
+                    rMap.put("msg",ResponseCode.E401_100003.getMsg());
+                } else if(USER_KICKOUT_VALUE_KICKOUT.equals(session.getAttribute(USER_KICKOUT_KEY))){
+                    rMap.put("code", ResponseCode.E401_100002.getCode());
+                    rMap.put("msg",ResponseCode.E401_100002.getMsg());
+                }
                 try {
                     ResponseUtils.renderString(httpServletResponse,rMap);
                 } catch (Exception e) {

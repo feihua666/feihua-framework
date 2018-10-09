@@ -9,13 +9,17 @@ import java.awt.Image;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
+import java.awt.image.ColorModel;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
+import javax.imageio.*;
 
 import com.feihua.utils.string.StringUtils;
 import com.google.zxing.*;
@@ -324,8 +328,61 @@ public class ImageUtils {
 	 * @param targetPath
 	 * @throws IOException
 	 */
-	public final static void outPutImage(BufferedImage bufferedimage,String targetPath) throws IOException{
-		 ImageIO.write(bufferedimage,  "JPEG", new File(targetPath));
+	public final static void outPutImage(BufferedImage bufferedimage ,String formatName,String targetPath) throws IOException{
+		String _formatName = formatName;
+		if(_formatName == null) {
+			_formatName = IMAGE_TYPE_JPEG;
+		}
+		 ImageIO.write(bufferedimage,  _formatName, new File(targetPath));
+	}
+
+	/**
+	 *
+	 * @param byteArrayInputStream
+	 * @return
+	 * @throws IOException
+	 */
+	public final static BufferedImage inputStreamToBufferedImage(ByteArrayInputStream byteArrayInputStream) throws IOException {
+		return ImageIO.read(byteArrayInputStream);
+	}
+	/**
+	 * 图片质量压缩
+	 * @param bufferedImage
+	 * @param quality
+	 * @param formatName 注意这个参数现在不支持png
+	 * @return
+	 */
+	public final static ByteArrayInputStream compressImage(BufferedImage bufferedImage, String formatName, float quality) throws IOException {
+		String _formatName = formatName;
+		if(_formatName == null) {
+			 _formatName = IMAGE_TYPE_JPEG;
+		}
+		// 得到指定Format图片的writer
+		Iterator<ImageWriter> iter = ImageIO
+				.getImageWritersByFormatName(_formatName);// 得到迭代器
+		ImageWriter writer = iter.next(); // 得到writer
+		// 得到指定writer的输出参数设置(ImageWriteParam )
+		ImageWriteParam imageWriteParam = writer.getDefaultWriteParam();
+		if(imageWriteParam.canWriteCompressed()){
+			imageWriteParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT); // 设置可否压缩
+			imageWriteParam.setCompressionQuality(quality); // 设置压缩质量参数
+		}
+
+		imageWriteParam.setProgressiveMode(ImageWriteParam.MODE_DISABLED);
+
+		ColorModel colorModel = ColorModel.getRGBdefault();
+		// 指定压缩时使用的色彩模式
+		imageWriteParam.setDestinationType(new ImageTypeSpecifier(colorModel,
+				colorModel.createCompatibleSampleModel(16, 16)));
+		IIOImage iIamge = new IIOImage(bufferedImage, null, null);
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(); // 取得内存输出流
+			writer.setOutput(ImageIO
+                    .createImageOutputStream(byteArrayOutputStream));
+			writer.write(null, iIamge, imageWriteParam);
+
+		ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+			return byteArrayInputStream;
+
 	}
 
 	/**

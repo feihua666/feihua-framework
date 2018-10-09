@@ -5,6 +5,8 @@ import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopePoService
 import com.feihua.framework.base.modules.datascope.dto.BaseDataScopeDto;
 import com.feihua.framework.base.modules.datascope.dto.SearchDataScopesConditionDto;
 import com.feihua.framework.base.modules.datascope.po.BaseDataScopePo;
+import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
+import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -28,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 数据范围配置接口
  * Created by yangwei
@@ -41,7 +46,8 @@ public class BaseDataScopeController extends BaseController {
 
     @Autowired
     private ApiBaseDataScopePoService apiBaseDataScopePoService;
-
+    @Autowired
+    private ApiBaseOfficePoService apiBaseOfficePoService;
     /**
      * 单资源，添加数据范围
      * @param addDataScopeFormDto
@@ -182,7 +188,7 @@ public class BaseDataScopeController extends BaseController {
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:search")
     @RequestMapping(value = "/dataScopes",method = RequestMethod.GET)
-    public ResponseEntity searchDataScopes(SearchDataScopesConditionDto dto){
+    public ResponseEntity searchDataScopes(SearchDataScopesConditionDto dto,boolean includeOffice){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -192,6 +198,21 @@ public class BaseDataScopeController extends BaseController {
         PageResultDto<BaseDataScopeDto> list = apiBaseDataScopePoService.searchDataScopesDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){
+            if(includeOffice){
+                //机构
+                Map<String,BaseOfficeDto> officeDtoMap = new HashMap<>();
+                BaseOfficeDto officeDto = null;
+                for (BaseDataScopeDto baseDataScopeDto : list.getData()) {
+                    officeDto = apiBaseOfficePoService.selectByPrimaryKey(baseDataScopeDto.getDataOfficeId());
+                    if (officeDto != null) {
+                        officeDtoMap.put(baseDataScopeDto.getDataOfficeId(),officeDto);
+                    }
+                }
+                if (!officeDtoMap.isEmpty()) {
+                    resultData.addData("office",officeDtoMap);
+                }
+            }
+
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);

@@ -16,6 +16,7 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -28,7 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 功能资源接口
@@ -204,7 +207,7 @@ public class BaseFunctionResouceController extends BaseController {
     @RepeatFormValidator
     @RequiresPermissions(value = {"base:functionResource:search","user"},logical = Logical.OR)
     @RequestMapping(value = "/functionResources",method = RequestMethod.GET)
-    public ResponseEntity searchFunctionResources(SearchFunctionResourcesConditionDto dto){
+    public ResponseEntity searchFunctionResources(SearchFunctionResourcesConditionDto dto,boolean includeParent){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -214,6 +217,24 @@ public class BaseFunctionResouceController extends BaseController {
         PageResultDto<BaseFunctionResourceDto> list = apiBaseFunctionResourcePoService.searchFunctionResourcesDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){
+            //父级
+            if (includeParent) {
+                Map<String,BaseFunctionResourceDto> parentDtoMap = new HashMap<>();
+                BaseFunctionResourceDto parentDto = null;
+                for (BaseFunctionResourceDto resourceDto : list.getData()) {
+                    if(StringUtils.isNotEmpty(resourceDto.getParentId())){
+                        parentDto = apiBaseFunctionResourcePoService.selectByPrimaryKey(resourceDto.getParentId());
+                        if (parentDto != null) {
+                            parentDtoMap.put(resourceDto.getParentId(),parentDto);
+                        }
+                    }
+                }
+
+                if (!parentDtoMap.isEmpty()) {
+                    resultData.addData("parent",parentDtoMap);
+                }
+            }
+
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);
