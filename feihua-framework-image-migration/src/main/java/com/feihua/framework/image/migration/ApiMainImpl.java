@@ -1,14 +1,12 @@
 package com.feihua.framework.image.migration;
 
-import com.feihua.framework.image.migration.source.ApiSource;
-import com.feihua.framework.image.migration.target.ApiTarget;
+import com.feihua.framework.image.migration.sourcefrom.ApiSource;
+import com.feihua.framework.image.migration.targetto.ApiTarget;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

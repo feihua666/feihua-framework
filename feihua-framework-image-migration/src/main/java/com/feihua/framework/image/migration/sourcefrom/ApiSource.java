@@ -1,7 +1,6 @@
-package com.feihua.framework.image.migration.source;
+package com.feihua.framework.image.migration.sourcefrom;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 

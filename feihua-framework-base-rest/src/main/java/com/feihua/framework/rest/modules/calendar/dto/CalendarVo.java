@@ -28,10 +28,12 @@ public class CalendarVo {
         this.hour = calendarDto.getHour();
         this.minute = calendarDto.getMinute();
         this.second = calendarDto.getSecond();
+        this.week = calendarDto.getWeek();
         this.lunarDate = calendarDto.getLunarDate();
         this.lunarDateStr = LunarCalendarUtils.lunarDateToString(lunarDate, CalendarUtils.DateStyle.YYYY_MM_DD_HH_MM_SS_CN);
         this.lunarYear = calendarDto.getLunarYear();
         this.lunarMonth = calendarDto.getLunarMonth();
+        this.lunarMonthStr = LunarCalendarUtils.ChineseNumber.getByNumber(lunarMonth).getMonthName();
         this.lunarDay = calendarDto.getLunarDay();
         this.lunarDayStr = LunarCalendarUtils.ChinaBaseTen.getByDay(lunarDay).getChineseName() + LunarCalendarUtils.ChineseNumber.getByDay(lunarDay).getChineseName();
         this.lunarHour = calendarDto.getLunarHour();
@@ -75,10 +77,12 @@ public class CalendarVo {
     private int hour;
     private int minute;
     private int second;
+    private int week;
     private LunarDate lunarDate;
     private String lunarDateStr;
     private int lunarYear;
     private int lunarMonth;
+    private String lunarMonthStr;
     private int lunarDay;
     private String lunarDayStr;
     private int lunarHour;
@@ -364,5 +368,21 @@ public class CalendarVo {
 
     public void setDayOfYear(int dayOfYear) {
         this.dayOfYear = dayOfYear;
+    }
+
+    public int getWeek() {
+        return week;
+    }
+
+    public void setWeek(int week) {
+        this.week = week;
+    }
+
+    public String getLunarMonthStr() {
+        return lunarMonthStr;
+    }
+
+    public void setLunarMonthStr(String lunarMonthStr) {
+        this.lunarMonthStr = lunarMonthStr;
     }
 }

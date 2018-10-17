@@ -17,6 +17,10 @@ public class CalendarDto {
     private int hour;
     private int minute;
     private int second;
+    /**
+     * 星期几，星期日为0
+     */
+    private int week;
     private LunarDate lunarDate;
     private int lunarYear;
     private int lunarMonth;
@@ -315,5 +319,13 @@ public class CalendarDto {
 
     public void setLunarSecond(int lunarSecond) {
         this.lunarSecond = lunarSecond;
+    }
+
+    public int getWeek() {
+        return week;
+    }
+
+    public void setWeek(int week) {
+        this.week = week;
     }
 }

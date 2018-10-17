@@ -1,3 +1,8 @@
 .idea/
 *.iml
 target/
+filePath_IS_UNDEFINED/
+pom.xml.versionsBackup
+feihua-framework.xml
+feihua-framework.properties
+module_*.xml

@@ -243,7 +243,7 @@ public class LunarCalendarUtils {
         qi("七", "七", 7),
         ba("八","八",8),
         jiu("九","九",9),
-        shi("十","十二",10),
+        shi("十","十",10),
         shiyi("十一","冬",11),
         shier("十二","腊",12);
         String value;
@@ -257,6 +257,10 @@ public class LunarCalendarUtils {
 
         public String getChineseName() {
             return value;
+        }
+
+        public String getMonthName() {
+            return monthName;
         }
 
         public int getNumber() {
@@ -1069,7 +1073,7 @@ public class LunarCalendarUtils {
     public static TraditionalFestival getTraditionalFestival(int lunarYear,int lunarMonth,int lunarDay){
 
 
-        String monthday = lunarMonth + "-" + lunarDay;
+        String monthday = (lunarMonth < 10 ? "0" + lunarMonth : lunarMonth) + "-" + (lunarDay < 10 ? "0" + lunarDay : lunarDay);
         //除夕判断
         int month = lunarMonth;
         if(12 == month){
