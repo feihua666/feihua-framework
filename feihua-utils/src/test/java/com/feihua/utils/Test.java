@@ -17,5 +17,10 @@ public class Test {
 
         LunarDate lunarDate = LunarCalendarUtils.stringTolunarDate("2018-02-29 12:12");
         System.out.println(lunarDate);
+
+        System.out.println(CalendarUtils.getDayOfWeek(CalendarUtils.stringToDate("2018-10-11")));
+        System.out.println(CalendarUtils.getDayOfWeek(CalendarUtils.stringToDate("2018-10-12")));
+        System.out.println(CalendarUtils.getDayOfWeek(CalendarUtils.stringToDate("2018-10-13")));
+        System.out.println(CalendarUtils.getDayOfWeek(CalendarUtils.stringToDate("2018-10-14")));
     }
 }
