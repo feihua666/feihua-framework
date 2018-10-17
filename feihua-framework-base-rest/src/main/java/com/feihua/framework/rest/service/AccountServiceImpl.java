@@ -22,6 +22,7 @@ import com.feihua.framework.shiro.service.AbstractAccountServiceImpl;
 import com.feihua.framework.shiro.service.AccountService;
 import com.feihua.framework.shiro.utils.ShiroUtils;
 import com.feihua.utils.string.StringUtils;
+import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageResultDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -164,7 +165,7 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         user.setGender(userDto.getGender());
         // 角色信息
         BaseRoleDto roleDto = apiBaseRolePoService.selectByUserId(userId);
-        if(roleDto != null){
+        if(roleDto != null && BasePo.YesNo.N.name().equals(roleDto.getDisabled())){
             user.setRole(roleDto);
         }
         //机构信息

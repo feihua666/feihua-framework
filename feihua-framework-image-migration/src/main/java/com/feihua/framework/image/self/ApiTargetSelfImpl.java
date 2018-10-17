@@ -1,6 +1,6 @@
 package com.feihua.framework.image.self;
 
-import com.feihua.framework.image.migration.target.ApiTargetImpl;
+import com.feihua.framework.image.migration.targetto.ApiTargetImpl;
 import com.feihua.framework.mybatis.orm.MultipleDataSource;
 
 import java.util.Map;

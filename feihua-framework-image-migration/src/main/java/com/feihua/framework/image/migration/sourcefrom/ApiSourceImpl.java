@@ -1,6 +1,5 @@
-package com.feihua.framework.image.migration.source;
+package com.feihua.framework.image.migration.sourcefrom;
 
-import com.feihua.framework.image.migration.Config;
 import com.feihua.framework.image.migration.Context;
 import com.feihua.framework.mybatis.orm.MultipleDataSource;
 import com.feihua.framework.mybatis.orm.mapper.NativeSqlMapper;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

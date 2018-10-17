@@ -37,6 +37,7 @@ public class ApiCalendarServiceImpl implements ApiCalendarService {
         calendarDto.setHour(hour);
         calendarDto.setMinute(minute);
         calendarDto.setSecond(second);
+        calendarDto.setWeek(CalendarUtils.getDayOfWeek(date) - 1);
         //转农历
         LunarDate lunarDate = LunarCalendarUtils.CalendarToLunar(date);
         int lunarYear = lunarDate.getYear();

@@ -1,12 +1,6 @@
 package com.feihua.framework.image.self;
 
-import com.feihua.framework.image.migration.Config;
-import com.feihua.framework.image.migration.source.ApiSourceImpl;
-import com.feihua.framework.mybatis.orm.MultipleDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-import java.util.Map;
+import com.feihua.framework.image.migration.sourcefrom.ApiSourceImpl;
 
 /**
  * Created by yangwei
