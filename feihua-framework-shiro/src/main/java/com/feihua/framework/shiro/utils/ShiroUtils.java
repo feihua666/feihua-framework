@@ -22,9 +22,7 @@ import org.springframework.core.task.TaskExecutor;
 
 import java.util.*;
 
-import static com.feihua.framework.shiro.UserSessionFilter.REFRESH_AUTHORIZATION_INFO_FLAG_KEY;
-import static com.feihua.framework.shiro.UserSessionFilter.REFRESH_SHIROUSER_INFO_FLAG_KEY;
-import static com.feihua.framework.shiro.UserSessionFilter.USER_KICKOUT_KEY;
+import static com.feihua.framework.shiro.UserSessionFilter.*;
 import static com.feihua.framework.shiro.pojo.PasswordAndSalt.getCredentialsMatcher;
 
 /**
@@ -151,12 +149,12 @@ public class ShiroUtils {
         if (sessions != null) {
             for (Session session : sessions) {
                 if(clientType == null){
-                    session.setAttribute(USER_KICKOUT_KEY,"true");
+                    session.setAttribute(USER_KICKOUT_KEY,USER_KICKOUT_VALUE_KICKOUT);
                     sessionDAO.update(session);
                 }else{
                     ShiroUser su = getShiroUser(session);
                     if (su != null && clientType.equals(su.getClientType())) {
-                        session.setAttribute(USER_KICKOUT_KEY,"true");
+                        session.setAttribute(USER_KICKOUT_KEY,USER_KICKOUT_VALUE_KICKOUT);
                         sessionDAO.update(session);
                     }
                 }
@@ -188,7 +186,8 @@ public class ShiroUtils {
                     continue;
                 }
                 ShiroUser su = getShiroUser(session);
-                if (su != null && su.getClientType().equals(clientType)) {
+                // 默认没有clienttype 则为pc
+                if (su != null && ((su.getClientType() == null && ShiroUser.LoginClient.pc.name().equals(clientType))|| su.getClientType().equals(clientType))) {
                     currentUsers.add(session);
                 }
             }
@@ -219,7 +218,7 @@ public class ShiroUtils {
                 } else {
                     Session session = currentUsers.get(i);
                     logger.debug("mark session for logoutOtherClient id: {} ", session.getId());
-                    session.setAttribute(USER_KICKOUT_KEY,"true");
+                    session.setAttribute(USER_KICKOUT_KEY,USER_KICKOUT_VALUE_ANOTHER);
                     sessionDAO.update(session);
                     deletedNum++;
                 }

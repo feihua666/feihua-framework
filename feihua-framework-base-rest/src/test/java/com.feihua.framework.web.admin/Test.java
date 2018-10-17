@@ -41,7 +41,7 @@ public class Test {
                 //是图片
                 if (image != null) {
                     image = ImageUtils.zoomImage(image,width,height);
-                    ImageUtils.outPutImage(image,realPath);
+                    ImageUtils.outPutImage(image,ImageUtils.IMAGE_TYPE_JPEG,realPath);
 
                 }else{
                 }

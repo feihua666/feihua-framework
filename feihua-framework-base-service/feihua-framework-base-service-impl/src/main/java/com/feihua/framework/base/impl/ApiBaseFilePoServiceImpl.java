@@ -45,6 +45,7 @@ public class ApiBaseFilePoServiceImpl extends ApiBaseServiceImpl<BaseFilePo, Bas
         baseFileDto.setId(po.getId());
         baseFileDto.setDownloadNum(po.getDownloadNum());
         baseFileDto.setDataOfficeId(po.getDataOfficeId());
+        baseFileDto.setCreateAt(po.getCreateAt());
         return baseFileDto;
     }
 }

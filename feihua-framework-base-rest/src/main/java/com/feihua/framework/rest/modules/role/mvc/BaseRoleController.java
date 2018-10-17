@@ -1,6 +1,10 @@
 package com.feihua.framework.rest.modules.role.mvc;
 
 
+import com.feihua.framework.base.modules.area.api.ApiBaseAreaPoService;
+import com.feihua.framework.base.modules.area.dto.BaseAreaDto;
+import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
+import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.base.modules.role.dto.SearchRolesConditionDto;
@@ -11,11 +15,13 @@ import com.feihua.framework.rest.modules.role.dto.AddRoleFormDto;
 import com.feihua.framework.rest.modules.role.dto.UpdateRoleFormDto;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
+import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +33,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 角色接口
@@ -42,6 +50,10 @@ public class BaseRoleController extends BaseController {
 
     @Autowired
     private ApiBaseRolePoService apiBaseRolePoService;
+    @Autowired
+    private ApiBaseOfficePoService apiBaseOfficePoService;
+    @Autowired
+    private ApiBaseAreaPoService apiBaseAreaPoService;
 
     /**
      * 单资源，添加角色
@@ -52,9 +64,25 @@ public class BaseRoleController extends BaseController {
     @RequiresPermissions("base:role:add")
     @RequestMapping(value = "/role",method = RequestMethod.POST)
     public ResponseEntity addRole(AddRoleFormDto addRoleFormDto){
-        logger.info("添加用户开始");
-        logger.info("用户id:{}",getLoginUser().getId());
+        logger.info("添加角色开始");
+        logger.info("角色id:{}",getLoginUser().getId());
         ResponseJsonRender resultData = new ResponseJsonRender();
+        // 查检
+        BaseRolePo baseRolePoCheckConditon = new BaseRolePo();
+        baseRolePoCheckConditon.setCode(addRoleFormDto.getCode());
+        baseRolePoCheckConditon.setDelFlag(BasePo.YesNo.N.name());
+
+        List dblist = apiBaseRolePoService.selectListSimple(baseRolePoCheckConditon);
+        if (dblist != null && !dblist.isEmpty()) {
+            // 添加失败
+            resultData.setCode(ResponseCode.E409_100001.getCode());
+            resultData.setMsg(ResponseCode.E409_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("添加角色结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+        }
+        
+
         BaseRolePo baseRolePo = new BaseRolePo();
         baseRolePo.setName(addRoleFormDto.getName());
         baseRolePo.setCode(addRoleFormDto.getCode());
@@ -67,12 +95,12 @@ public class BaseRoleController extends BaseController {
         BaseRoleDto roleDto = apiBaseRolePoService.insert(baseRolePo);
         if(roleDto == null){
             logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
-            logger.info("添加用户结束，失败");
+            logger.info("添加角色结束，失败");
             return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
         }else {
             resultData.setData(roleDto);
             logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
-            logger.info("添加用户结束，成功");
+            logger.info("添加角色结束，成功");
             return new ResponseEntity(resultData, HttpStatus.CREATED);
         }
 
@@ -87,7 +115,7 @@ public class BaseRoleController extends BaseController {
     @RequestMapping(value = "/role/{id}",method = RequestMethod.DELETE)
     public ResponseEntity roleDeleteById(@PathVariable("id") String id){
         logger.info("删除角色开始");
-        logger.info("当前登录用户id:{}",getLoginUser().getId());
+        logger.info("当前登录角色id:{}",getLoginUser().getId());
         logger.info("角色id:{}",id);
         ResponseJsonRender resultData = new ResponseJsonRender();
 
@@ -126,10 +154,23 @@ public class BaseRoleController extends BaseController {
     @RequestMapping(value = "/role/{id}",method = RequestMethod.PUT)
     public ResponseEntity roleUpdateById(@PathVariable String id,UpdateRoleFormDto updateRoleFormDto){
         logger.info("更新角色开始");
-        logger.info("当前登录用户id:{}",getLoginUser().getId());
+        logger.info("当前登录角色id:{}",getLoginUser().getId());
         logger.info("角色id:{}",id);
         ResponseJsonRender resultData=new ResponseJsonRender();
+        // 查检
+        BaseRolePo baseRolePoCheckConditon = new BaseRolePo();
+        baseRolePoCheckConditon.setCode(updateRoleFormDto.getCode());
+        baseRolePoCheckConditon.setDelFlag(BasePo.YesNo.N.name());
 
+        List<BaseRolePo> dblist = apiBaseRolePoService.selectListSimple(baseRolePoCheckConditon);
+        if (dblist != null && !dblist.isEmpty() && !dblist.get(0).getId().equals(id)) {
+            // 添加失败
+            resultData.setCode(ResponseCode.E409_100001.getCode());
+            resultData.setMsg(ResponseCode.E409_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("更新角色结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+        }
 
         // 更新数据
         BaseRolePo baseRolePo = new BaseRolePo();
@@ -190,14 +231,62 @@ public class BaseRoleController extends BaseController {
     @RepeatFormValidator
     @RequiresPermissions("base:role:search")
     @RequestMapping(value = "/roles",method = RequestMethod.GET)
-    public ResponseEntity searchUsers(SearchRolesConditionDto dto){
+    public ResponseEntity searchUsers(SearchRolesConditionDto dto, boolean includeParent, boolean includeOffice,boolean includeArea){
         ResponseJsonRender resultData = new ResponseJsonRender();
         PageResultDto<BaseRoleDto> pageResultDto = apiBaseRolePoService.searchRolesDsf(dto,new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal()));
+
         if(CollectionUtils.isEmpty(pageResultDto.getData())){
             resultData.setCode(ResponseCode.E404_100001.getCode());
             resultData.setMsg(ResponseCode.E404_100001.getMsg());
             return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);
         }
+
+        //机构和区域、父级
+        if (includeOffice || includeArea || includeParent) {
+            //父级
+            Map<String,BaseRoleDto> roleDtoMap = new HashMap<>();
+            BaseRoleDto roleDto = null;
+
+            //区域
+            Map<String,BaseAreaDto> areaDtoMap = new HashMap<>();
+            BaseAreaDto areaDto = null;
+
+            //机构
+            Map<String,BaseOfficeDto> officeDtoMap = new HashMap<>();
+            BaseOfficeDto officeDto = null;
+            for (BaseRoleDto _roleDto : pageResultDto.getData()) {
+                if(includeArea && StringUtils.isNotEmpty(_roleDto.getDataAreaId())){
+                    areaDto = apiBaseAreaPoService.selectByPrimaryKey(_roleDto.getDataAreaId());
+                    if (areaDto != null) {
+                        areaDtoMap.put(_roleDto.getDataAreaId(),areaDto);
+                    }
+                }
+
+                if(includeOffice && StringUtils.isNotEmpty(_roleDto.getDataOfficeId())){
+                    officeDto = apiBaseOfficePoService.selectByPrimaryKey(_roleDto.getDataOfficeId());
+                    if (officeDto != null) {
+                        officeDtoMap.put(_roleDto.getDataOfficeId(),officeDto);
+                    }
+                }
+
+                if(includeParent && StringUtils.isNotEmpty(_roleDto.getParentId())){
+                    roleDto = apiBaseRolePoService.selectByPrimaryKey(_roleDto.getParentId());
+                    if (roleDto != null) {
+                        roleDtoMap.put(_roleDto.getParentId(),roleDto);
+                    }
+                }
+            }
+            if (!areaDtoMap.isEmpty()) {
+                resultData.addData("area",areaDtoMap);
+            }
+            if (!officeDtoMap.isEmpty()) {
+                resultData.addData("office",officeDtoMap);
+            }
+            if (!roleDtoMap.isEmpty()) {
+                resultData.addData("parent",roleDtoMap);
+            }
+        }
+
         resultData.setData(pageResultDto.getData());
         resultData.setPage(pageResultDto.getPage());
         return new ResponseEntity(resultData, HttpStatus.OK);

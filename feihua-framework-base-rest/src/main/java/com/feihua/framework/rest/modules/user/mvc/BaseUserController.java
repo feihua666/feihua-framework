@@ -1,5 +1,7 @@
 package com.feihua.framework.rest.modules.user.mvc;
 
+import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
+import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserAuthPoService;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
 import com.feihua.framework.base.modules.user.dto.BaseUserAddParamDto;
@@ -25,6 +27,7 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +56,8 @@ public class BaseUserController extends BaseController {
     private ApiBaseUserPoService apiBaseUserPoService;
     @Autowired
     private ApiBaseUserAuthPoService apiBaseUserAuthPoService;
+    @Autowired
+    private ApiBaseOfficePoService apiBaseOfficePoService;
     /**
      * 单资源，添加用户
      * @param addUserFormDto
@@ -336,7 +341,9 @@ public class BaseUserController extends BaseController {
         if(baseUserDto != null){
             BaseUserVo vo = new BaseUserVo(baseUserDto);
             BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(id,ShiroUser.LoginType.ACCOUNT.name());
-            vo.setAccount(userAuthDto.getIdentifier());
+            if (userAuthDto != null) {
+                vo.setAccount(userAuthDto.getIdentifier());
+            }
             resultData.setData(vo);
             return new ResponseEntity(resultData, HttpStatus.OK);
         }else{
@@ -354,7 +361,7 @@ public class BaseUserController extends BaseController {
     @RepeatFormValidator
     @RequiresPermissions("base:user:search")
     @RequestMapping(value = "/users",method = RequestMethod.GET)
-    public ResponseEntity searchUsers(SearchBaseUsersConditionDto dto){
+    public ResponseEntity searchUsers(SearchBaseUsersConditionDto dto,boolean includeOfficeName){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -372,7 +379,13 @@ public class BaseUserController extends BaseController {
                 if (userAuthDto != null) {
                     vo.setAccount(userAuthDto.getIdentifier());
                 }
-
+                //机构名称
+                if(includeOfficeName && StringUtils.isNotEmpty(userDto.getDataOfficeId())){
+                    BaseOfficeDto baseOfficeDto = apiBaseOfficePoService.selectByPrimaryKey(userDto.getDataOfficeId());
+                    if(baseOfficeDto != null){
+                        vo.setDataOfficeName(baseOfficeDto.getName());
+                    }
+                }
                     result.add(vo);
             }
             resultData.setData(result);

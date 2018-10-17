@@ -1,14 +1,12 @@
 package com.feihua.utils;
 
-import com.feihua.utils.http.httpclient.HttpClientUtils;
-import com.feihua.utils.json.JSONUtils;
-import com.feihua.utils.string.StringUtils;
-import org.apache.http.HttpResponse;
+import com.feihua.utils.calendar.CalendarUtils;
+import com.feihua.utils.calendar.LunarCalendarUtils;
+import com.feihua.utils.calendar.LunarDate;
 
-import java.io.IOException;
-import java.util.Map;
+import java.util.Date;
 
-import static com.feihua.utils.string.StringUtils.propertyToSetMethodName;
+import static com.feihua.utils.calendar.LunarCalendarUtils.getChinaConstellation;
 
 /**
  * Created by yangwei
@@ -17,9 +15,7 @@ import static com.feihua.utils.string.StringUtils.propertyToSetMethodName;
 public class Test {
     public static void main(String[] args) throws Exception {
 
-
-        String url = "http://localhost:8080/wwd/users";
-        System.out.println( url.substring(0,url.indexOf("/wwd")));
-
+        LunarDate lunarDate = LunarCalendarUtils.stringTolunarDate("2018-02-29 12:12");
+        System.out.println(lunarDate);
     }
 }

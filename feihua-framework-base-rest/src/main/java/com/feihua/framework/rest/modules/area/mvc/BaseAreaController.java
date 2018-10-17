@@ -4,6 +4,7 @@ import com.feihua.framework.base.modules.area.api.ApiBaseAreaPoService;
 import com.feihua.framework.base.modules.area.dto.BaseAreaDto;
 import com.feihua.framework.base.modules.area.dto.SearchAreasConditionDto;
 import com.feihua.framework.base.modules.area.po.BaseAreaPo;
+import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.modules.area.dto.AddAreaFormDto;
@@ -16,6 +17,7 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 区域接口
@@ -195,7 +199,7 @@ public class BaseAreaController extends BaseController {
     @RepeatFormValidator
     @RequiresPermissions("base:area:search")
     @RequestMapping(value = "/areas",method = RequestMethod.GET)
-    public ResponseEntity searchAreas(SearchAreasConditionDto dto){
+    public ResponseEntity searchAreas(SearchAreasConditionDto dto, boolean includeParent){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -205,6 +209,23 @@ public class BaseAreaController extends BaseController {
         PageResultDto<BaseAreaDto> list = apiBaseAreaPoService.searchAreasDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){
+            //父级
+            if (includeParent) {
+                Map<String,BaseAreaDto> parentDtoMap = new HashMap<>();
+                BaseAreaDto parentDto = null;
+                for (BaseAreaDto baseAreaDto : list.getData()) {
+                    if(StringUtils.isNotEmpty(baseAreaDto.getParentId())){
+                        parentDto = apiBaseAreaPoService.selectByPrimaryKey(baseAreaDto.getParentId());
+                        if (parentDto != null) {
+                            parentDtoMap.put(baseAreaDto.getParentId(),parentDto);
+                        }
+                    }
+                }
+
+                if (!parentDtoMap.isEmpty()) {
+                    resultData.addData("parent",parentDtoMap);
+                }
+            }
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);

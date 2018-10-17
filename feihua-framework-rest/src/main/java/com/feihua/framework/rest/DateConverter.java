@@ -12,7 +12,7 @@ import java.util.Date;
 public class DateConverter implements Converter<String, Date> {
     @Override
     public Date convert(String source) {
-        return CalendarUtils.StringToDate(source, CalendarUtils.getDateStyle(source));
+        return CalendarUtils.stringToDate(source, CalendarUtils.getDateStyle(source));
     }
 
 }

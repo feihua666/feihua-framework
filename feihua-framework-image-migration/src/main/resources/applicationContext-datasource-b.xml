@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <description>orm Configuration</description>
+
+
+    <!-- 数据源配置, 使用 bonecp druid 数据库连接池 -->
+    <bean id="dataSourceB" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${b.jdbc.driver}"/>
+        <property name="url" value="${b.jdbc.url}"/>
+        <property name="username" value="${b.jdbc.username}"/>
+        <property name="password" value="${b.jdbc.password}"/>
+        <property name="initialSize" value="${b.jdbc.initialSize}"/>
+        <property name="minIdle" value="${b.jdbc.minIdle}"/>
+        <!-- <property name="maxIdle" value="${b.jdbc.maxIdle}"/> -->
+        <property name="maxActive" value="${b.jdbc.maxActive}"/>
+        <property name="maxWait" value="${b.jdbc.maxWait}"/>
+        <property name="timeBetweenEvictionRunsMillis" value="${b.jdbc.timeBetweenEvictionRunsMillis}"/>
+        <property name="minEvictableIdleTimeMillis" value="${b.jdbc.minEvictableIdleTimeMillis}"/>
+        <property name="validationQuery" value="${b.jdbc.testSql}"/>
+        <property name="testWhileIdle" value="${b.jdbc.testWhileIdle}"/>
+        <property name="testOnBorrow" value="${b.jdbc.testOnBorrow}"/>
+        <property name="testOnReturn" value="${b.jdbc.testOnReturn}"/>
+    </bean>
+</beans>

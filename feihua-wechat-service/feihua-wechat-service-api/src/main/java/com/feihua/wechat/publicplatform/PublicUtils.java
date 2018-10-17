@@ -346,7 +346,12 @@ public class PublicUtils {
     "scope":"SCOPE" }
      */
     public static AuthorizeAccessToken getAuthorizeAccessToken(String code, String which) {
-        AuthorizeAccessToken authorizeAccessToken = (AuthorizeAccessToken) JedisUtils.getObject("authorizeAccessToken_" + which);
+
+        //如果没有code 返回空
+        if(StringUtils.isEmpty(code)){
+            return null;
+        }
+        AuthorizeAccessToken authorizeAccessToken = (AuthorizeAccessToken) JedisUtils.getObject("authorizeAccessToken_" + which + code);
         JSONObject jsonObject = null;
         // 如果存在
         if(authorizeAccessToken != null){
@@ -358,17 +363,12 @@ public class PublicUtils {
              else{
                  authorizeAccessToken = refreshAuthorizeAccessToken(authorizeAccessToken.getRefreshToken(),which);
                  if (authorizeAccessToken != null) {
-                     JedisUtils.setObject("authorizeAccessToken_" + which,authorizeAccessToken,0);
+                     JedisUtils.setObject("authorizeAccessToken_" + which + code,authorizeAccessToken,0);
                      return authorizeAccessToken;
                  }
              }
         }
 
-
-        //如果没有code 返回空
-        if(StringUtils.isEmpty(code)){
-            return null;
-        }
 
         String url = PublicConstants.AUTHORIZE_ACCESS_TOKEN_URL.replace(CommonConstants.PARAM_APPID, PublicUtils.getAppid(which)).replace(CommonConstants.PARAM_APPSECRET,PublicUtils.getAppsecret(which)).replace(PublicConstants.PARAM_CODE,code);
 

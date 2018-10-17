@@ -18,6 +18,7 @@ import java.util.Map;
 public class CalendarUtils {
 
     private static final ThreadLocal<SimpleDateFormat> threadLocal = new ThreadLocal<SimpleDateFormat>();
+    private static final ThreadLocal<SimpleDateFormat> threadLocalLenient = new ThreadLocal<SimpleDateFormat>();
     private static final Calendar calendar = Calendar.getInstance();
     private static final Object object = new Object();
 
@@ -41,7 +42,45 @@ public class CalendarUtils {
         dateFormat.applyPattern(pattern);
         return dateFormat;
     }
+    /**
+     * 获取SimpleDateFormat
+     * @param pattern 日期格式
+     * @param lenient 是否宽松
+     * @return SimpleDateFormat对象
+     * @throws RuntimeException 异常：非法日期格式
+     */
+    private static SimpleDateFormat getDateFormat(String pattern,boolean lenient) throws RuntimeException {
+        if(lenient){
+            SimpleDateFormat dateFormat = threadLocalLenient.get();
+            if (dateFormat == null) {
+                synchronized (object) {
+                    if (dateFormat == null) {
+                        dateFormat = new SimpleDateFormat(pattern);
+                        dateFormat.setLenient(lenient);
+                        threadLocalLenient.set(dateFormat);
+                    }
+                }
+            }
+            dateFormat.applyPattern(pattern);
+            return dateFormat;
+        }else {
+            return getDateFormat(pattern);
+        }
 
+    }
+
+    /**
+     * 判断是否为闰年
+     * @param year
+     * @return
+     */
+    public static boolean isLeap(int year){
+        if(year % 4 == 0 && year % 100 != 0 || year%400 == 0){
+            return true;
+        }else{
+            return false;
+        }
+    }
     /**
      * 获取日期中的某数值。如获取月份 
      * @param date 日期 
@@ -68,9 +107,9 @@ public class CalendarUtils {
         String dateString = null;
         DateStyle dateStyle = getDateStyle(date);
         if (dateStyle != null) {
-            Date myDate = StringToDate(date, dateStyle);
+            Date myDate = stringToDate(date, dateStyle);
             myDate = addInteger(myDate, dateType, amount);
-            dateString = DateToString(myDate, dateStyle);
+            dateString = dateToString(myDate, dateStyle);
         }
         return dateString;
     }
@@ -172,7 +211,15 @@ public class CalendarUtils {
      * @param date 日期字符串
      * @return 日期风格
      */
-    public static DateStyle getDateStyle(String date) {
+    public static DateStyle getDateStyle(String date){
+        return getDateStyle(date,false);
+    }
+    /**
+     * 获取日期字符串的日期风格。失敗返回null。
+     * @param date 日期字符串
+     * @return 日期风格
+     */
+    public static DateStyle getDateStyle(String date,boolean lenient) {
         DateStyle dateStyle = null;
         Map<Long, DateStyle> map = new HashMap<Long, DateStyle>();
         List<Long> timestamps = new ArrayList<Long>();
@@ -184,7 +231,7 @@ public class CalendarUtils {
             if (date != null) {
                 try {
                     ParsePosition pos = new ParsePosition(0);
-                    dateTmp = getDateFormat(style.getValue()).parse(date, pos);
+                    dateTmp = getDateFormat(style.getValue(),lenient).parse(date, pos);
                     if (pos.getIndex() != date.length()) {
                         dateTmp = null;
                     }
@@ -208,22 +255,39 @@ public class CalendarUtils {
      * @param date 日期字符串
      * @return 日期
      */
-    public static Date StringToDate(String date) {
+    public static Date stringToDate(String date) {
         DateStyle dateStyle = getDateStyle(date);
-        return StringToDate(date, dateStyle);
+        return stringToDate(date, dateStyle);
     }
-
+    /**
+     * 将日期字符串转化为日期。失败返回null。
+     * @param date 日期字符串
+     * @return 日期
+     */
+    public static Date stringToDate(String date, boolean lenient) {
+        DateStyle dateStyle = getDateStyle(date,lenient);
+        return stringToDate(date, dateStyle,lenient);
+    }
     /**
      * 将日期字符串转化为日期。失败返回null。
      * @param date 日期字符串
      * @param pattern 日期格式
      * @return 日期
      */
-    public static Date StringToDate(String date, String pattern) {
+    public static Date stringToDate(String date, String pattern) {
+        return stringToDate(date,pattern,false);
+    }
+    /**
+     * 将日期字符串转化为日期。失败返回null。
+     * @param date 日期字符串
+     * @param pattern 日期格式
+     * @return 日期
+     */
+    public static Date stringToDate(String date, String pattern, boolean lenient) {
         Date myDate = null;
         if (date != null) {
             try {
-                myDate = getDateFormat(pattern).parse(date);
+                myDate = getDateFormat(pattern,lenient).parse(date);
             } catch (Exception e) {
             }
         }
@@ -236,25 +300,42 @@ public class CalendarUtils {
      * @param dateStyle 日期风格
      * @return 日期
      */
-    public static Date StringToDate(String date, DateStyle dateStyle) {
+    public static Date stringToDate(String date, DateStyle dateStyle) {
+        return stringToDate(date,dateStyle,false);
+    }
+    /**
+     * 将日期字符串转化为日期。失败返回null。
+     * @param date 日期字符串
+     * @param dateStyle 日期风格
+     * @return 日期
+     */
+    public static Date stringToDate(String date, DateStyle dateStyle,boolean lenient) {
         Date myDate = null;
         if (dateStyle != null) {
-            myDate = StringToDate(date, dateStyle.getValue());
+            myDate = stringToDate(date, dateStyle.getValue(),lenient);
         }
         return myDate;
     }
-
     /**
      * 将日期转化为日期字符串。失败返回null。
      * @param date 日期
      * @param pattern 日期格式
      * @return 日期字符串
      */
-    public static String DateToString(Date date, String pattern) {
+    public static String dateToString(Date date, String pattern) {
+        return dateToString(date,pattern,false);
+    }
+    /**
+     * 将日期转化为日期字符串。失败返回null。
+     * @param date 日期
+     * @param pattern 日期格式
+     * @return 日期字符串
+     */
+    public static String dateToString(Date date, String pattern,boolean lenient) {
         String dateString = null;
         if (date != null) {
             try {
-                dateString = getDateFormat(pattern).format(date);
+                dateString = getDateFormat(pattern,lenient).format(date);
             } catch (Exception e) {
             }
         }
@@ -264,26 +345,51 @@ public class CalendarUtils {
     /**
      * 将日期转化为日期字符串。失败返回null。
      * @param date 日期
+     * @return 日期字符串 格式为@See com.feihua.utils.calendar.CalendarUtils.DateStyle#YYYY_MM_DD
+     */
+    public static String dateToString(Date date) {
+        return dateToString(date,DateStyle.YYYY_MM_DD);
+    }
+
+    /**
+     * 将日期转化为日期时间字符串。失败返回null。
+     * @param date 日期
+     * @return 日期字符串 格式为@See com.feihua.utils.calendar.CalendarUtils.DateStyle#YYYY_MM_DD_HH_MM_SS
+     */
+    public static String dateTimeToString(Date date) {
+        return dateToString(date,DateStyle.YYYY_MM_DD_HH_MM_SS);
+    }
+    /**
+     * 将日期转化为日期字符串。失败返回null。
+     * @param date 日期
      * @param dateStyle 日期风格
      * @return 日期字符串
      */
-    public static String DateToString(Date date, DateStyle dateStyle) {
+    public static String dateToString(Date date, DateStyle dateStyle) {
+        return dateToString(date,dateStyle,false);
+    }
+    /**
+     * 将日期转化为日期字符串。失败返回null。
+     * @param date 日期
+     * @param dateStyle 日期风格
+     * @return 日期字符串
+     */
+    public static String dateToString(Date date, DateStyle dateStyle,boolean lenient) {
         String dateString = null;
         if (dateStyle != null) {
-            dateString = DateToString(date, dateStyle.getValue());
+            dateString = dateToString(date, dateStyle.getValue(),lenient);
         }
         return dateString;
     }
-
     /**
      * 将日期字符串转化为另一日期字符串。失败返回null。
      * @param date 旧日期字符串
      * @param newPattern 新日期格式
      * @return 新日期字符串
      */
-    public static String StringToString(String date, String newPattern) {
+    public static String stringToString(String date, String newPattern) {
         DateStyle oldDateStyle = getDateStyle(date);
-        return StringToString(date, oldDateStyle, newPattern);
+        return stringToString(date, oldDateStyle, newPattern);
     }
 
     /**
@@ -292,9 +398,9 @@ public class CalendarUtils {
      * @param newDateStyle 新日期风格
      * @return 新日期字符串
      */
-    public static String StringToString(String date, DateStyle newDateStyle) {
+    public static String stringToString(String date, DateStyle newDateStyle) {
         DateStyle oldDateStyle = getDateStyle(date);
-        return StringToString(date, oldDateStyle, newDateStyle);
+        return stringToString(date, oldDateStyle, newDateStyle);
     }
 
     /**
@@ -304,8 +410,8 @@ public class CalendarUtils {
      * @param newPattern 新日期格式
      * @return 新日期字符串
      */
-    public static String StringToString(String date, String olddPattern, String newPattern) {
-        return DateToString(StringToDate(date, olddPattern), newPattern);
+    public static String stringToString(String date, String olddPattern, String newPattern) {
+        return dateToString(stringToDate(date, olddPattern), newPattern);
     }
 
     /**
@@ -315,10 +421,10 @@ public class CalendarUtils {
      * @param newParttern 新日期格式
      * @return 新日期字符串
      */
-    public static String StringToString(String date, DateStyle olddDteStyle, String newParttern) {
+    public static String stringToString(String date, DateStyle olddDteStyle, String newParttern) {
         String dateString = null;
         if (olddDteStyle != null) {
-            dateString = StringToString(date, olddDteStyle.getValue(), newParttern);
+            dateString = stringToString(date, olddDteStyle.getValue(), newParttern);
         }
         return dateString;
     }
@@ -330,10 +436,10 @@ public class CalendarUtils {
      * @param newDateStyle 新日期风格
      * @return 新日期字符串
      */
-    public static String StringToString(String date, String olddPattern, DateStyle newDateStyle) {
+    public static String stringToString(String date, String olddPattern, DateStyle newDateStyle) {
         String dateString = null;
         if (newDateStyle != null) {
-            dateString = StringToString(date, olddPattern, newDateStyle.getValue());
+            dateString = stringToString(date, olddPattern, newDateStyle.getValue());
         }
         return dateString;
     }
@@ -345,10 +451,10 @@ public class CalendarUtils {
      * @param newDateStyle 新日期风格
      * @return 新日期字符串
      */
-    public static String StringToString(String date, DateStyle olddDteStyle, DateStyle newDateStyle) {
+    public static String stringToString(String date, DateStyle olddDteStyle, DateStyle newDateStyle) {
         String dateString = null;
         if (olddDteStyle != null && newDateStyle != null) {
-            dateString = StringToString(date, olddDteStyle.getValue(), newDateStyle.getValue());
+            dateString = stringToString(date, olddDteStyle.getValue(), newDateStyle.getValue());
         }
         return dateString;
     }
@@ -479,7 +585,7 @@ public class CalendarUtils {
      * @return 年份
      */
     public static int getYear(String date) {
-        return getYear(StringToDate(date));
+        return getYear(stringToDate(date));
     }
 
     /**
@@ -497,7 +603,7 @@ public class CalendarUtils {
      * @return 月份
      */
     public static int getMonth(String date) {
-        return getMonth(StringToDate(date));
+        return getMonth(stringToDate(date));
     }
 
     /**
@@ -515,7 +621,7 @@ public class CalendarUtils {
      * @return 天
      */
     public static int getDay(String date) {
-        return getDay(StringToDate(date));
+        return getDay(stringToDate(date));
     }
 
     /**
@@ -533,7 +639,7 @@ public class CalendarUtils {
      * @return 小时
      */
     public static int getHour(String date) {
-        return getHour(StringToDate(date));
+        return getHour(stringToDate(date));
     }
 
     /**
@@ -551,7 +657,7 @@ public class CalendarUtils {
      * @return 分钟
      */
     public static int getMinute(String date) {
-        return getMinute(StringToDate(date));
+        return getMinute(stringToDate(date));
     }
 
     /**
@@ -569,7 +675,7 @@ public class CalendarUtils {
      * @return 秒钟
      */
     public static int getSecond(String date) {
-        return getSecond(StringToDate(date));
+        return getSecond(stringToDate(date));
     }
 
     /**
@@ -587,7 +693,7 @@ public class CalendarUtils {
      * @return 日期
      */
     public static String getDate(String date) {
-        return StringToString(date, DateStyle.YYYY_MM_DD);
+        return stringToString(date, DateStyle.YYYY_MM_DD);
     }
 
     /**
@@ -596,7 +702,7 @@ public class CalendarUtils {
      * @return 日期
      */
     public static String getDate(Date date) {
-        return DateToString(date, DateStyle.YYYY_MM_DD);
+        return dateToString(date, DateStyle.YYYY_MM_DD);
     }
 
     /**
@@ -605,7 +711,7 @@ public class CalendarUtils {
      * @return 时间
      */
     public static String getTime(String date) {
-        return StringToString(date, DateStyle.HH_MM_SS);
+        return stringToString(date, DateStyle.HH_MM_SS);
     }
 
     /**
@@ -614,7 +720,7 @@ public class CalendarUtils {
      * @return 时间
      */
     public static String getTime(Date date) {
-        return DateToString(date, DateStyle.HH_MM_SS);
+        return dateToString(date, DateStyle.HH_MM_SS);
     }
 
     /**
@@ -626,7 +732,7 @@ public class CalendarUtils {
         Week week = null;
         DateStyle dateStyle = getDateStyle(date);
         if (dateStyle != null) {
-            Date myDate = StringToDate(date, dateStyle);
+            Date myDate = stringToDate(date, dateStyle);
             week = getWeek(myDate);
         }
         return week;
@@ -675,7 +781,7 @@ public class CalendarUtils {
      * @return 相差天数。如果失败则返回-1
      */
     public static int getIntervalDays(String date, String otherDate) {
-        return getIntervalDays(StringToDate(date), StringToDate(otherDate));
+        return getIntervalDays(stringToDate(date), stringToDate(otherDate));
     }
 
     /**
@@ -685,10 +791,10 @@ public class CalendarUtils {
      */
     public static int getIntervalDays(Date date, Date otherDate) {
         int num = -1;
-        Date dateTmp = CalendarUtils.StringToDate(CalendarUtils.getDate(date), DateStyle.YYYY_MM_DD);
-        Date otherDateTmp = CalendarUtils.StringToDate(CalendarUtils.getDate(otherDate), DateStyle.YYYY_MM_DD);
+        Date dateTmp = CalendarUtils.stringToDate(CalendarUtils.getDate(date), DateStyle.YYYY_MM_DD);
+        Date otherDateTmp = CalendarUtils.stringToDate(CalendarUtils.getDate(otherDate), DateStyle.YYYY_MM_DD);
         if (dateTmp != null && otherDateTmp != null) {
-            long time = Math.abs(dateTmp.getTime() - otherDateTmp.getTime());
+            long time = (dateTmp.getTime() - otherDateTmp.getTime());
             num = (int) (time / (24 * 60 * 60 * 1000));
         }
         return num;
@@ -698,9 +804,9 @@ public class CalendarUtils {
      * @param date 日期
      * @param otherDate 另一个日期
      * @return dateStyle格式的字符串时间差
-     * displayAll 是否全部显示，默认显示全部,如果为true，如：0年0月9天，为false则为：9天，前边的不显示
+     * displayAll 是否全部显示，默认显示全部,如果为true，如：0年0月9天，为false则为：9天，前边的0不显示
      */
-    public static String getIntervalTime(Date date,Date otherDate,DateStyle dateStyle,boolean ...displayAll){
+    public static String getIntervalTime(Date date,Date otherDate,DateStyle dateStyle,boolean displayAll){
         String result = dateStyle.getValue();
         int year = 0,month = 0,day = 0,hour = 0,minute = 0,second = 0;
         Date bigDate = null;
@@ -756,8 +862,7 @@ public class CalendarUtils {
             month = month + 12;
         }
         year = endYear - startYear;
-        if(displayAll.length>0){
-            if(!displayAll[0]){
+            if(!displayAll){
                 if(year==0){
                     if(result.indexOf("MM")>0)
                         result = result.substring(result.indexOf("MM"));
@@ -779,7 +884,6 @@ public class CalendarUtils {
                         result = result.substring(0, result.indexOf("ss"));
                 }
             }
-        }
 
         return result.replace("yyyy", ""+year).replace("MM", ""+month).replace("dd", ""+day)
                 .replace("HH", ""+hour).replace("mm", ""+minute).replace("ss", ""+second);
@@ -842,21 +946,23 @@ public class CalendarUtils {
     }
     public enum Week {
 
-        MONDAY("星期一", "Monday", "Mon.", 1),
-        TUESDAY("星期二", "Tuesday", "Tues.", 2),
-        WEDNESDAY("星期三", "Wednesday", "Wed.", 3),
-        THURSDAY("星期四", "Thursday", "Thur.", 4),
-        FRIDAY("星期五", "Friday", "Fri.", 5),
-        SATURDAY("星期六", "Saturday", "Sat.", 6),
-        SUNDAY("星期日", "Sunday", "Sun.", 7);
+        MONDAY("星期一","一", "Monday", "Mon.", 1),
+        TUESDAY("星期二","二", "Tuesday", "Tues.", 2),
+        WEDNESDAY("星期三","三", "Wednesday", "Wed.", 3),
+        THURSDAY("星期四","四", "Thursday", "Thur.", 4),
+        FRIDAY("星期五","五", "Friday", "Fri.", 5),
+        SATURDAY("星期六","六", "Saturday", "Sat.", 6),
+        SUNDAY("星期日","日", "Sunday", "Sun.", 7);
 
         String name_cn;
+        String name_cnShort;
         String name_en;
         String name_enShort;
         int number;
 
-        Week(String name_cn, String name_en, String name_enShort, int number) {
+        Week(String name_cn,String name_cnShort, String name_en, String name_enShort, int number) {
             this.name_cn = name_cn;
+            this.name_cnShort = name_cnShort;
             this.name_en = name_en;
             this.name_enShort = name_enShort;
             this.number = number;
@@ -864,6 +970,9 @@ public class CalendarUtils {
 
         public String getChineseName() {
             return name_cn;
+        }
+        public String getChineseShortName() {
+            return name_cnShort;
         }
 
         public String getName() {
@@ -907,6 +1016,7 @@ public class CalendarUtils {
      * @return
      */
     public static Date getFirstDayOfWeek(Date date){
+        //设置一周的第一天是星期几
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
@@ -918,6 +1028,7 @@ public class CalendarUtils {
      * @return
      */
     public static Date getEndDayOfWeek(Date date){
+        //设置一周的第一天是星期几
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
@@ -956,6 +1067,16 @@ public class CalendarUtils {
     }
 
     /**
+     * 获取日期是年中第几天
+     * @param date
+     * @return
+     */
+    public static int getDayOfYear(Date date){
+        calendar.setTime(date);
+        return calendar.get(Calendar.DAY_OF_YEAR);
+    }
+
+    /**
      * 获取该日期当月有几天
      * @param date
      * @return
@@ -963,5 +1084,29 @@ public class CalendarUtils {
     public static int getDaysOfMonth(Date date){
         calendar.setTime(date);
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+    }
+
+    /**
+     * 获取日期是月中第几周
+     * @param date
+     * @return
+     */
+    public static int getWeekOfMonth(Date date){
+        calendar.setTime(date);
+        //设置一周的第一天是星期几
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        return calendar.get(Calendar.WEEK_OF_MONTH);
+    }
+
+    /**
+     * 获取日期是年中第几周
+     * @param date
+     * @return
+     */
+    public static int getWeekOfYear(Date date){
+        calendar.setTime(date);
+        //设置一周的第一天是星期几
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
+        return calendar.get(Calendar.WEEK_OF_YEAR);
     }
 }

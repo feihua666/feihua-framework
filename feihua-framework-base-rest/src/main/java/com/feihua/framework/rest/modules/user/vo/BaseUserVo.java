@@ -21,6 +21,7 @@ public class BaseUserVo {
     private String gender;
     private String serialNo;
     private String dataOfficeId;
+    private String dataOfficeName;
     private String photo;
 
 
@@ -34,7 +35,10 @@ public class BaseUserVo {
         this.dataOfficeId = userDto.getDataOfficeId();
         this.photo = userDto.getPhoto();
     }
-
+    public BaseUserVo(BaseUserDto userDto,String dataOfficeName) {
+        this(userDto);
+        this.dataOfficeName = dataOfficeName;
+    }
     public static List<BaseUserVo> toList(List<BaseUserDto> userDtoList){
 
         if(userDtoList != null) {
@@ -104,6 +108,14 @@ public class BaseUserVo {
 
     public void setDataOfficeId(String dataOfficeId) {
         this.dataOfficeId = dataOfficeId;
+    }
+
+    public String getDataOfficeName() {
+        return dataOfficeName;
+    }
+
+    public void setDataOfficeName(String dataOfficeName) {
+        this.dataOfficeName = dataOfficeName;
     }
 
     public String getPhoto() {

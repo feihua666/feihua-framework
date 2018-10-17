@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-4.2.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+    <description>orm Configuration</description>
+
+    <bean id="propertyPlaceHolderConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc-default.properties</value>
+                <value>classpath:jdbc-b.properties</value>
+                <value>classpath:mybatis-orm-config.properties</value>
+                <value>classpath:fastdfs.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="fastdfsHelper" class="com.feihua.framework.utils.FastdfsHelper" init-method="init">
+        <property name="connectTimeout" value="${fastdfs.connect_timeout}"/>
+        <property name="networkTimeout" value="${fastdfs.network_timeout}"/>
+        <property name="charset" value="${fastdfs.charset}"/>
+        <property name="tracker_http_port" value="${fastdfs.http.tracker_http_port}"/>
+        <property name="anti_steal_token" value="${fastdfs.http.anti_steal_token}"/>
+        <property name="secret_key" value="${fastdfs.http.secret_key}"/>
+        <property name="tracker_server" value="${fastdfs.tracker_server}"/>
+        <property name="tracker_ngnix_addr" value="${fastdfs.tracker_ngnix_addr}"/>
+
+
+    </bean>
+    <import resource="classpath:applicationContext-mybatis-orm.xml"/>
+    <import resource="classpath:applicationContext-datasource-b.xml"/>
+
+
+    <util:map id="multipleDataSourceMap">
+        <!--key 对应 MultipleDataSource 中的枚举-->
+        <entry key="dataSourceDefault" value-ref="dataSourceDefault"/>
+        <entry key="dataSourceB" value-ref="dataSourceB" />
+    </util:map>
+
+</beans>
