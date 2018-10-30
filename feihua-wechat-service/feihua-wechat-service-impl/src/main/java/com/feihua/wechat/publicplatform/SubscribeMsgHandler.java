@@ -35,13 +35,13 @@ public class SubscribeMsgHandler implements MsgTypeHandler {
     @Autowired
     ApiWeixinUserListener apiWeixinUserListener;
 
-    public String handleMsg( String postXmlData, String which) {
+    public String handleMsg(String postXmlData, String which) {
 
         //关注事件，有两个情况，可能是直接关注，也有可能是扫描带参数二维码关注，这里处理一下带参数二维码情况
-        String eventKey = XmlUtils.getElementText("EventKey",XmlUtils.stringToDocument(postXmlData));
+        String eventKey = XmlUtils.getElementText("EventKey", XmlUtils.stringToDocument(postXmlData));
 
         //处理关注事宜
-        RequestSubscribeMessage requestSubscribeMessage = PublicUtils.xmlToMessage(postXmlData,new RequestSubscribeMessage());
+        RequestSubscribeMessage requestSubscribeMessage = PublicUtils.xmlToMessage(postXmlData, new RequestSubscribeMessage());
         // 根据openid查询是否存在数据
         WeixinUserPo weixinUserPoCondition = new WeixinUserPo();
         weixinUserPoCondition.setOpenid(requestSubscribeMessage.getFromUserName());
@@ -52,13 +52,13 @@ public class SubscribeMsgHandler implements MsgTypeHandler {
         WeixinUserPo weixinUserPoDb = apiWeixinUserPoService.selectOneSimple(weixinUserPoCondition);
         // 如果库里没有，插入
         if (weixinUserPoDb == null) {
-            WeixinUserPo weixinUserPo = PublicUtils.getWeixinUser(requestSubscribeMessage.getFromUserName(),which);
+            WeixinUserPo weixinUserPo = PublicUtils.getWeixinUser(requestSubscribeMessage.getFromUserName(), which);
             weixinUserPo.setStatus(DictEnum.WeixinUserStatus.subscribe.name());
-            apiWeixinUserPoService.preInsert(weixinUserPo,BasePo.DEFAULT_USER_ID);
+            apiWeixinUserPoService.preInsert(weixinUserPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(weixinUserPo);
             //调用监听
             apiWeixinUserListener.onAddWexinUser(weixinUserDto);
-        }else{
+        } else {
             WeixinUserPo weixinUserPo = new WeixinUserPo();
             weixinUserPo.setId(weixinUserPoDb.getId());
             weixinUserPo.setStatus(DictEnum.WeixinUserStatus.subscribe.name());
@@ -66,17 +66,18 @@ public class SubscribeMsgHandler implements MsgTypeHandler {
             apiWeixinUserPoService.updateByPrimaryKeySelective(weixinUserPo);
         }
 
-        if(StringUtils.isNotEmpty(eventKey)){
-            String scanR  =  scanQuSceneMsgHandler.handleMsg(postXmlData,which);
-            if(StringUtils.isNotEmpty(scanR)){
+        if (StringUtils.isNotEmpty(eventKey)) {
+            String scanR = scanQuSceneMsgHandler.handleMsg(postXmlData, which);
+            if (StringUtils.isNotEmpty(scanR)) {
                 return scanR;
             }
         }
-        String r = "欢迎关注！";
+        String r = PublicUtils.getWxMessage(which);
+        r = r != null ? r : "欢迎关注！";
         ResponseTextMessage responseTextMessage = new ResponseTextMessage();
         responseTextMessage.setContent(r);
-        PublicUtils.userChange(requestSubscribeMessage,responseTextMessage);
-        r = PublicUtils.messageToXml(responseTextMessage,true);
+        PublicUtils.userChange(requestSubscribeMessage, responseTextMessage);
+        r = PublicUtils.messageToXml(responseTextMessage, true);
         return r;
     }
 }
