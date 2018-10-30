@@ -301,7 +301,7 @@ public class PublicUtils {
     public static JsapiTicket getJsapiTicket(String which) {
         JsapiTicket ticket = (JsapiTicket) JedisUtils.getObject("JsapiTicket_" + which);
 
-        if (ticket == null || ticket.isExpires() == false) return ticket;
+        if(ticket != null && ticket.isExpires() == false) return ticket;
         AccessToken accessToken = getAccessToken(which);
         String url = PublicConstants.JS_API_TICKET.replace(PublicConstants.PARAM_ACCESS_TOKEN, accessToken.getToken());
 

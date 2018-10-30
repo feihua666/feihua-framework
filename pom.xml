@@ -27,7 +27,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <feihua-framework.version>${version}</feihua-framework.version>
+        <feihua-framework.version>${project.version}</feihua-framework.version>
 
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

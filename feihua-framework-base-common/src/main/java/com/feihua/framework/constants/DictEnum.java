@@ -171,4 +171,12 @@ public class DictEnum {
         view_limited,        //跳转图文消息URL
         miniprogram        //小程序
     }
+
+    /**
+     * 消息状态
+     */
+    public enum MessageState {
+        sended,      //已发送
+        to_be_sended   //待发送
+    }
 }

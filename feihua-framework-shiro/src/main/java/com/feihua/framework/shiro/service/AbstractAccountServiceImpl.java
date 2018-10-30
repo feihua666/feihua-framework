@@ -8,6 +8,7 @@ import com.feihua.framework.shiro.pojo.token.AccountPasswordToken;
 import com.feihua.framework.shiro.pojo.token.EmailPasswordToken;
 import com.feihua.framework.shiro.pojo.token.MobilePasswordToken;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.subject.Subject;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -36,5 +37,10 @@ public abstract class AbstractAccountServiceImpl implements AccountService {
     @Override
     public boolean validateCaptchaWhenLogin(ServletRequest request, ServletResponse response) {
         return false;
+    }
+
+    @Override
+    public void onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) {
+
     }
 }

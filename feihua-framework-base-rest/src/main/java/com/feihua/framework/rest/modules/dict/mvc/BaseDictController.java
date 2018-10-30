@@ -68,20 +68,7 @@ public class BaseDictController extends BaseController {
         logger.info("添加字典开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         ResponseJsonRender resultData=new ResponseJsonRender();
-        // 检查
-        BaseDictPo baseDictPoCheckCondition = new BaseDictPo();
-        baseDictPoCheckCondition.setParentId(addDictFormDto.getParentId());
-        baseDictPoCheckCondition.setValue(addDictFormDto.getValue());
-        baseDictPoCheckCondition.setDelFlag(BasePo.YesNo.N.name());
-        List dblist = apiBaseDictPoService.selectListSimple(baseDictPoCheckCondition);
-        if (dblist != null && !dblist.isEmpty()) {
-            // 添加失败
-            resultData.setCode(ResponseCode.E409_100001.getCode());
-            resultData.setMsg(ResponseCode.E409_100001.getMsg());
-            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
-            logger.info("添加字典结束，失败");
-            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
-        }
+
 
 
         // 表单值设置
@@ -169,21 +156,6 @@ public class BaseDictController extends BaseController {
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         logger.info("字典id:{}",id);
         ResponseJsonRender resultData=new ResponseJsonRender();
-        // 检查
-        BaseDictPo baseDictPoCheckCondition = new BaseDictPo();
-        baseDictPoCheckCondition.setParentId(updateDictFormDto.getParentId());
-        baseDictPoCheckCondition.setValue(updateDictFormDto.getValue());
-        baseDictPoCheckCondition.setDelFlag(BasePo.YesNo.N.name());
-        List<BaseDictPo> dblist = apiBaseDictPoService.selectListSimple(baseDictPoCheckCondition);
-        if (dblist != null && !dblist.isEmpty() && !dblist.get(0).getId().equals(id)) {
-            // 添加失败
-            resultData.setCode(ResponseCode.E409_100001.getCode());
-            resultData.setMsg(ResponseCode.E409_100001.getMsg());
-            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
-            logger.info("更新字典结束，失败");
-            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
-        }
-
 
 
         // 表单值设置

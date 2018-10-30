@@ -67,7 +67,8 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
 
         // 如果尝试登录次数已经超越设置，开始验证验证码
-        if(accountService.validateCaptchaWhenLogin(request,response) && getTryLoginMaxNum() >= PropertiesUtils.getInteger("shiro.tryLoginMaxNum").intValue()){
+        int configMaxNum = PropertiesUtils.getInteger("shiro.tryLoginMaxNum").intValue();
+        if(accountService.validateCaptchaWhenLogin(request,response) && getTryLoginMaxNum() >= configMaxNum){
             String code = captchaService.resolveCaptcha((HttpServletRequest) request);
             //验证码
             if (!captchaService.validateCaptcha(code)) {
@@ -302,6 +303,9 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
 
         // 踢出其它同一客户端
         ShiroUtils.kickoutOtherClient(subject.getSession().getId().toString(),ShiroUtils.getCurrentUser().getId(),loginClient);
+
+        // 回调登录成功
+        accountService.onLoginSuccess(token,subject,request,response);
 
         if (!RequestUtils.isAjaxRequest(httpServletRequest)) {// 不是ajax请求
             issueSuccessRedirect(request, response);
