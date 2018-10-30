@@ -71,7 +71,7 @@ public class BaseDictController extends BaseController {
         // 检查
         BaseDictPo baseDictPoCheckCondition = new BaseDictPo();
         baseDictPoCheckCondition.setParentId(addDictFormDto.getParentId());
-        baseDictPoCheckCondition.setType(addDictFormDto.getType());
+        baseDictPoCheckCondition.setValue(addDictFormDto.getValue());
         baseDictPoCheckCondition.setDelFlag(BasePo.YesNo.N.name());
         List dblist = apiBaseDictPoService.selectListSimple(baseDictPoCheckCondition);
         if (dblist != null && !dblist.isEmpty()) {
@@ -172,7 +172,7 @@ public class BaseDictController extends BaseController {
         // 检查
         BaseDictPo baseDictPoCheckCondition = new BaseDictPo();
         baseDictPoCheckCondition.setParentId(updateDictFormDto.getParentId());
-        baseDictPoCheckCondition.setType(updateDictFormDto.getType());
+        baseDictPoCheckCondition.setValue(updateDictFormDto.getValue());
         baseDictPoCheckCondition.setDelFlag(BasePo.YesNo.N.name());
         List<BaseDictPo> dblist = apiBaseDictPoService.selectListSimple(baseDictPoCheckCondition);
         if (dblist != null && !dblist.isEmpty() && !dblist.get(0).getId().equals(id)) {
