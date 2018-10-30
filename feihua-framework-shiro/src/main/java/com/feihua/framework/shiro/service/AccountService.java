@@ -4,6 +4,7 @@ package com.feihua.framework.shiro.service;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
 import com.feihua.framework.shiro.pojo.ShiroUser;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.subject.Subject;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -85,4 +86,13 @@ public interface AccountService {
      * @return
      */
     public Set<String> findStringRoles(String userId);
+
+    /**
+     * 登录成功后调用
+     * @param token
+     * @param subject
+     * @param request
+     * @param response
+     */
+    public void onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response);
 }

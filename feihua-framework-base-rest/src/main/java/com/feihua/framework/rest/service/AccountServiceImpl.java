@@ -12,6 +12,7 @@ import com.feihua.framework.base.modules.user.api.ApiBaseUserAuthPoService;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
 import com.feihua.framework.base.modules.user.dto.BaseUserAuthDto;
 import com.feihua.framework.base.modules.user.dto.BaseUserDto;
+import com.feihua.framework.base.modules.user.po.BaseUserAuthPo;
 import com.feihua.framework.rest.utils.Utils;
 import com.feihua.framework.shiro.ShiroFormAuthenticationFilter;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
@@ -26,11 +27,13 @@ import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageResultDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -219,5 +222,23 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
             roles.add(roleDto.getCode());
         }
         return roles;
+    }
+
+    @Override
+    public void onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) {
+        super.onLoginSuccess(token, subject, request, response);
+        // 修改用户最新登录信息
+        ShiroUser su = ShiroUtils.getCurrentUser();
+        BaseUserAuthPo baseUserAuthPoCondition = new BaseUserAuthPo();
+        baseUserAuthPoCondition.setUserId(su.getId());
+        baseUserAuthPoCondition.setDelFlag(BasePo.YesNo.N.name());
+        baseUserAuthPoCondition.setIdentityType(su.getLoginType());
+
+        BaseUserAuthPo baseUserAuthPo = new BaseUserAuthPo();
+        baseUserAuthPo.setLastTime(new Date());
+        baseUserAuthPo.setLastIp(su.getHost());
+
+        apiBaseUserAuthPoService.preUpdate(baseUserAuthPo,su.getId());
+        apiBaseUserAuthPoService.updateSelective(baseUserAuthPo,baseUserAuthPoCondition);
     }
 }

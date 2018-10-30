@@ -48,6 +48,8 @@ public   enum ResponseCode {
     E403_100002("E403_100002","repeated request in a short time"),
     // 禁止删除，存在数据关联
     E403_100003("E403_100003","the data cannot be delete,ralative data may deal first"),
+    // 禁止修改，可以用来提示数据可能因为某状态不能改动
+    E403_100004("E403_100004","the data cannot be updated"),
 
     // 404
     // 通用错误提示
