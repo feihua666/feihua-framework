@@ -5,12 +5,15 @@ import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
-import com.feihua.wechat.publicplatform.PublicUtils;
+import com.feihua.wechat.common.WxPublicConstants;
+import com.feihua.wechat.common.WxPublicUtils;
 import com.feihua.wechat.common.api.ApiWeixinAccountPoService;
 import com.feihua.wechat.common.dto.SearchWeixinAccountsConditionDto;
 import com.feihua.wechat.common.dto.WeixinAccountDto;
 import com.feihua.wechat.common.dto.WxTemplate;
 import com.feihua.wechat.common.po.WeixinAccountPo;
+import com.feihua.wechat.miniprogram.MiniProgramUtils;
+import com.feihua.wechat.publicplatform.PublicUtils;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
@@ -202,21 +205,26 @@ public class WeixinAccountController extends SuperController {
     /**
      * 获取已添加至帐号下所有模板列表，可在微信公众平台后台中查看模板列表信息
      *
-     * @param which
+     * @param accountId
      *
      * @return
      */
     @RepeatFormValidator
     @RequiresPermissions("weixinaccount:wxalltemplates")
-    @RequestMapping(value = "/wxalltemplates/{which}", method = RequestMethod.GET)
-    public ResponseEntity getWxAllPrivateTemplates(@PathVariable String which) {
-        if (StringUtils.isEmpty(which)) return null;
+    @RequestMapping(value = "/wxalltemplates/{accountId}", method = RequestMethod.GET)
+    public ResponseEntity getWxAllPrivateTemplates(@PathVariable String accountId) {
+        if (StringUtils.isEmpty(accountId)) return null;
         ResponseJsonRender resultData = new ResponseJsonRender();
         List<WxTemplate> wxAllPrivateTemplate = null;
         try {
-            wxAllPrivateTemplate = PublicUtils.getWxAllPrivateTemplate(which);
+            final WeixinAccountDto weixinAccountDto = apiWeixinAccountPoService.selectByPrimaryKey(accountId);
+            if (WxPublicConstants.WxAccountType.WEIXIN_MINIPROGRAM.value().equals(weixinAccountDto.getType())) {
+                wxAllPrivateTemplate = MiniProgramUtils.getWxAllPrivateTemplate(weixinAccountDto.getWhich(), weixinAccountDto.getType());
+            } else {
+                wxAllPrivateTemplate = PublicUtils.getWxAllPrivateTemplate(weixinAccountDto.getWhich(), weixinAccountDto.getType());
+            }
         } catch (Exception e) {
-           logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
         }
         if (wxAllPrivateTemplate != null) {
             resultData.setData(wxAllPrivateTemplate);

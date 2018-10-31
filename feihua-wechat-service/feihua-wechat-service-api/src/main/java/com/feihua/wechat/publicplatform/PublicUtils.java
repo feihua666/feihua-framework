@@ -9,10 +9,13 @@ import com.feihua.utils.json.JSONUtils;
 import com.feihua.utils.properties.PropertiesUtils;
 import com.feihua.utils.spring.SpringContextHolder;
 import com.feihua.wechat.CommonConstants;
+import com.feihua.wechat.common.WxPublicConstants;
 import com.feihua.wechat.common.dto.WeixinAccountDto;
 import com.feihua.wechat.common.po.WeixinUserPo;
 import com.feihua.wechat.common.api.ApiWeixinAccountPoService;
 import com.feihua.wechat.common.dto.WxTemplate;
+import com.feihua.wechat.miniprogram.MiniConstants;
+import com.feihua.wechat.miniprogram.MiniProgramUtils;
 import com.feihua.wechat.publicplatform.dto.*;
 import com.feihua.wechat.common.po.WeixinAccountPo;
 import feihua.jdbc.api.pojo.BasePo;
@@ -23,6 +26,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -300,7 +304,7 @@ public class PublicUtils {
     public static JsapiTicket getJsapiTicket(String which) {
         JsapiTicket ticket = (JsapiTicket) JedisUtils.getObject("JsapiTicket_" + which);
 
-        if(ticket != null && ticket.isExpires() == false) return ticket;
+        if (ticket != null && ticket.isExpires() == false) return ticket;
         AccessToken accessToken = getAccessToken(which);
         String url = PublicConstants.JS_API_TICKET.replace(PublicConstants.PARAM_ACCESS_TOKEN, accessToken.getToken());
 
@@ -602,8 +606,7 @@ public class PublicUtils {
         weixinPo.setDelFlag(BasePo.YesNo.N.name());
         weixinPo.setStatus(BasePo.YesNo.Y.name()); //有效的
         weixinPo.setWhich(which);
-        //TODO 设置类型为公众号，订阅、小程序有可能会有问题
-        weixinPo.setType("weixin_publicplatform");
+        weixinPo.setType(WxPublicConstants.WxAccountType.WEIXIN_PUBLICPLATFORM.value());
         return apiWeixinAccountPoService.selectList(weixinPo);
     }
 
@@ -619,7 +622,7 @@ public class PublicUtils {
         if (weixinAccountDtos != null && weixinAccountDtos.size() > 0) {
             final WeixinAccountDto weixinAccountDto = weixinAccountDtos.get(0);
             //TODO 微信关注欢迎语暂时只支持文本类型
-            if ("text".equals(weixinAccountDto.getTemplateType()) && StringUtils.isNotBlank(weixinAccountDto.getTemplate())) {
+            if (WxPublicConstants.WxMsgType.TEXT.value().equals(weixinAccountDto.getTemplateType()) && StringUtils.isNotBlank(weixinAccountDto.getTemplate())) {
                 return weixinAccountDtos.get(0).getTemplate();
             } else {
                 return null;
@@ -636,25 +639,35 @@ public class PublicUtils {
      *
      * @return
      */
-    public static List<WxTemplate> getWxAllPrivateTemplate(String which) {
-        String url = PublicConstants.GET_ALL_PRIVATE_TEMPLATE.replace(PublicConstants.PARAM_ACCESS_TOKEN, getAccessToken(which).getToken());
+    public static List<WxTemplate> getWxAllPrivateTemplate(String which, String type) {
+        String url = PublicConstants.GET_ALL_PRIVATE_TEMPLATE_URL.replace(PublicConstants.PARAM_ACCESS_TOKEN, PublicUtils.getAccessToken(which).getToken());
 
         JSONObject jsonObject = null;
         List<WxTemplate> wxTemplates = new ArrayList<>();
         try {
 
             jsonObject = new JSONObject(HttpClientUtils.httpGet(url));
-            logger.info("《=====获取已添加至微信公众帐号下所有模板列表：{},{}",which,jsonObject.toString() );
-            if (jsonObject.has("errcode")) {
+            logger.info("《=====获取已添加至微信公众帐号下所有模板列表：{},{}", which, jsonObject.toString());
+            if (jsonObject != null && jsonObject.has("errcode")) {
                 Integer errCode = jsonObject.getInt("errcode");
                 logger.error("Error occurs when getWxAllPrivateTemplate, requestUrl:{},error:{}", url, jsonObject);
                 if (errCode != 0) {
                     throw new RuntimeException(jsonObject.toString());
                 }
             }
-            // 只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
             try {
-                wxTemplates = (List<WxTemplate>) jsonObject.get("template_list");
+                JSONArray jsonArray = (JSONArray) jsonObject.get("template_list");
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    String template_id = jsonArray.getJSONObject(i).getString("template_id");
+                    String title = jsonArray.getJSONObject(i).getString("title");
+                    String primary_industry = jsonArray.getJSONObject(i).getString("primary_industry");
+                    String deputy_industry = jsonArray.getJSONObject(i).getString("deputy_industry");
+                    String content = jsonArray.getJSONObject(i).getString("content");
+                    String example = jsonArray.getJSONObject(i).getString("example");
+                    WxTemplate wxTemplate = new WxTemplate(template_id, title, primary_industry, deputy_industry, content, example);
+                    wxTemplate.setType(type);
+                    wxTemplates.add(wxTemplate);
+                }
             } catch (JSONException e) {
 
             }
