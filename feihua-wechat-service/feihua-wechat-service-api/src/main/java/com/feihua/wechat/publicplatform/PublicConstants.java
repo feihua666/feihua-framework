@@ -75,5 +75,9 @@ public class PublicConstants {
      * 网页授权后，获取用户信息
      */
     public final static String AUTH_USER_INFO_URL = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
+    /**
+     * 获取已添加至帐号下所有模板列表，可在微信公众平台后台中查看模板列表信息
+     */
+    public final static String GET_ALL_PRIVATE_TEMPLATE = "https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=ACCESS_TOKEN";
 
 }

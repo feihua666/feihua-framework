@@ -32,10 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Formatter;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by yangwei
@@ -598,7 +595,7 @@ public class PublicUtils {
      * @return
      */
     private static List<WeixinAccountDto> getWeixinAccountDtos(String which) {
-        ApiWeixinAccountPoService apiWeixinAccountPoService = SpringContextHolder.getBean("apiWeixinAccountPoService");
+        ApiWeixinAccountPoService apiWeixinAccountPoService = SpringContextHolder.getBean(ApiWeixinAccountPoService.class);
         WeixinAccountPo weixinPo = new WeixinAccountPo();
         weixinPo.setDelFlag(BasePo.YesNo.N.name());
         weixinPo.setStatus(BasePo.YesNo.Y.name()); //有效的
@@ -627,5 +624,41 @@ public class PublicUtils {
         } else {
             return null;
         }
+    }
+
+    /**
+     * 获取已添加至帐号下所有模板列表，可在微信公众平台后台中查看模板列表信息
+     *
+     * @param which
+     *
+     * @return
+     */
+    public static List<WxTemplate> getWxAllPrivateTemplate(String which) {
+        String url = PublicConstants.GET_ALL_PRIVATE_TEMPLATE.replace(PublicConstants.PARAM_ACCESS_TOKEN, getAccessToken(which).getToken());
+
+        JSONObject jsonObject = null;
+        List<WxTemplate> wxTemplates = new ArrayList<>();
+        try {
+
+            jsonObject = new JSONObject(HttpClientUtils.httpGet(url));
+            logger.info("《=====获取已添加至微信公众帐号下所有模板列表：{},{}",which,jsonObject.toString() );
+            if (jsonObject.has("errcode")) {
+                Integer errCode = jsonObject.getInt("errcode");
+                logger.error("Error occurs when getWxAllPrivateTemplate, requestUrl:{},error:{}", url, jsonObject);
+                if (errCode != 0) {
+                    throw new RuntimeException(jsonObject.toString());
+                }
+            }
+            // 只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
+            try {
+                wxTemplates = (List<WxTemplate>) jsonObject.get("template_list");
+            } catch (JSONException e) {
+
+            }
+        } catch (Exception e) {
+            logger.error("Error occurs when getWxAllPrivateTemplate, requestUrl:" + url, e);
+            throw new RuntimeException(e.getMessage());
+        }
+        return wxTemplates;
     }
 }
