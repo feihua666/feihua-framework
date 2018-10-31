@@ -1,4 +1,4 @@
-package com.feihua.wechat.rest.publicplatform.mvc;
+package com.feihua.wechat.rest.common.mvc;
 
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.rest.ResponseJsonRender;
@@ -6,11 +6,11 @@ import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.wechat.publicplatform.PublicUtils;
-import com.feihua.wechat.publicplatform.api.ApiWeixinAccountPoService;
-import com.feihua.wechat.publicplatform.dto.SearchWeixinAccountsConditionDto;
-import com.feihua.wechat.publicplatform.dto.WeixinAccountDto;
-import com.feihua.wechat.publicplatform.dto.WxTemplate;
-import com.feihua.wechat.publicplatform.po.WeixinAccountPo;
+import com.feihua.wechat.common.api.ApiWeixinAccountPoService;
+import com.feihua.wechat.common.dto.SearchWeixinAccountsConditionDto;
+import com.feihua.wechat.common.dto.WeixinAccountDto;
+import com.feihua.wechat.common.dto.WxTemplate;
+import com.feihua.wechat.common.po.WeixinAccountPo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;

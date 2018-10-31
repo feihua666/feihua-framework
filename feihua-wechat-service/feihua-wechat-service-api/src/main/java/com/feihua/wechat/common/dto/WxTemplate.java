@@ -1,4 +1,4 @@
-package com.feihua.wechat.publicplatform.dto;
+package com.feihua.wechat.common.dto;
 
 /**
  * @Auther: wzn

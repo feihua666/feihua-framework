@@ -9,10 +9,12 @@ import com.feihua.utils.json.JSONUtils;
 import com.feihua.utils.properties.PropertiesUtils;
 import com.feihua.utils.spring.SpringContextHolder;
 import com.feihua.wechat.CommonConstants;
+import com.feihua.wechat.common.dto.WeixinAccountDto;
 import com.feihua.wechat.common.po.WeixinUserPo;
-import com.feihua.wechat.publicplatform.api.ApiWeixinAccountPoService;
+import com.feihua.wechat.common.api.ApiWeixinAccountPoService;
+import com.feihua.wechat.common.dto.WxTemplate;
 import com.feihua.wechat.publicplatform.dto.*;
-import com.feihua.wechat.publicplatform.po.WeixinAccountPo;
+import com.feihua.wechat.common.po.WeixinAccountPo;
 import feihua.jdbc.api.pojo.BasePo;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.MethodUtils;
@@ -600,6 +602,7 @@ public class PublicUtils {
         weixinPo.setDelFlag(BasePo.YesNo.N.name());
         weixinPo.setStatus(BasePo.YesNo.Y.name()); //有效的
         weixinPo.setWhich(which);
+        //TODO 设置类型为公众号，订阅、小程序有可能会有问题
         weixinPo.setType("weixin_publicplatform");
         return apiWeixinAccountPoService.selectList(weixinPo);
     }
