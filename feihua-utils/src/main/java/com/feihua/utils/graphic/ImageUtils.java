@@ -10,10 +10,7 @@ import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.ColorModel;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -108,18 +105,24 @@ public class ImageUtils {
 	/**
 	 * 按高度和宽度缩放
 	 * @param image
-	 * @param height
 	 * @param width
 	 * @return 
 	 */
-	public final static BufferedImage zoomImage(BufferedImage image, int width,int height) {
-			double ratio = 0.0; // 缩放比例
-			if (image.getHeight() > image.getWidth()) {
-				ratio = (new Integer(height)).doubleValue()/ image.getHeight();
-			} else {
-				ratio = (new Integer(width)).doubleValue()/image.getWidth();
-			}
+	public final static BufferedImage zoomEqualRatioImageByWidth(BufferedImage image, int width) {
+			double ratio = (new Integer(width)).doubleValue()/image.getWidth();
+
 			return zoomImage(image,ratio);
+	}
+	/**
+	 * 按高度和宽度缩放
+	 * @param image
+	 * @param height
+	 * @return
+	 */
+	public final static BufferedImage zoomEqualRatioImageByHeight(BufferedImage image,int height) {
+		double ratio = (new Integer(height)).doubleValue()/ image.getHeight();
+
+		return zoomImage(image,ratio);
 	}
 	/**
 	 * 旋转图像
@@ -186,9 +189,9 @@ public class ImageUtils {
 			int dheight = Math.abs(height-dy);
 					
 			if (srcWidth > 0 && srcHeight > 0) {
-				resultImage = createImage(dwidth, dheight);
+				resultImage = createImage(width, height);
 				Graphics g = resultImage.getGraphics();
-				g.drawImage(bufferedimage, 0, 0, dwidth,dheight ,dx,dy,width,height, null); // 绘制切割后的图
+				g.drawImage(bufferedimage, 0, 0, width,height ,dx,dy,width,height, null); // 绘制切割后的图
 				g.dispose();
 			}
 
@@ -317,7 +320,7 @@ public class ImageUtils {
 			int height_biao = pressImg.getHeight(null);
 			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_ATOP,
 					alpha));
-			g.drawImage(pressImg, x,y, x+width_biao>width?width:x+width_biao, y+height_biao>height?height:y+height_biao, null);
+			g.drawImage(pressImg, x,y,null);
 			// 水印文件结束
 			g.dispose();
 			return bufferedimage;
@@ -344,6 +347,19 @@ public class ImageUtils {
 	 */
 	public final static BufferedImage inputStreamToBufferedImage(ByteArrayInputStream byteArrayInputStream) throws IOException {
 		return ImageIO.read(byteArrayInputStream);
+	}
+
+	/**
+	 *
+	 * @param bufferedImage
+	 * @return
+	 * @throws IOException
+	 */
+	public final static InputStream bufferedImageToInputStream(BufferedImage bufferedImage,String formatName) throws IOException {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		ImageIO.write(bufferedImage, formatName, os);
+		InputStream is = new ByteArrayInputStream(os.toByteArray());
+		return is;
 	}
 	/**
 	 * 图片质量压缩

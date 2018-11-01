@@ -38,7 +38,20 @@ public class FileUtils {
 	public static boolean exists(String filePath){
 		boolean flag = false;
 		File file = getFile(filePath);
-		if(file!=null && file.exists() && file.isFile()){
+		if(file != null && file.exists() && file.isFile()){
+			flag = true;
+		}
+		return flag;
+	}
+	/**
+	 * 判断文件夹是否存在,不是判断文件
+	 * @param folderPath
+	 * @return 文件夹存在返回true 不存在返回false
+	 */
+	public static boolean existsFolder(String folderPath){
+		boolean flag = false;
+		File file = getFile(folderPath);
+		if(file != null && file.exists() && !file.isFile()){
 			flag = true;
 		}
 		return flag;
@@ -569,22 +582,5 @@ public class FileUtils {
 				}
 			}
 		}
-	}
-
-	/**
-	 *
-	 * @param in
-	 * @return
-	 * @throws IOException
-	 */
-	public static byte[] inputStreamtoByteArray(InputStream in) throws IOException {
-
-		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		byte[] buffer = new byte[1024 * 4];
-		int n = 0;
-		while ((n = in.read(buffer)) != -1) {
-			out.write(buffer, 0, n);
-		}
-		return out.toByteArray();
 	}
 }
