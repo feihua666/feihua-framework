@@ -5,6 +5,7 @@ import com.feihua.framework.mybatis.orm.MultipleDataSource;
 import com.feihua.framework.mybatis.orm.mapper.NativeSqlMapper;
 import com.feihua.utils.http.httpclient.HttpClientUtils;
 import com.feihua.utils.io.FileUtils;
+import com.feihua.utils.io.StreamUtils;
 import com.feihua.utils.string.RegularExpression;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -72,7 +73,7 @@ public abstract class ApiSourceImpl implements ApiSource {
 
         HttpResponse httpResponse =  client.execute(get);
         InputStream inputStream = httpResponse.getEntity().getContent();
-        byte[] bytes = FileUtils.inputStreamtoByteArray(inputStream);
+        byte[] bytes = StreamUtils.inputStreamToByteArray(inputStream);
         get.releaseConnection();
         return bytes;
     }

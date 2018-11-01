@@ -162,7 +162,9 @@ public class FileController extends BaseController{
                     BufferedImage image = ImageUtils.createImage(originRealPath);
                     //是图片
                     if (image != null) {
-                        image = ImageUtils.zoomImage(image,width,height);
+                        image = ImageUtils.zoomImage(image,width);
+                        if (image.getHeight() > height)
+                        image = ImageUtils.cutImage(image,0,(image.getHeight() - height) / 2,width,height);
                         ImageUtils.outPutImage(image,ImageUtils.IMAGE_TYPE_JPEG,realPath);
                         //contentType = "image/*";
                     }else{
