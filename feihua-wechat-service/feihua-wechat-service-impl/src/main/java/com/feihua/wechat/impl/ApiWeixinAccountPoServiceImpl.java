@@ -1,8 +1,9 @@
-package com.feihua.wechat.publicplatform;
+package com.feihua.wechat.impl;
 
-import com.feihua.wechat.publicplatform.api.ApiWeixinAccountPoService;
-import com.feihua.wechat.publicplatform.dto.WeixinAccountDto;
-import com.feihua.wechat.publicplatform.po.WeixinAccountPo;
+import com.feihua.wechat.common.api.ApiWeixinAccountPoService;
+import com.feihua.wechat.common.dto.SearchWeixinAccountsConditionDto;
+import com.feihua.wechat.common.dto.WeixinAccountDto;
+import com.feihua.wechat.common.po.WeixinAccountPo;
 import com.github.pagehelper.Page;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
@@ -24,9 +25,9 @@ public class ApiWeixinAccountPoServiceImpl extends ApiBaseServiceImpl<WeixinAcco
     }
 
     @Override
-    public PageResultDto<WeixinAccountDto> searchWeixinAccountsDsf(com.feihua.wechat.publicplatform.dto.SearchWeixinAccountsConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto) {
+    public PageResultDto<WeixinAccountDto> searchWeixinAccountsDsf(SearchWeixinAccountsConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto) {
         Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
-        List<com.feihua.wechat.publicplatform.dto.WeixinAccountDto> list = this.wrapDtos(WeixinAccountPoMapper.searchWeixinAccounts(dto));
+        List<WeixinAccountDto> list = this.wrapDtos(WeixinAccountPoMapper.searchWeixinAccounts(dto));
         return new PageResultDto(list, this.wrapPage(p));
     }
 }

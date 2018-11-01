@@ -71,7 +71,7 @@ public class ApiMiniProgramServiceImpl implements ApiMiniProgramService {
     public LoginCredentialsDto fetchLoginCredentials(String code, ParamsDto paramsDto) {
         String r = null;
         // 请求的url和参数
-        String url = MiniConstants.ACCESS_TOKEN_URL.replace(MiniConstants.PARAM_JSCODE,code)
+        String url = MiniConstants.JSCODE2_SESSION_URL.replace(MiniConstants.PARAM_JSCODE,code)
                 .replace(CommonConstants.PARAM_APPID,paramsDto.getAppId())
                 .replace(CommonConstants.PARAM_APPSECRET,paramsDto.getSecret());
         // 请求

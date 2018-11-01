@@ -1,6 +1,6 @@
-package com.feihua.wechat.publicplatform.dto;
+package com.feihua.wechat.common.dto;
 
-import feihua.jdbc.api.pojo.BaseConditionDto;
+import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
 /**
@@ -9,7 +9,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-10-19 16:31:29
 */
-public class SearchWeixinAccountsConditionDto extends BaseConditionDto {
+public class WeixinAccountDto extends BaseDto {
     private String id;
 
     private String which;
