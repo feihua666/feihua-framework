@@ -181,4 +181,12 @@ public class RequestUtils {
     public static String getDomain(HttpServletRequest request){
         return request.getRequestURI().substring(0,request.getRequestURI().indexOf(request.getContextPath()));
     }
+    /**
+     * 获取当前访问的域名，带http
+     * @param request
+     * @return
+     */
+    public static String getWebappRealPath(HttpServletRequest request){
+        return RequestUtils.getRequest().getSession().getServletContext().getRealPath("");
+    }
 }

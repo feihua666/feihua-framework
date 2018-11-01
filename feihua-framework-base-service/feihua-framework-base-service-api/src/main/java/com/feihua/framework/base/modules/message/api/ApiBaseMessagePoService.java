@@ -1,6 +1,7 @@
 package com.feihua.framework.base.modules.message.api;
 
 import com.feihua.framework.base.modules.message.dto.BaseMessageDto;
+import com.feihua.framework.base.modules.message.dto.BaseMessageSendParamsDto;
 import com.feihua.framework.base.modules.message.po.BaseMessagePo;
 import feihua.jdbc.api.pojo.PageResultDto;
 
@@ -10,4 +11,10 @@ import feihua.jdbc.api.pojo.PageResultDto;
  */
 public interface ApiBaseMessagePoService extends feihua.jdbc.api.service.ApiBaseService<BaseMessagePo, BaseMessageDto, String> {
     PageResultDto<BaseMessageDto> searchBaseMessagesDsf(com.feihua.framework.base.modules.message.dto.SearchBaseMessagesConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto);
+
+    /**
+     * 消息发送
+     * @param dto
+     */
+    void messageSend(BaseMessageSendParamsDto dto);
 }

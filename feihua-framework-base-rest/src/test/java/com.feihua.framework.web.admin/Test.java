@@ -40,7 +40,7 @@ public class Test {
                 BufferedImage image = ImageUtils.createImage(originRealPath);
                 //是图片
                 if (image != null) {
-                    image = ImageUtils.zoomImage(image,width,height);
+                    image = ImageUtils.zoomImage(image,width);
                     ImageUtils.outPutImage(image,ImageUtils.IMAGE_TYPE_JPEG,realPath);
 
                 }else{

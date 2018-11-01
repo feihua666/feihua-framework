@@ -2,6 +2,8 @@ package com.feihua.framework.rest.modules.message.mvc;
 
 import com.feihua.framework.base.modules.message.api.ApiBaseMessageUserStatePoService;
 import com.feihua.framework.base.modules.message.dto.BaseMessageUserStateDto;
+import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
+import com.feihua.framework.base.modules.user.dto.BaseUserDto;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -49,6 +51,8 @@ public class BaseMessageController extends BaseController {
     @Autowired
     private ApiBaseMessageUserStatePoService apiBaseMessageUserStatePoService;
 
+    @Autowired
+    private ApiBaseUserPoService apiBaseUserPoService;
 
     /**
      * 单资源，添加
@@ -71,7 +75,6 @@ public class BaseMessageController extends BaseController {
         basePo.setTargetsValue(addFormDto.getTargetsValue());
         basePo.setPredictNum(addFormDto.getPredictNum());
         basePo.setMsgType(addFormDto.getMsgType());
-        basePo.setMsgState(addFormDto.getMsgState());
         basePo.setMsgLevel(addFormDto.getMsgLevel());
         basePo.setMsgState(DictEnum.MessageState.to_be_sended.name());
 
@@ -262,11 +265,118 @@ public class BaseMessageController extends BaseController {
             for (BaseMessageUserStateDto baseMessageUserStateDto : list.getData()) {
                 userIds.add(baseMessageUserStateDto.getUserId());
             }
+            List<BaseUserDto> userDtos = apiBaseUserPoService.selectByPrimaryKeys(userIds,false);
+            if (userDtos != null && !userDtos.isEmpty()){
+                BaseUserVo userVo = null;
+                List<BaseUserVo> userVos = new ArrayList<>(userDtos.size());
+                for (BaseUserDto userDto : userDtos) {
+                    userVo = new BaseUserVo(userDto);
+                    userVos.add(userVo);
+                }
+                resultData.addData("users",userVos);
+            }
+
             return new ResponseEntity(resultData, HttpStatus.OK);
         }else{
             resultData.setCode(ResponseCode.E404_100001.getCode());
             resultData.setMsg(ResponseCode.E404_100001.getMsg());
             return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * 单资源，复制一条消息
+     * @param id
+     * @return
+     */
+    @RepeatFormValidator
+    @RequiresPermissions("message:copy")
+    @RequestMapping(value = "/message/{id}/copy",method = RequestMethod.POST)
+    public ResponseEntity copy(@PathVariable String id){
+        logger.info("复制消息开始");
+        logger.info("当前登录用户id:{}",getLoginUser().getId());
+        ResponseJsonRender resultData=new ResponseJsonRender();
+
+        BaseMessageDto baseMessageDtoDb = apiBaseMessagePoService.selectByPrimaryKey(id,false);
+        if (baseMessageDtoDb == null) {
+            // 复制失败
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("复制消息结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+        BaseMessagePo basePo = new BaseMessagePo();
+        basePo.setTitle(baseMessageDtoDb.getTitle());
+        basePo.setProfile(baseMessageDtoDb.getProfile());
+        basePo.setContent(baseMessageDtoDb.getContent());
+        basePo.setMsgType(baseMessageDtoDb.getMsgType());
+        basePo.setMsgLevel(baseMessageDtoDb.getMsgLevel());
+        basePo.setMsgState(DictEnum.MessageState.to_be_sended.name());
+
+        apiBaseMessagePoService.preInsert(basePo,getLoginUser().getId());
+        BaseMessageDto r = apiBaseMessagePoService.insert(basePo);
+        if (r == null) {
+            // 复制失败
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("复制消息结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }else{
+            // 复制成功，返回添加的数据
+            resultData.setData(r);
+            logger.info("复制消息id:{}",r.getId());
+            logger.info("复制消息结束，成功");
+            return new ResponseEntity(resultData, HttpStatus.CREATED);
+        }
+    }
+
+    /**
+     * 单资源，发送消息
+     * @param id
+     * @return
+     */
+    @RepeatFormValidator
+    @RequiresPermissions("message:send")
+    @RequestMapping(value = "/message/{id}/send",method = RequestMethod.POST)
+    public ResponseEntity send(@PathVariable String id){
+        logger.info("发送消息开始");
+        logger.info("当前登录用户id:{}",getLoginUser().getId());
+        ResponseJsonRender resultData=new ResponseJsonRender();
+
+        BaseMessageDto baseMessageDtoDb = apiBaseMessagePoService.selectByPrimaryKey(id,false);
+        if (baseMessageDtoDb == null) {
+            // 复制失败
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("发送消息结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+        BaseMessagePo basePo = new BaseMessagePo();
+        basePo.setTitle(baseMessageDtoDb.getTitle());
+        basePo.setProfile(baseMessageDtoDb.getProfile());
+        basePo.setContent(baseMessageDtoDb.getContent());
+        basePo.setMsgType(baseMessageDtoDb.getMsgType());
+        basePo.setMsgLevel(baseMessageDtoDb.getMsgLevel());
+        basePo.setMsgState(DictEnum.MessageState.to_be_sended.name());
+
+        apiBaseMessagePoService.preInsert(basePo,getLoginUser().getId());
+        BaseMessageDto r = apiBaseMessagePoService.insert(basePo);
+        if (r == null) {
+            // 复制失败
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("发送消息结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }else{
+            // 复制成功，返回添加的数据
+            resultData.setData(r);
+            logger.info("发送消息id:{}",r.getId());
+            logger.info("发送消息结束，成功");
+            return new ResponseEntity(resultData, HttpStatus.CREATED);
         }
     }
 }

@@ -4,6 +4,7 @@ import com.feihua.framework.mybatis.orm.mapper.NativeSqlMapper;
 import com.feihua.framework.utils.FastdfsHelper;
 import com.feihua.utils.http.httpclient.HttpClientUtils;
 import com.feihua.utils.io.FileUtils;
+import com.feihua.utils.io.StreamUtils;
 import com.feihua.utils.string.RegularExpression;
 import com.feihua.utils.string.StringUtils;
 import org.apache.http.HttpResponse;
@@ -374,7 +375,7 @@ public class TestFor268 {
         HttpResponse httpResponse =  client.execute(get);
         InputStream inputStream = httpResponse.getEntity().getContent();
 
-        String uploadFilePath = fastdfsHelper.uploadFile(FileUtils.inputStreamtoByteArray(inputStream),getExt(path));
+        String uploadFilePath = fastdfsHelper.uploadFile(StreamUtils.inputStreamToByteArray(inputStream),getExt(path));
         get.releaseConnection();
         return uploadFilePath;
     }

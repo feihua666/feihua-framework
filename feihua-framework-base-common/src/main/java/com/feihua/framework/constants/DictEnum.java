@@ -179,4 +179,16 @@ public class DictEnum {
         sended,      //已发送
         to_be_sended   //待发送
     }
+    /**
+     * 消息发送目标
+     */
+    public enum MessageTargets {
+        all,            // 所有人
+        personal,       //单个人
+        multi_people,   //多个人
+        office,         //机构下的人
+        officedown,      // 机构及以下机构的人
+        role,           // 角色绑定的人
+        roledown,      // 角色及以下角色绑定的人
+    }
 }

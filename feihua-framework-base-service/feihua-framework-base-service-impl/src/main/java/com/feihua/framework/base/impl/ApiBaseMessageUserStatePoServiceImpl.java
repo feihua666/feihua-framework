@@ -9,6 +9,7 @@ import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,6 @@ public class ApiBaseMessageUserStatePoServiceImpl extends ApiBaseServiceImpl<Bas
         BaseMessageUserStatePo baseMessageUserStatePo = new BaseMessageUserStatePo();
         baseMessageUserStatePo.setMessageId(messageId);
         baseMessageUserStatePo.setDelFlag(BasePo.YesNo.N.name());
-        baseMessageUserStatePo.setIsRead(isRead);
         List<BaseMessageUserStateDto> list = this.selectList(baseMessageUserStatePo);
         return new PageResultDto(list, this.wrapPage(p));
     }

@@ -16,9 +16,21 @@
 
     <properties>
         <com.google.zxing.version>3.3.3</com.google.zxing.version>
+        <pdfbox.version>2.0.3</pdfbox.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <!-- 二维码 -->
         <dependency>
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>

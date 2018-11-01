@@ -73,4 +73,19 @@ public class SystemUtils {
 	public static String getClassPath() {
 		return SystemUtils.class.getClassLoader().getResource("").getPath();
 	}
+
+	/**
+	 * 执行命令
+	 * @param cmd
+	 * @return
+	 * @throws IOException
+	 */
+	public static Process execCmd(String cmd,boolean outputLog) throws IOException {
+		Process process = Runtime.getRuntime().exec(cmd);
+		if (outputLog) {
+			new DoProcessOutput(process.getInputStream(),false);
+			new DoProcessOutput(process.getErrorStream(),true);
+		}
+		return process;
+	}
 }
