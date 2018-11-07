@@ -1,5 +1,7 @@
 package com.feihua.framework.shiro.pojo;
 
+import com.feihua.framework.shiro.LoginClient;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,28 +18,6 @@ public class ShiroUser implements Serializable{
     private static final String office_key = "office";
     private static final String area_key = "area";
 
-    /**
-     * 登录方式
-     */
-    public enum LoginType {
-        //帐号登录
-        ACCOUNT,
-        //邮箱登录
-        EMAIL,
-        //QQ登录
-        QQ,
-        //微信公众平台
-        WX_PLATFORM,
-        // 微信小程序
-        WX_MINIPROGRAM,
-        //手机号登录
-        MOBILE,
-        // 二维码登录
-        QRCODE
-    }
-    public enum LoginClient{
-        pc
-    }
     public ShiroUser(){}
 
     /**
@@ -101,10 +81,9 @@ public class ShiroUser implements Serializable{
      * 用户登录方式
      */
     private String loginType;
-    /**
-     * 客户端
-     */
-    private String clientType;
+
+    private LoginClient loginClient;
+
     /**
      * 用户登录IP
      */
@@ -249,15 +228,15 @@ public class ShiroUser implements Serializable{
         return host;
     }
 
-    public String getClientType() {
-        return clientType;
-    }
-
-    public void setClientType(String clientType) {
-        this.clientType = clientType;
-    }
-
     public void setHost(String host) {
         this.host = host;
+    }
+
+    public LoginClient getLoginClient() {
+        return loginClient;
+    }
+
+    public void setLoginClient(LoginClient loginClient) {
+        this.loginClient = loginClient;
     }
 }

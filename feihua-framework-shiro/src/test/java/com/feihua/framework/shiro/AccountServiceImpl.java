@@ -1,5 +1,6 @@
 package com.feihua.framework.shiro;
 
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
 import com.feihua.framework.shiro.pojo.PasswordAndSalt;
 import com.feihua.framework.shiro.pojo.ShiroUser;
@@ -56,7 +57,7 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
     }
 
     @Override
-    public AuthenticationToken createToken(ServletRequest request, ShiroUser.LoginType loginType,String loginClient) {
+    public AuthenticationToken createToken(ServletRequest request, DictEnum.LoginType loginType, String loginClient) {
         return null;
     }
 

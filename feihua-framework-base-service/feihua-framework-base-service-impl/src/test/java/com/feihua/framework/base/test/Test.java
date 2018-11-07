@@ -1,11 +1,6 @@
 package com.feihua.framework.base.test;
 
-import com.feihua.framework.base.modules.calendar.dto.BaseCalendarExtendDto;
-import com.feihua.framework.base.modules.message.dto.BaseMessageTargetClientDto;
-import com.feihua.framework.base.modules.message.dto.BaseMessageTemplateDto;
-import com.feihua.framework.base.modules.urlcollect.dto.BaseUrlCollectDto;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
@@ -20,7 +15,7 @@ public class Test {
     public static void main(String[] args) {
         // System.out.println(DictEnum.OfficeDataScope.all.name());
         //BaseMessageTemplateDto baseUserRoleRelDto = new BaseMessageTemplateDto();
-        getSetMethod(new BaseMessageTargetClientDto(),"baseMessageTargetClientDto","po");
+        // getSetMethod(new BaseMessageTargetClientDto(),"baseMessageTargetClientDto","po");
         //runCollectionUtils2();
         //System.out.println(RandomStringUtils.random(10,true,true));
         //System.out.println(com.feihua.utils.collection.CollectionUtils.catArray(new String[]{"s","2"},new String[]{"s","2"}));

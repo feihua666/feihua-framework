@@ -1,5 +1,6 @@
 package com.feihua.framework.shiro.service;
 
+import com.feihua.framework.shiro.LoginClient;
 import com.feihua.framework.shiro.ShiroFormAuthenticationFilter;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
 import com.feihua.framework.shiro.pojo.PasswordAndSalt;
@@ -27,8 +28,11 @@ public abstract class AbstractAccountServiceImpl implements AccountService {
         return request.getParameter(ShiroFormAuthenticationFilter.param_loginType_key);
     }
     @Override
-    public String resolveLoginClient(ServletRequest request) {
-        return request.getParameter(ShiroFormAuthenticationFilter.param_loginClient_key);
+    public LoginClient resolveLoginClient(ServletRequest request) {
+        LoginClient loginClient = new LoginClient();
+        loginClient.setClientType( request.getParameter(ShiroFormAuthenticationFilter.param_loginClient_key));
+        loginClient.setSubClientType( request.getParameter(ShiroFormAuthenticationFilter.param_subloginClient_key));
+        return loginClient;
     }
     @Override
     public boolean validatePasswordWhenLogin(AuthenticationToken authcToken) {

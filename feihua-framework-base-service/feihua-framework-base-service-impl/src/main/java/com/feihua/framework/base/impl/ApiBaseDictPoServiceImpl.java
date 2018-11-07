@@ -105,6 +105,19 @@ public class ApiBaseDictPoServiceImpl extends ApiBaseTreeServiceImpl<BaseDictPo,
     }
 
     @Override
+    public String selectDictLabel(String type,String value){
+        if (StringUtils.isEmpty(type) || StringUtils.isEmpty(value)){
+            return null;
+        }
+        BaseDictPo condition = new BaseDictPo();
+        condition.setType(type);
+        condition.setValue(value);
+
+        condition = this.selectOneSimple(condition);
+        return condition == null ? null : condition.getName();
+    }
+
+    @Override
     public BaseDictDto wrapDto(BaseDictPo po) {
         if (po == null) {
             return null;
