@@ -237,4 +237,27 @@ public class ApiBaseMessagePoServiceImpl extends ApiBaseServiceImpl<BaseMessageP
         throw new BaseException("no ApiMessageSendHandler implement found for targetClient=" + targetClient.getTargetClient());
     }
 
+    @Override
+    public BaseMessageDto wrapDto(BaseMessagePo po) {
+        if (po == null) {
+            return null;
+        }
+        BaseMessageDto baseMessageDto = new BaseMessageDto();
+        baseMessageDto.setTitle(po.getTitle());
+        baseMessageDto.setProfile(po.getProfile());
+        baseMessageDto.setContent(po.getContent());
+        baseMessageDto.setTargets(po.getTargets());
+        baseMessageDto.setTargetsValue(po.getTargetsValue());
+        baseMessageDto.setPredictNum(po.getPredictNum());
+        baseMessageDto.setMsgType(po.getMsgType());
+        baseMessageDto.setMsgState(po.getMsgState());
+        baseMessageDto.setMsgLevel(po.getMsgLevel());
+        baseMessageDto.setUpdateAt(po.getUpdateAt());
+        baseMessageDto.setId(po.getId());
+        baseMessageDto.setDataOfficeId(po.getDataOfficeId());
+        baseMessageDto.setDataUserId(po.getDataUserId());
+        baseMessageDto.setDataType(po.getDataType());
+        baseMessageDto.setDataAreaId(po.getDataAreaId());
+        return baseMessageDto;
+    }
 }

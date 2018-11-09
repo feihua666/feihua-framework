@@ -15,7 +15,7 @@ public class Test {
     public static void main(String[] args) {
         // System.out.println(DictEnum.OfficeDataScope.all.name());
         //BaseMessageTemplateDto baseUserRoleRelDto = new BaseMessageTemplateDto();
-        // getSetMethod(new BaseMessageTargetClientDto(),"baseMessageTargetClientDto","po");
+         // getSetMethod(new BaseMessageDto(),"baseMessageDto","po");
         //runCollectionUtils2();
         //System.out.println(RandomStringUtils.random(10,true,true));
         //System.out.println(com.feihua.utils.collection.CollectionUtils.catArray(new String[]{"s","2"},new String[]{"s","2"}));

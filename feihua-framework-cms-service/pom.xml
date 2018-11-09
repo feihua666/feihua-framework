@@ -16,5 +16,28 @@
         <module>feihua-framework-cms-service-impl</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-jedis</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-common</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-jdbc-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-service-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
