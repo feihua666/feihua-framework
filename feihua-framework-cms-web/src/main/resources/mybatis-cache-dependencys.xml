@@ -9,8 +9,8 @@
         <statement id="com.feihua.framework.base.mapper.BaseUserMobilePoMapper">
             <observer id="com.feihua.framework.base.mapper.BaseUserAccountPoMapper.searchUsersMultiTable" />
         </statement>-->
-        <statement id="com.feihua.framework.message.mapper.BaseMessageTargetClientUserRelPoMapper">
-            <observer id="com.feihua.framework.message.mapper.BaseMessagePoMapper.searchUserMessage" />
-        </statement>
+        <!--<statement id="com.feihua.framework.message.mapper.BaseMessageTargetClientUserRelPoMapper">-->
+            <!--<observer id="com.feihua.framework.message.mapper.BaseMessagePoMapper.searchUserMessage" />-->
+        <!--</statement>-->
     </statements>
 </dependencies>
