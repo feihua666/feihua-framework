@@ -1,5 +1,6 @@
 package com.feihua.framework.shiro.service;
 
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.shiro.ShiroFormAuthenticationFilter;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
 import com.feihua.framework.shiro.pojo.PasswordAndSalt;
@@ -62,7 +63,7 @@ public class DefaultAccountServiceImpl extends AbstractAccountServiceImpl{
     }
 
     @Override
-    public AuthenticationToken createToken(ServletRequest request, ShiroUser.LoginType loginType,String loginClient) {
+    public AuthenticationToken createToken(ServletRequest request, DictEnum.LoginType loginType, String loginClient) {
         AccountPasswordToken token = new AccountPasswordToken(userAccount,"123456");
         return token;
     }

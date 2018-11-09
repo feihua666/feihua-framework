@@ -10,6 +10,7 @@ import com.feihua.framework.base.modules.user.dto.BaseUserDto;
 import com.feihua.framework.base.modules.user.dto.SearchBaseUsersConditionDto;
 import com.feihua.framework.base.modules.user.po.BaseUserAuthPo;
 import com.feihua.framework.base.modules.user.po.BaseUserPo;
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -80,7 +81,7 @@ public class BaseUserController extends BaseController {
         baseUserAddParamDto.setLocked(addUserFormDto.getLocked());
         baseUserAddParamDto.setDataOfficeId(addUserFormDto.getDataOfficeId());
         baseUserAddParamDto.setGender(addUserFormDto.getGender());
-        baseUserAddParamDto.setIdentityType(ShiroUser.LoginType.ACCOUNT.name());
+        baseUserAddParamDto.setIdentityType(DictEnum.LoginType.ACCOUNT.name());
         baseUserAddParamDto.setNickname(addUserFormDto.getNickname());
 
         PasswordAndSalt ps = PasswordAndSalt.entryptPassword(addUserFormDto.getPassword());
@@ -120,7 +121,7 @@ public class BaseUserController extends BaseController {
         logger.info("用户id:{}",id);
         ResponseJsonRender resultData=new ResponseJsonRender();
         // 查询手机号是否存在
-        BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(id,ShiroUser.LoginType.MOBILE.name());
+        BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(id,DictEnum.LoginType.MOBILE.name());
         if(userAuthDto != null){
             resultData.setCode(ResponseCode.E409_100001.getCode());
             resultData.setMsg(ResponseCode.E409_100001.getMsg());
@@ -133,9 +134,9 @@ public class BaseUserController extends BaseController {
         baseUserAuthPo.setId(userAuthDto.getId());
         baseUserAuthPo.setUserId(id);
         baseUserAuthPo.setVerified(BasePo.YesNo.Y.name());
-        baseUserAuthPo.setIdentityType(ShiroUser.LoginType.MOBILE.name());
+        baseUserAuthPo.setIdentityType(DictEnum.LoginType.MOBILE.name());
         baseUserAuthPo.setIdentifier(mobile);
-        baseUserAuthPo.setCredential(apiBaseUserAuthPoService.selectCredential(id,ShiroUser.LoginType.MOBILE.name()));
+        baseUserAuthPo.setCredential(apiBaseUserAuthPoService.selectCredential(id,DictEnum.LoginType.MOBILE.name()));
 
         apiBaseUserAuthPoService.preInsert(baseUserAuthPo,getLoginUser().getId());
         BaseUserAuthPo insertBaseUserAuthPo = apiBaseUserAuthPoService.insertSelectiveSimple(baseUserAuthPo);
@@ -310,7 +311,7 @@ public class BaseUserController extends BaseController {
         ResponseJsonRender resultData=new ResponseJsonRender();
         PasswordAndSalt ps = PasswordAndSalt.entryptPassword(password);
         int r = apiBaseUserAuthPoService.updateCredential(ps.getPassword() + "_" + ps.getSalt(),id,getLoginUser().getId(),
-                ShiroUser.LoginType.ACCOUNT.name(),ShiroUser.LoginType.MOBILE.name(),ShiroUser.LoginType.EMAIL.name());
+                DictEnum.LoginType.ACCOUNT.name(),DictEnum.LoginType.MOBILE.name(),DictEnum.LoginType.EMAIL.name());
 
         if (r <= 0) {
             // 更新失败，资源不存在
@@ -340,7 +341,7 @@ public class BaseUserController extends BaseController {
         BaseUserDto baseUserDto = apiBaseUserPoService.selectByPrimaryKey(id,false);
         if(baseUserDto != null){
             BaseUserVo vo = new BaseUserVo(baseUserDto);
-            BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(id,ShiroUser.LoginType.ACCOUNT.name());
+            BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(id,DictEnum.LoginType.ACCOUNT.name());
             if (userAuthDto != null) {
                 vo.setAccount(userAuthDto.getIdentifier());
             }
@@ -374,7 +375,7 @@ public class BaseUserController extends BaseController {
             // 添加帐号
             List<BaseUserVo> result = new ArrayList<>(pageResultDto.getData().size());
             for (BaseUserDto userDto : pageResultDto.getData()) {
-                BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(userDto.getId(),ShiroUser.LoginType.ACCOUNT.name());
+                BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(userDto.getId(),DictEnum.LoginType.ACCOUNT.name());
                 BaseUserVo vo = new BaseUserVo(userDto);
                 if (userAuthDto != null) {
                     vo.setAccount(userAuthDto.getIdentifier());
@@ -461,7 +462,7 @@ public class BaseUserController extends BaseController {
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         ResponseJsonRender resultData=new ResponseJsonRender();
 
-        BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(getLoginUser().getId(),ShiroUser.LoginType.ACCOUNT.name());
+        BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(getLoginUser().getId(),DictEnum.LoginType.ACCOUNT.name());
         if (userAuthDto == null) {
             // 更新失败，资源不存在
             resultData.setCode(ResponseCode.E404_100001.getCode());
@@ -485,7 +486,7 @@ public class BaseUserController extends BaseController {
         }
         PasswordAndSalt ps = PasswordAndSalt.entryptPassword(password);
         int r = apiBaseUserAuthPoService.updateCredential(ps.getPassword() + "_" + ps.getSalt(),getLoginUser().getId(),getLoginUser().getId(),
-                ShiroUser.LoginType.ACCOUNT.name(),ShiroUser.LoginType.MOBILE.name(),ShiroUser.LoginType.EMAIL.name());
+                DictEnum.LoginType.ACCOUNT.name(),DictEnum.LoginType.MOBILE.name(),DictEnum.LoginType.EMAIL.name());
 
         if (r <= 0) {
             // 更新失败，资源不存在

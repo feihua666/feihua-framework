@@ -13,6 +13,7 @@ import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
 import com.feihua.framework.base.modules.user.dto.BaseUserAuthDto;
 import com.feihua.framework.base.modules.user.dto.BaseUserDto;
 import com.feihua.framework.base.modules.user.po.BaseUserAuthPo;
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.utils.Utils;
 import com.feihua.framework.shiro.ShiroFormAuthenticationFilter;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
@@ -110,17 +111,17 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         if(authcToken instanceof AccountPasswordToken){
             if(org.apache.commons.lang3.StringUtils.isNotEmpty(((AccountPasswordToken) authcToken).getAccount())) {
                 //根据用户帐号查询用户
-                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((AccountPasswordToken) authcToken).getAccount(),ShiroUser.LoginType.ACCOUNT.name());
+                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((AccountPasswordToken) authcToken).getAccount(),DictEnum.LoginType.ACCOUNT.name());
             }
         }else if(authcToken instanceof MobilePasswordToken){
             if(org.apache.commons.lang3.StringUtils.isNotEmpty(((MobilePasswordToken) authcToken).getMobile())) {
                 //根据用户手机号
-                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((MobilePasswordToken) authcToken).getMobile(),ShiroUser.LoginType.MOBILE.name());
+                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((MobilePasswordToken) authcToken).getMobile(),DictEnum.LoginType.MOBILE.name());
             }
         }else if(authcToken instanceof EmailPasswordToken){
             if(org.apache.commons.lang3.StringUtils.isNotEmpty(((EmailPasswordToken) authcToken).getEmail())) {
                 // 根据邮箱查询
-                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((EmailPasswordToken) authcToken).getEmail(), ShiroUser.LoginType.EMAIL.name());
+                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((EmailPasswordToken) authcToken).getEmail(), DictEnum.LoginType.EMAIL.name());
             }
         }else if(authcToken instanceof QrcodeToken){
             if(org.apache.commons.lang3.StringUtils.isNotEmpty(((QrcodeToken) authcToken).getUserId())) {
@@ -128,18 +129,18 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
                 // 实际转化为帐号登录
                 ShiroUser su = findUserInfo(((QrcodeToken) authcToken).getUserId());
                 if(su != null)
-                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(su.getAccount(),ShiroUser.LoginType.ACCOUNT.name());
+                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(su.getAccount(),DictEnum.LoginType.ACCOUNT.name());
             }
         }
         else if(authcToken instanceof WxMiniProgramToken){
             if(org.apache.commons.lang3.StringUtils.isNotEmpty(((WxMiniProgramToken) authcToken).getOpenid())){
                 // 小程序opendid 查询
-                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((WxMiniProgramToken) authcToken).getOpenid(),ShiroUser.LoginType.WX_MINIPROGRAM.name());
+                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((WxMiniProgramToken) authcToken).getOpenid(),DictEnum.LoginType.WX_MINIPROGRAM.name());
             }
         }else if(authcToken instanceof WxPlatformToken){
             if(org.apache.commons.lang3.StringUtils.isNotEmpty(((WxPlatformToken) authcToken).getOpenid())) {
                 // 公众平台opendid 查询
-                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((WxPlatformToken) authcToken).getOpenid(), ShiroUser.LoginType.WX_PLATFORM.name());
+                userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(((WxPlatformToken) authcToken).getOpenid(), DictEnum.LoginType.WX_PLATFORM.name());
             }
         }
         return userAuthDto;
@@ -150,7 +151,7 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         user.setId(userId);
 
         BaseUserDto userDto = apiBaseUserPoService.selectByPrimaryKey(userId);
-        BaseUserAuthDto userAuthAccountDto = apiBaseUserAuthPoService.selectByUserIdAndType(userId,ShiroUser.LoginType.ACCOUNT.name());
+        BaseUserAuthDto userAuthAccountDto = apiBaseUserAuthPoService.selectByUserIdAndType(userId,DictEnum.LoginType.ACCOUNT.name());
 
         // 帐号信息
         if (userAuthAccountDto != null) {
@@ -159,7 +160,7 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         user.setLocked(Utils.toBoolean(userDto.getLocked()));
         user.setPhoto(userDto.getPhoto());
         // 手机号信息
-        BaseUserAuthDto userAuthMobileDto = apiBaseUserAuthPoService.selectByUserIdAndType(userId,ShiroUser.LoginType.MOBILE.name());
+        BaseUserAuthDto userAuthMobileDto = apiBaseUserAuthPoService.selectByUserIdAndType(userId,DictEnum.LoginType.MOBILE.name());
         if (userAuthMobileDto != null) {
             user.setMobile(userAuthMobileDto.getIdentifier());
         }
@@ -181,7 +182,7 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
     }
 
     @Override
-    public AuthenticationToken createToken(ServletRequest servletRequest,ShiroUser.LoginType loginType,String loginClient) {
+    public AuthenticationToken createToken(ServletRequest servletRequest, DictEnum.LoginType loginType, String loginClient) {
         return null;
     }
 

@@ -1,9 +1,10 @@
 package com.feihua.framework.shiro.utils;
 
+import com.feihua.framework.shiro.LoginClient;
 import com.feihua.framework.shiro.pojo.PasswordAndSalt;
+import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.realms.Realm;
 import com.feihua.framework.shiro.service.AccountService;
-import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.session.ShiroJedisSessionDAO;
 import com.feihua.utils.encode.EncodeUtils;
 import com.feihua.utils.properties.PropertiesUtils;
@@ -18,9 +19,11 @@ import org.apache.shiro.session.mgt.eis.SessionDAO;
 import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.task.TaskExecutor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static com.feihua.framework.shiro.UserSessionFilter.*;
 import static com.feihua.framework.shiro.pojo.PasswordAndSalt.getCredentialsMatcher;
@@ -77,7 +80,7 @@ public class ShiroUtils {
                 //登录成功之后设置的
                 su.setLoginType((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_TYPE_KEY));
                 su.setHost(SecurityUtils.getSubject().getSession().getHost());
-                su.setClientType((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY));
+                su.setLoginClient((LoginClient) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY));
                 SecurityUtils.getSubject().getSession().setAttribute(SHIRO_USER_SESSION_KEY,su);
             }
         }
@@ -126,11 +129,15 @@ public class ShiroUtils {
 
     /**
      * 获取设置的同一客户端可登录的session数量
-     * @param clientType
+     * @param loginClient
      * @return
      */
-    public static int getClientTypeMaxnum(String clientType){
-        String maxnum = PropertiesUtils.getProperty("shiro.session." + clientType + ".maxnum");
+    public static int getClientTypeMaxnum(LoginClient loginClient){
+        String _subClientType = loginClient.getSubClientType();
+        if (StringUtils.isNotEmpty(_subClientType)){
+            _subClientType = "-" + _subClientType;
+        }
+        String maxnum = PropertiesUtils.getProperty("shiro.session." + loginClient.getClientType() + _subClientType + ".maxnum");
         if(StringUtils.isEmpty(maxnum)){
             return PropertiesUtils.getInteger("shiro.session.maxnum");
         }else{
@@ -141,19 +148,19 @@ public class ShiroUtils {
     /**
      * 踢出用户，使其不在登录状态，一般用于使用用户下线，
      * @param userId
-     * @param clientType
+     * @param loginClient  可以为null，表示所有客户端
      */
-    public static void kickoutClient(final String userId,final String clientType){
+    public static void kickoutClient(final String userId,final LoginClient loginClient){
         final SessionDAO sessionDAO = SpringContextHolder.getBean(DefaultSessionManager.class).getSessionDAO();
         List<Session> sessions  = ((ShiroJedisSessionDAO)sessionDAO).getSessionsByUserId(userId);
         if (sessions != null) {
             for (Session session : sessions) {
-                if(clientType == null){
+                if(loginClient == null){
                     session.setAttribute(USER_KICKOUT_KEY,USER_KICKOUT_VALUE_KICKOUT);
                     sessionDAO.update(session);
                 }else{
                     ShiroUser su = getShiroUser(session);
-                    if (su != null && clientType.equals(su.getClientType())) {
+                    if (su != null && su.getLoginClient().equals(loginClient)) {
                         session.setAttribute(USER_KICKOUT_KEY,USER_KICKOUT_VALUE_KICKOUT);
                         sessionDAO.update(session);
                     }
@@ -162,14 +169,14 @@ public class ShiroUtils {
         }
     }
     /**
-     * 踢用户，使其不在登录状态，一般用于一个用户登录其它设备，另一个设备自动下线
+     * 踢用户，使其不在登录状态，一般用于一个用户登录其它同一设备，另一个同一设备自动下线
      * 该方法不会将用户所有设备都下线，每个设备保留的登录数以设置为准
      * @param excludeSessionId 不包括的sessionId,
      * @param userId 踢出的用户id
-     * @param clientType 客户端类型,传null是所有类型
+     * @param loginClient 客户端类型，不可以为null
      */
-    public static void kickoutOtherClient(final String excludeSessionId,final String userId,final String clientType){
-        final int  maxnum = getClientTypeMaxnum(clientType);
+    public static void kickoutOtherClient(final String excludeSessionId,final String userId,final LoginClient loginClient){
+        final int  maxnum = getClientTypeMaxnum(loginClient);
         //如果不限制，不踢除用户
         if(-1 == maxnum){
             return;
@@ -187,7 +194,7 @@ public class ShiroUtils {
                 }
                 ShiroUser su = getShiroUser(session);
                 // 默认没有clienttype 则为pc
-                if (su != null && ((su.getClientType() == null && ShiroUser.LoginClient.pc.name().equals(clientType))|| su.getClientType().equals(clientType))) {
+                if (su != null && su.getLoginClient().equals(loginClient)) {
                     currentUsers.add(session);
                 }
             }

@@ -50,6 +50,8 @@ public   enum ResponseCode {
     E403_100003("E403_100003","the data cannot be delete,ralative data may deal first"),
     // 禁止修改，可以用来提示数据可能因为某状态不能改动
     E403_100004("E403_100004","the data cannot be updated"),
+    // 禁止操作，可以用来提示数据可能因某状态原因还没有达到操作条件
+    E403_100005("E403_100005","the operation is forbidden"),
 
     // 404
     // 通用错误提示

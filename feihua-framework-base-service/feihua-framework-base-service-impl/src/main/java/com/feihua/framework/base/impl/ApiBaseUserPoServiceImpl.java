@@ -244,6 +244,14 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
         }
         return new PageResultDto();
     }
+
+    @Override
+    public PageResultDto<BaseUserPo> searchBaseUsers(SearchBaseUsersConditionDto dto,PageAndOrderbyParamDto pageAndOrderbyParamDto) {
+        Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+        List<BaseUserPo> list = BaseUserPoMapper.searchBaseUsers(dto);
+        return new PageResultDto(this.wrapDtos(list), this.wrapPage(p));
+    }
+
     @Transactional(rollbackFor = Exception.class,readOnly = false)
     @Override
     public BaseUserPo addUser(BaseUserAddParamDto addParamDto) {

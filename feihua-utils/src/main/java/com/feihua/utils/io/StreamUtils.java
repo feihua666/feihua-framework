@@ -19,13 +19,7 @@ public class StreamUtils {
      */
     public static byte[] inputStreamToByteArray(InputStream in) throws IOException {
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024 * 4];
-        int n = 0;
-        while ((n = in.read(buffer)) != -1) {
-            out.write(buffer, 0, n);
-        }
-        return out.toByteArray();
+        return inputStreamToByteArrayOutputStream(in).toByteArray();
     }
 
     /**
@@ -53,12 +47,6 @@ public class StreamUtils {
      */
     public static ByteArrayInputStream inputStreamToByteArrayInputStream(InputStream in) throws IOException {
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024 * 4];
-        int n = 0;
-        while ((n = in.read(buffer)) != -1) {
-            out.write(buffer, 0, n);
-        }
         return new ByteArrayInputStream(inputStreamToByteArray(in));
     }
 }
