@@ -13,7 +13,8 @@ public abstract class Message implements Serializable {
     private String msgType;
 
     public Message(){
-        this.createTime = System.currentTimeMillis();
+        //由于微信服务端需要的时间整形是以秒为单位的，故需要除以1000L
+        this.createTime = System.currentTimeMillis() / 1000L;
     }
     public String getToUserName() {
         return toUserName;

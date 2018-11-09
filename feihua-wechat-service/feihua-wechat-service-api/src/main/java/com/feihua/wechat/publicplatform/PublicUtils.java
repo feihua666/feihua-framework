@@ -31,8 +31,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.codec.multipart.FilePart;
 
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -592,6 +594,44 @@ public class PublicUtils {
             return PropertiesUtils.getProperty("publicplatform." + which + ".token");
         }
     }
+
+    /**
+     * 微信发送模板消息
+     *
+     * @param wxPublicTemplate 模板实体
+     * @param which            公众号类型
+     */
+    public static void sendWxPublicTemplateMsg(WxPublicTemplate wxPublicTemplate, String which) {
+        sedTemlateMsg(wxPublicTemplate, which, 0);
+    }
+
+    /**
+     * 微信发送模板消息
+     *
+     * @param wxPublicTemplate 模板实体
+     * @param which            公众号类型
+     * @param maxRetries       最多重试三次
+     */
+    private static void sedTemlateMsg(WxPublicTemplate wxPublicTemplate, String which, int maxRetries) {
+        try {
+            //获取请求路径
+            String url = PublicConstants.SEND_TEMPLATE_MSG.replace(PublicConstants.PARAM_ACCESS_TOKEN, getAccessToken(which).getToken());
+
+            logger.info("微信:{},sendWxPublicTemplateMsg 发送消息模板：{},参数：{}", which, JSONUtils.obj2json(wxPublicTemplate));
+            JSONObject jsonObject = new JSONObject(HttpClientUtils.httpPostJson(url, JSONUtils.obj2json(wxPublicTemplate)));
+
+            logger.info("微信:{},sendWxPublicTemplateMsg 发送消息模板：{},返回：{}", which, jsonObject);
+            //有可能会出现："errcode":40001/42001 access_token 失效情况，需要重新获取。最多重试3次
+            if (jsonObject != null && jsonObject.getInt("errcode") != 0 && maxRetries < 3) {
+                maxRetries++;
+                sedTemlateMsg(wxPublicTemplate, which, maxRetries);
+                logger.info("微信:{},sendWxPublicTemplateMsg 发送消息模板：{},maxRetries 重试：{} 次！", which, maxRetries);
+            }
+        } catch (Exception e) {
+            logger.error("ERROR: sendWxPublicTemplateMsg fail ：", e);
+        }
+    }
+
 
     /**
      * 获取数据库公众号配置
