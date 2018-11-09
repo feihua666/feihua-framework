@@ -15,7 +15,7 @@
         <module>feihua-framework-message-service-api</module>
         <module>feihua-framework-message-service-impl</module>
     </modules>
-    <dependencies>
+     <dependencies>
         <dependency>
             <groupId>feihua</groupId>
             <artifactId>feihua-framework-jedis</artifactId>
@@ -32,11 +32,11 @@
             <artifactId>feihua-jdbc-api</artifactId>
             <version>${feihua-framework.version}</version>
         </dependency>
-            <dependency>
-                <groupId>feihua</groupId>
-                <artifactId>feihua-framework-base-service-api</artifactId>
-                <version>${feihua-framework.version}</version>
-            </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-service-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
     </dependencies>
 
 </project>
