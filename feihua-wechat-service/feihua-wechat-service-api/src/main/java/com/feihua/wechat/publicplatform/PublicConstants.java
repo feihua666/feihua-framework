@@ -81,4 +81,24 @@ public class PublicConstants {
      */
     public final static String GET_ALL_PRIVATE_TEMPLATE_URL = "https://api.weixin.qq.com/cgi-bin/template/get_all_private_template?access_token=ACCESS_TOKEN";
 
+    /**
+     * 微信发送模板消息
+     */
+    public final static String SEND_TEMPLATE_MSG = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
+
+    /**
+     * 新增其他类型永久素材
+     * request:
+     * access_token	是	调用接口凭证
+     * type	是	媒体文件类型，分别有图片（image）、语音（voice）、视频（video）和缩略图（thumb）
+     * media	是	form-data中媒体文件标识，有filename、filelength、content-type等信息
+     * return:
+     * {
+     * "media_id":MEDIA_ID,
+     * "url":URL
+     * }
+     */
+    public final static String ADD_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=ACCESS_TOKEN&type=TYPE";
+
+
 }
