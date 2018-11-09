@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+>
+    <!-- 定义扫描的包路径 -->
+    <context:component-scan  use-default-filters="false" base-package="com.feihua.framework">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+    </context:component-scan>
+
+    <!--<import resource="classpath:applicationContext-base-rest.xml"/>-->
+
+    <!--<import resource="classpath:applicationContext-service.xml"/>-->
+    <!--&lt;!&ndash; 微信相关，不用可以不添加 &ndash;&gt;-->
+    <!--<import resource="classpath:applicationContext-wechat-service.xml"/>-->
+    <!--&lt;!&ndash;添加工作流支持&ndash;&gt;-->
+    <!--<import resource="classpath:applicationContext-activity-service.xml"/>-->
+    <!--&lt;!&ndash;消息支持&ndash;&gt;-->
+    <!--<import resource="classpath:applicationContext-message-service.xml"/>-->
+
+    <!-- 以下是配置文件引用 -->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="com.feihua.utils.properties.PropertiesUtils.addPropertyPath" />
+        <property name="arguments">
+            <list>
+                <value>shiro.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="propertyPlaceHolderConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="ignoreUnresolvablePlaceholders" value="true" />
+        <property name="locations">
+            <list>
+                <value>classpath:redis.properties</value>
+                <value>classpath:jdbc-default.properties</value>
+                <value>classpath:mybatis-orm-config.properties</value>
+                <value>classpath:shiro.properties</value>
+            </list>
+        </property>
+    </bean>
+    <bean class="com.feihua.framework.shiro.service.DefaultCaptchaServiceImpl"></bean>
+    <bean class="com.feihua.framework.shiro.service.DefaultQrCodeServiceImpl"></bean>
+</beans>
