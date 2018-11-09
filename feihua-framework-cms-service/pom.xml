@@ -14,7 +14,6 @@
     <modules>
         <module>feihua-framework-cms-service-api</module>
         <module>feihua-framework-cms-service-impl</module>
-        <module>feihua-framework-cms-service-impl</module>
     </modules>
 
 
