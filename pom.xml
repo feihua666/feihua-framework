@@ -25,6 +25,9 @@
         <module>feihua-framework-image-migration</module>
         <module>feihua-framework-message-service</module>
         <module>feihua-framework-message-rest</module>
+        <module>feihua-framework-cms-service</module>
+        <module>feihua-framework-cms-service</module>
+        <module>feihua-framework-cms-web</module>
     </modules>
     <packaging>pom</packaging>
 
