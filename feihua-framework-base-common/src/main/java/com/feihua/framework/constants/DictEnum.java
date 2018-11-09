@@ -9,6 +9,37 @@ public class DictEnum {
 
 
     /**
+     * 登录方式
+     */
+    public enum LoginType {
+        //帐号登录
+        ACCOUNT,
+        //邮箱登录
+        EMAIL,
+        //QQ登录
+        QQ,
+        //微信公众平台
+        WX_PLATFORM,
+        // 微信小程序
+        WX_MINIPROGRAM,
+        //手机号登录
+        MOBILE,
+        // 二维码登录
+        QRCODE
+    }
+
+    /**
+     * 登录客户端
+     */
+    public enum LoginClient{
+        pc,
+        wx_platform,
+        wx_miniprogram,
+        app_android,
+        app_ios
+    }
+
+    /**
      * 性别
      */
     public enum Gender {
@@ -177,18 +208,17 @@ public class DictEnum {
      */
     public enum MessageState {
         sended,      //已发送
-        to_be_sended   //待发送
+        to_be_sended,   //待发送
+        sending   //发送中
     }
     /**
      * 消息发送目标
      */
     public enum MessageTargets {
         all,            // 所有人
-        personal,       //单个人
         multi_people,   //多个人
-        office,         //机构下的人
-        officedown,      // 机构及以下机构的人
-        role,           // 角色绑定的人
-        roledown,      // 角色及以下角色绑定的人
+        multi_office,      //机构下的人
+        multi_role,           // 角色绑定的人
+        multi_area           // 区域下的人
     }
 }

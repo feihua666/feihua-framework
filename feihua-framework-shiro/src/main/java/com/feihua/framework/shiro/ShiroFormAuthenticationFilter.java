@@ -1,6 +1,8 @@
 package com.feihua.framework.shiro;
 
 
+import com.feihua.exception.BaseException;
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.jedis.utils.JedisUtils;
 import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.pojo.token.*;
@@ -44,6 +46,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
     public static String param_principal_key = "principal";
     public static String param_password_key = "password";
     public static String param_loginClient_key = "loginClient";
+    public static String param_subloginClient_key = "subloginClient";
 
     private static String failedMsgKey = "loginFailedKey";
     private static String failedStatusKey = "loginFailedStatusKey";
@@ -65,7 +68,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
 
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
-
+        LoginClient loginClient = this.resolveLoginClient(request);
         // 如果尝试登录次数已经超越设置，开始验证验证码
         int configMaxNum = PropertiesUtils.getInteger("shiro.tryLoginMaxNum").intValue();
         if(accountService.validateCaptchaWhenLogin(request,response) && getTryLoginMaxNum() >= configMaxNum){
@@ -106,9 +109,9 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
 
         String principal_str = request.getParameter(param_principal_key);
         String password_str = request.getParameter(param_password_key);
-        ShiroUser.LoginType loginType = null;
+        DictEnum.LoginType loginType = null;
         try {
-            loginType = ShiroUser.LoginType.valueOf(loginType_str);
+            loginType = DictEnum.LoginType.valueOf(loginType_str);
         }catch (IllegalArgumentException e){
             logger.warn("不支持的登录类型{}，请自行处理。",loginType_str);
         }
@@ -158,13 +161,13 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
 
         String loginType_str = accountService.resolveLoginType(request);
         // 如果是二维码登录，登录失败 后，设置失败 的阶段
-        if(ShiroUser.LoginType.QRCODE.name().equals(loginType_str)){
+        if(DictEnum.LoginType.QRCODE.name().equals(loginType_str)){
             qrCodeService.setPhase(qrCodeService.getScanedClientQrCodeContent(), QrCodeService.Phase.le);
         }
 
-        if (ShiroUser.LoginType.ACCOUNT.name().equals(loginType_str)
-                ||ShiroUser.LoginType.EMAIL.name().equals(loginType_str)
-                ||ShiroUser.LoginType.MOBILE.name().equals(loginType_str)){
+        if (DictEnum.LoginType.ACCOUNT.name().equals(loginType_str)
+                ||DictEnum.LoginType.EMAIL.name().equals(loginType_str)
+                ||DictEnum.LoginType.MOBILE.name().equals(loginType_str)){
             // 统计登录次数
             countTryLoginMaxNum();
         }
@@ -262,20 +265,18 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
      * @param request
      * @return
      */
-    public  String resolveLoginClient(ServletRequest request){
+    public  LoginClient resolveLoginClient(ServletRequest request){
         // 取登录客户端
-        String loginClient = accountService.resolveLoginClient(request);
-        if(StringUtils.isEmpty(loginClient)){
-            // 默认是pc登录
-            loginClient = ShiroUser.LoginClient.pc.name();
-            logger.warn("loginClient is null.default pc instead");
+        LoginClient loginClient = accountService.resolveLoginClient(request);
+        if(loginClient == null || StringUtils.isEmpty(loginClient.getClientType())){
+            throw new BaseException("loginClient can not be null," + ShiroFormAuthenticationFilter.param_loginClient_key + " param must pass");
         }
         return loginClient;
     }
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
         String loginType = accountService.resolveLoginType(request);
-        String loginClient = this.resolveLoginClient(request);
+        LoginClient loginClient = this.resolveLoginClient(request);
 
         String principal = request.getParameter(param_principal_key);
 
@@ -289,7 +290,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
 
 
         // 如果是二维码登录，登录成功后，设置失败的阶段
-        if(ShiroUser.LoginType.QRCODE.name().equals(resolveLoginClient(request))){
+        if(DictEnum.LoginType.QRCODE.name().equals(resolveLoginClient(request))){
             qrCodeService.setPhase(qrCodeService.getScanedClientQrCodeContent(), QrCodeService.Phase.l);
         }
         // 注意调用先后顺序，initCurrentUserToSession中用到了该值，一定要放在前面

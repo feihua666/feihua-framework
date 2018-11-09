@@ -72,28 +72,24 @@ public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends
         BaseTreePo dbEntity = super.selectByPrimaryKeySimple((PK) po.getId(),false);
         //如果父节点有变动，则子节点也要变动，原来的子节点上移
         if(!dbEntity.getParentId().equals(po.getParentId())){
-            BaseTreePo sourceParent = null;
             BaseTreePo targetParent = null;
             BaseTreePo _root  = new BaseTreePo();
             _root.setId(BaseTreePo.defaultRootParentId);
             _root.setLevel(BaseTreePo.defaultRootLevel-1);
             setParentIdsWithDefault(_root);
-                //如果是根节点
-                if((BaseTreePo.defaultRootParentId).equals(dbEntity.getParentId())){
-                    sourceParent = _root;
-                }else {
-                    sourceParent = super.selectByPrimaryKeySimple((PK) dbEntity.getParentId(),false);
-                }
+
+            //如果是根节点
+            if((BaseTreePo.defaultRootParentId).equals(po.getParentId())){
+                targetParent = _root;
+            }else {
+                targetParent = super.selectByPrimaryKeySimple((PK) po.getParentId(),false);
+            }
+            //变更当前节点
+            moveNode(po,targetParent);
+
                 //原子节点上移
-                moveChildrenNodes((PK) dbEntity.getId(),sourceParent);
-                //如果是根节点
-                if((BaseTreePo.defaultRootParentId).equals(po.getParentId())){
-                    targetParent = _root;
-                }else {
-                    targetParent = super.selectByPrimaryKeySimple((PK) po.getParentId(),false);
-                }
-                //变更当前节点
-                moveNode(po,targetParent);
+                moveChildrenNodes((PK) dbEntity.getId(),po);
+
 
         }
     }

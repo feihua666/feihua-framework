@@ -23,6 +23,8 @@
         <module>feihua-framework-activity-service</module>
         <module>feihua-framework-activity-rest</module>
         <module>feihua-framework-image-migration</module>
+        <module>feihua-framework-message-service</module>
+        <module>feihua-framework-message-rest</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -522,15 +524,15 @@
             </snapshots>
         </repository>
         <repository>
-            <id>http://central.maven.org/maven2/</id>
+            <id>central.maven.org</id>
             <url>http://central.maven.org/maven2/</url>
         </repository>
         <repository>
-            <id>https://packages.atlassian.com/maven-3rdparty/</id>
+            <id>packages.atlassian.com</id>
             <url>https://packages.atlassian.com/maven-3rdparty/</url>
         </repository>
         <repository>
-            <id>http://nexus.talanlabs.com/content/repositories/releases/</id>
+            <id>nexus.talanlabs.com</id>
             <url>http://nexus.talanlabs.com/content/repositories/releases/</url>
         </repository>
     </repositories>

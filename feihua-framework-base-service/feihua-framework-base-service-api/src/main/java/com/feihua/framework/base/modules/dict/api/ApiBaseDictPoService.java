@@ -29,4 +29,7 @@ public interface ApiBaseDictPoService extends feihua.jdbc.api.service.ApiBaseTre
      * @return
      */
     public List<BaseDictDto> selectByTypeDsf(SelectDictsConditionDto selectDictsConditionDto, Orderby orderby);
+
+
+    public String selectDictLabel(String type,String value);
 }
