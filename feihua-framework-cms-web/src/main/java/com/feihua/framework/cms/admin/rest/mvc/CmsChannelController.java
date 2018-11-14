@@ -1,6 +1,12 @@
 package com.feihua.framework.cms.admin.rest.mvc;
 
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.cms.admin.rest.dto.AddCmsChannelFormDto;
+import com.feihua.framework.cms.admin.rest.dto.UpdateCmsChannelFormDto;
+import com.feihua.framework.cms.api.ApiCmsChannelPoService;
+import com.feihua.framework.cms.dto.CmsChannelDto;
+import com.feihua.framework.cms.dto.SearchCmsChannelsConditionDto;
+import com.feihua.framework.cms.po.CmsChannelPo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
@@ -11,6 +17,7 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +28,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.feihua.framework.cms.dto.CmsChannelDto;
-import com.feihua.framework.cms.dto.SearchCmsChannelsConditionDto;
-import com.feihua.framework.cms.api.ApiCmsChannelPoService;
-import com.feihua.framework.cms.admin.rest.dto.AddCmsChannelFormDto;
-import com.feihua.framework.cms.admin.rest.dto.UpdateCmsChannelFormDto;
-import com.feihua.framework.cms.po.CmsChannelPo;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 栏目管理
  * Created by yangwei
@@ -59,6 +64,10 @@ public class CmsChannelController extends SuperController {
         basePo.setPath(dto.getPath());
         basePo.setSequence(dto.getSequence());
         basePo.setSiteId(dto.getSiteId());
+        basePo.setParentId(dto.getParentId());
+        basePo.setIv(0);
+        basePo.setUv(0);
+        basePo.setPv(0);
 
 
         apiCmsChannelPoService.preInsert(basePo,getLoginUser().getId());
@@ -131,6 +140,7 @@ public class CmsChannelController extends SuperController {
         basePo.setPath(dto.getPath());
         basePo.setSequence(dto.getSequence());
         basePo.setSiteId(dto.getSiteId());
+        basePo.setParentId(dto.getParentId());
 
 
         // 用条件更新，乐观锁机制
@@ -185,7 +195,7 @@ public class CmsChannelController extends SuperController {
     @RepeatFormValidator
     @RequiresPermissions("channel:search")
     @RequestMapping(value = "/channels",method = RequestMethod.GET)
-    public ResponseEntity search(SearchCmsChannelsConditionDto dto){
+    public ResponseEntity search(SearchCmsChannelsConditionDto dto, boolean includeParent){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -195,6 +205,23 @@ public class CmsChannelController extends SuperController {
         PageResultDto<CmsChannelDto> list = apiCmsChannelPoService.searchCmsChannelsDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){
+            //父级
+            if (includeParent) {
+                Map<String,CmsChannelDto> parentDtoMap = new HashMap<>();
+                CmsChannelDto parentDto = null;
+                for (CmsChannelDto cmsChannelDto : list.getData()) {
+                    if(StringUtils.isNotEmpty(cmsChannelDto.getParentId())){
+                        parentDto = apiCmsChannelPoService.selectByPrimaryKey(cmsChannelDto.getParentId());
+                        if (parentDto != null) {
+                            parentDtoMap.put(cmsChannelDto.getParentId(),parentDto);
+                        }
+                    }
+                }
+
+                if (!parentDtoMap.isEmpty()) {
+                    resultData.addData("parent",parentDtoMap);
+                }
+            }
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);

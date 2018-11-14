@@ -1,6 +1,10 @@
 package com.feihua.framework.cms.admin.rest.mvc;
 
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.cms.api.ApiCmsChannelPoService;
+import com.feihua.framework.cms.api.ApiCmsSitePoService;
+import com.feihua.framework.cms.dto.CmsChannelDto;
+import com.feihua.framework.cms.dto.CmsSiteDto;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
@@ -11,6 +15,7 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +32,10 @@ import com.feihua.framework.cms.api.ApiCmsContentPoService;
 import com.feihua.framework.cms.admin.rest.dto.AddCmsContentFormDto;
 import com.feihua.framework.cms.admin.rest.dto.UpdateCmsContentFormDto;
 import com.feihua.framework.cms.po.CmsContentPo;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 内容管理
  * Created by yangwei
@@ -39,7 +48,10 @@ public class CmsContentController extends SuperController {
 
     @Autowired
     private ApiCmsContentPoService apiCmsContentPoService;
-
+    @Autowired
+    private ApiCmsChannelPoService apiCmsChannelPoService;
+    @Autowired
+    private ApiCmsSitePoService apiCmsSitePoService;
     /**
      * 单资源，添加
      * @param dto
@@ -59,8 +71,10 @@ public class CmsContentController extends SuperController {
         basePo.setStatus(dto.getStatus());
         basePo.setSiteId(dto.getSiteId());
         basePo.setChannelId(dto.getChannelId());
-
         basePo.setContent(dto.getContent());
+        basePo.setIv(0);
+        basePo.setUv(0);
+        basePo.setPv(0);
 
         apiCmsContentPoService.preInsert(basePo,getLoginUser().getId());
         CmsContentDto r = apiCmsContentPoService.insert(basePo);
@@ -188,7 +202,7 @@ public class CmsContentController extends SuperController {
     @RepeatFormValidator
     @RequiresPermissions("content:search")
     @RequestMapping(value = "/contents",method = RequestMethod.GET)
-    public ResponseEntity search(SearchCmsContentsConditionDto dto){
+    public ResponseEntity search(SearchCmsContentsConditionDto dto,boolean includeSite,boolean includeChannel){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -198,6 +212,35 @@ public class CmsContentController extends SuperController {
         PageResultDto<CmsContentDto> list = apiCmsContentPoService.searchCmsContentsDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){
+
+            if (includeChannel || includeSite) {
+                Map<String,CmsChannelDto> channelDtoMap = new HashMap<>();
+                CmsChannelDto channelDto = null;
+                Map<String,CmsSiteDto> siteDtoMap = new HashMap<>();
+                CmsSiteDto siteDto = null;
+                for (CmsContentDto cmsContentDto : list.getData()) {
+                    if(includeChannel && StringUtils.isNotEmpty(cmsContentDto.getChannelId())){
+                        channelDto = apiCmsChannelPoService.selectByPrimaryKey(cmsContentDto.getChannelId());
+                        if (channelDto != null) {
+                            channelDtoMap.put(cmsContentDto.getChannelId(),channelDto);
+                        }
+                    }
+                    if(includeSite && StringUtils.isNotEmpty(cmsContentDto.getSiteId())){
+                        siteDto = apiCmsSitePoService.selectByPrimaryKey(cmsContentDto.getSiteId());
+                        if (siteDto != null) {
+                            siteDtoMap.put(cmsContentDto.getSiteId(),siteDto);
+                        }
+                    }
+                }
+
+                if (!channelDtoMap.isEmpty()) {
+                    resultData.addData("channel",channelDtoMap);
+                }
+                if (!siteDtoMap.isEmpty()) {
+                    resultData.addData("site",siteDtoMap);
+                }
+            }
+
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);

@@ -1105,13 +1105,13 @@
     from cms_site
      where del_flag = 'N'
     <if test="name != null and name  != ''">
-      name like concat('%',#{name},'%')
+      and name like concat('%',#{name},'%')
     </if>
     <if test="domain != null and domain  != ''">
-      domain like concat('%',#{domain},'%')
+      and domain like concat('%',#{domain},'%')
     </if>
     <if test="path != null and path  != ''">
-      path like concat('%',#{path},'%')
+      and path like concat('%',#{path},'%')
     </if>
   </select>
 </mapper>

@@ -17,6 +17,8 @@ public class SearchCmsChannelsConditionDto extends BaseConditionDto {
 
     private String siteId;
 
+    private String parentId;
+
     public String getName() {
         return name;
     }
@@ -39,5 +41,13 @@ public class SearchCmsChannelsConditionDto extends BaseConditionDto {
 
     public void setSiteId(String siteId) {
         this.siteId = siteId;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }

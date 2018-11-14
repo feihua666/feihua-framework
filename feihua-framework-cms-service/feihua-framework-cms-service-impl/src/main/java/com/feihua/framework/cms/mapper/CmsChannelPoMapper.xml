@@ -2058,5 +2058,18 @@
     <include refid="Base_Column_List" />
     from cms_channel
      where del_flag = 'N'
+    <if test="name != null and name  != ''">
+      and name like concat('%',#{name},'%')
+    </if>
+    <if test="path != null and path  != ''">
+      and path like concat('%',#{path},'%')
+    </if>
+    <if test="siteId != null and siteId  != ''">
+      and site_id = #{siteId}
+    </if>
+    <if test="parentId != null and parentId  != ''">
+      and parent_id = #{parentId}
+    </if>
+    order by sequence
   </select>
 </mapper>
