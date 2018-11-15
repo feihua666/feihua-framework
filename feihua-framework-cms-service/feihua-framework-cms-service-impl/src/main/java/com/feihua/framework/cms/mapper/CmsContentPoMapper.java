@@ -8,7 +8,6 @@ import feihua.jdbc.api.dao.CrudDao;
  * @author yangwei 2018-11-09 16:57:39
  */
 public interface CmsContentPoMapper extends feihua.jdbc.api.dao.CrudDao<CmsContentPo, String> {
-    int updateByPrimaryKeyWithBLOBs(CmsContentPo record);
 
     java.util.List<CmsContentPo> searchCmsContents(com.feihua.framework.cms.dto.SearchCmsContentsConditionDto dto);
 }

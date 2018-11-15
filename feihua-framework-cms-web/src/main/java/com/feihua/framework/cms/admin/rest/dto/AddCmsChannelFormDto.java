@@ -18,6 +18,8 @@ public class AddCmsChannelFormDto {
 
     private String siteId;
 
+    private String parentId;
+
     public String getName() {
         return name;
     }
@@ -48,5 +50,13 @@ public class AddCmsChannelFormDto {
 
     public void setSiteId(String siteId) {
         this.siteId = siteId;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }
