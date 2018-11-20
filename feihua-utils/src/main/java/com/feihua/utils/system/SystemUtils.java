@@ -1,5 +1,8 @@
 package com.feihua.utils.system;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,13 +16,13 @@ import java.util.regex.Pattern;
  */
 public class SystemUtils {
 
+	Logger logger = LoggerFactory.getLogger(SystemUtils.class);
 	/**
 	 * Scanner 方式读取所有输入
 	 * @param message
 	 * @return
 	 */
 	public static String readInputScanner(String message){
-		System.out.println(message);
 		return readInputScanner();
 	}
 	/**
@@ -44,7 +47,6 @@ public class SystemUtils {
 	 * @return
 	 */
 	public static String readInputScanner(String message,Pattern pattern){
-		System.out.println(message);
 		return readInputScanner(pattern);
 	}
 	/**
@@ -63,7 +65,6 @@ public class SystemUtils {
 	 * @throws IOException
 	 */
 	public static String readInputBuffer(String message) throws IOException{
-	    System.out.println(message);
 	    return readInputBuffer();
 	}
 	/**

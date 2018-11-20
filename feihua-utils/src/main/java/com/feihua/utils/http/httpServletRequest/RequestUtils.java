@@ -1,5 +1,6 @@
 package com.feihua.utils.http.httpServletRequest;
 
+import com.feihua.utils.io.FileUtils;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.DeviceType;
 import eu.bitwalker.useragentutils.UserAgent;
@@ -15,7 +16,25 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.feihua.utils.io.FileUtils.*;
+
 /**
+ * getContextPath = /context // 部署到ROOT为空""
+ * getPathInfo = null
+ * getQueryString = null
+ * getRequestURI = /context/news/main/111.html
+ * getServletPath = /news/main/111.html
+ * getRemoteAddr = 0:0:0:0:0:0:0:1
+ * getRemoteAddr1 = 0:0:0:0:0:0:0:1
+ * getLocalAddr = 0:0:0:0:0:0:0:1
+ * getRequestURL = http://localhost:8080/context/news/main/111.html
+ * protocol = HTTP/1.1
+ * getServerPort = 8080
+ * getScheme = http
+ * getServerName = localhost
+ * getServletContext = org.apache.catalina.core.ApplicationContextFacade@4f43c2d3
+
+
  * Created by yw on 2016/2/21.
  */
 public class RequestUtils {
@@ -174,19 +193,110 @@ public class RequestUtils {
     }
 
     /**
-     * 获取当前访问的域名，带http
+     * 获取当前访问的域名
      * @param request
+     * @param includeScheme 是否包含scheme
+     * @param includePort 是否包含接口
+     * @return http://localhost:8080
+     */
+    public static String getDomain(HttpServletRequest request,boolean includeScheme,boolean includePort ){
+        String _scheme = request.getScheme();
+        String _serverName = request.getServerName();
+        int _port = request.getServerPort();
+        String r = _serverName;
+        if(includeScheme){
+            r = _scheme + "://" + r;
+        }
+        if(includePort){
+            r = r + ":" + _port;
+        }
+        return r;
+    }
+
+    /**
+     *
+     * @param request
+     * @param includeContextPath
      * @return
      */
-    public static String getDomain(HttpServletRequest request){
-        return request.getRequestURI().substring(0,request.getRequestURI().indexOf(request.getContextPath()));
+    public static String [] resolveRequestURI(HttpServletRequest request,boolean includeContextPath){
+        String []r = null;
+        String requestURI = request.getRequestURI();
+        String contextPath = request.getContextPath();
+
+        String siteRequestUri = requestURI;
+        if(!includeContextPath && !StringUtils.isEmpty(contextPath)){
+            siteRequestUri = siteRequestUri.substring(contextPath.length());
+        }
+        r = siteRequestUri.split("/");
+        return r;
     }
     /**
-     * 获取当前访问的域名，带http
+     * 获取当前项目的实际地址存放路径
      * @param request
      * @return
      */
     public static String getWebappRealPath(HttpServletRequest request){
         return RequestUtils.getRequest().getSession().getServletContext().getRealPath("");
+    }
+
+
+    /**
+     * 将路径中的路径分隔符校正为斜杠分隔符
+     * @param path
+     * @return
+     */
+    public static String convertToSlash(String path){
+        String r = path;
+        while (r.contains(slash_double) || r.contains(backslash_double)){
+            r = r.replace(slash_double,slash).replace(backslash_double,backslash);
+        }
+        r = r.replace(backslash,slash);
+
+        return r;
+    }
+
+    /**
+     * 将path以斜杠分隔符开始
+     * @param path
+     * @return
+     */
+    public static String wrapStartSlash(String path){
+        String r = path;
+        while (r.startsWith(slash_double) || r.startsWith(backslash_double)){
+            r = slash + r.substring(2);
+        }
+        if (r.startsWith(slash) || r.startsWith(backslash)){
+            r = slash + r.substring(1);
+        }else {
+            r = slash + r;
+        }
+        return r;
+    }
+
+    /**
+     * 将path以斜杠分隔符结尾
+     * @param path
+     * @return
+     */
+    public static String wrapEndSlash(String path){
+        String r = path;
+        while (r.endsWith(slash_double) || r.endsWith(backslash_double)){
+            r = r.substring(0,r.length() - 2) + slash ;
+        }
+        if (r.endsWith(slash) || r.endsWith(backslash)){
+            r = r.substring(0,r.length() - 1) + slash ;
+        }else {
+            r = r + slash ;
+        }
+        return r;
+    }
+    public static String unwrapStartFileSeparator(String path){
+        String r = wrapStartFileSeparator(path);
+        return r.substring(1);
+    }
+    public static String unwrapEndFileSeparator(String path){
+        String r = wrapEndFileSeparator(path);
+        return r.substring(0,r.length() - 1);
     }
 }

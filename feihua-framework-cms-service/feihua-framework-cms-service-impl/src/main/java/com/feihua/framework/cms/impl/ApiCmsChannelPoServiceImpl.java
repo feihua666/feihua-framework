@@ -4,11 +4,13 @@ import com.feihua.framework.cms.api.ApiCmsChannelPoService;
 import com.feihua.framework.cms.dto.CmsChannelDto;
 import com.feihua.framework.cms.po.CmsChannelPo;
 import com.github.pagehelper.Page;
+import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
 import java.util.List;
 
 import feihua.jdbc.api.service.impl.ApiBaseTreeServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,19 @@ public class ApiCmsChannelPoServiceImpl extends ApiBaseTreeServiceImpl<CmsChanne
     }
 
     @Override
+    public CmsChannelPo selectByPathAndSiteId(String channelPath, String siteId) {
+
+        if(StringUtils.isAnyEmpty(channelPath,siteId)){
+            return null;
+        }
+        CmsChannelPo cmsChannelPo = new CmsChannelPo();
+        cmsChannelPo.setPath(channelPath);
+        cmsChannelPo.setSiteId(siteId);
+        cmsChannelPo.setDelFlag(BasePo.YesNo.N.name());
+        return this.selectOneSimple(cmsChannelPo);
+    }
+
+    @Override
     public CmsChannelDto wrapDto(CmsChannelPo po) {
         if (po == null) { return null; }
         CmsChannelDto dto = new CmsChannelDto();
@@ -51,6 +66,8 @@ public class ApiCmsChannelPoServiceImpl extends ApiBaseTreeServiceImpl<CmsChanne
         dto.setDataType(po.getDataType());
         dto.setDataAreaId(po.getDataAreaId());
         dto.setUpdateAt(po.getUpdateAt());
+        dto.setChannelType(po.getChannelType());
+        dto.setTemplate(po.getTemplate());
         return dto;
     }
 }

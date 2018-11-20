@@ -12,7 +12,8 @@
 		http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
 >
     <!-- 定义扫描的包路径 -->
-    <context:component-scan use-default-filters="false" base-package="com.feihua.framework.cms.impl">
+    <context:component-scan use-default-filters="false" base-package="com.feihua.framework.cms.impl,com.feihua.framework.cms.directive">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
     </context:component-scan>
 </beans>

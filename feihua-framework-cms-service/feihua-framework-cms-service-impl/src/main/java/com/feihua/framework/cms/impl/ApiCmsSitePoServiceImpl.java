@@ -4,9 +4,12 @@ import com.feihua.framework.cms.api.ApiCmsSitePoService;
 import com.feihua.framework.cms.dto.CmsSiteDto;
 import com.feihua.framework.cms.po.CmsSitePo;
 import com.github.pagehelper.Page;
+import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +34,35 @@ public class ApiCmsSitePoServiceImpl extends ApiBaseServiceImpl<CmsSitePo, CmsSi
     }
 
     @Override
+    public CmsSitePo selecltMainSiteByDomain(String domain) {
+
+        CmsSitePo cmsSitePo = new CmsSitePo();
+        cmsSitePo.setDelFlag(BasePo.YesNo.N.name());
+        if(StringUtils.isEmpty(domain)) return null;
+        cmsSitePo.setDomain(domain);
+        cmsSitePo.setIsMain(BasePo.YesNo.Y.name());
+        return this.selectOneSimple(cmsSitePo);
+    }
+
+    @Override
+    public List<CmsSitePo> selecltByDomain(String domain) {
+        CmsSitePo cmsSitePo = new CmsSitePo();
+        cmsSitePo.setDelFlag(BasePo.YesNo.N.name());
+        if(StringUtils.isEmpty(domain)) return null;
+        cmsSitePo.setDomain(domain);
+        return this.selectListSimple(cmsSitePo);
+    }
+
+    @Override
+    public CmsSitePo selecltByPath(String contextPath) {
+        CmsSitePo cmsSitePo = new CmsSitePo();
+        cmsSitePo.setDelFlag(BasePo.YesNo.N.name());
+        if(StringUtils.isEmpty(contextPath)) return null;
+        cmsSitePo.setPath(contextPath);
+        return this.selectOneSimple(cmsSitePo);
+    }
+
+    @Override
     public CmsSiteDto wrapDto(CmsSitePo po) {
         if (po == null) { return null; }
         CmsSiteDto dto = new CmsSiteDto();
@@ -43,6 +75,9 @@ public class ApiCmsSitePoServiceImpl extends ApiBaseServiceImpl<CmsSitePo, CmsSi
         dto.setDataType(po.getDataType());
         dto.setDataAreaId(po.getDataAreaId());
         dto.setUpdateAt(po.getUpdateAt());
+        dto.setTemplate(po.getTemplate());
+        dto.setTemplatePath(po.getTemplatePath());
+        dto.setStaticPath(po.getStaticPath());
         return dto;
     }
 }

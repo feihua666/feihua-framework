@@ -14,6 +14,10 @@ import java.util.Properties;
  */
 public class FileUtils {
 
+    public static final String slash = "/";
+    public static final String slash_double = slash + slash;
+    public static final String backslash = "\\";
+    public static final String backslash_double = backslash + backslash;
 	/**
 	 * 创建文件夹,如果存在则返回已存在的，不存在则创建，
 	 * 可能的问题，如果目录很长中间没有的目录也会被创建，一旦创建失败，中间的目录可能已经生成
@@ -583,4 +587,65 @@ public class FileUtils {
 			}
 		}
 	}
+
+    /**
+     * 将路径中的路径分隔符校正为文件分隔符
+     * @param path
+     * @return
+     */
+	public static String convertToFileSeparator(String path){
+	    String r = path;
+	    while (r.contains(slash_double) || r.contains(backslash_double)){
+	        r = r.replace(slash_double,slash).replace(backslash_double,backslash);
+        }
+        r = r.replace(slash,File.separator).replace(backslash,File.separator);
+
+	    return r;
+    }
+
+    /**
+     * 将path以文件分隔符开始
+     * @param path
+     * @return
+     */
+    public static String wrapStartFileSeparator(String path){
+        String r = path;
+        while (r.startsWith(slash_double) || r.startsWith(backslash_double)){
+            r = File.separator + r.substring(2);
+        }
+        if (r.startsWith(slash) || r.startsWith(backslash)){
+            r = File.separator + r.substring(1);
+        }else{
+            r = File.separator + r;
+
+        }
+        return r;
+    }
+
+    /**
+     * 将path以文件分隔符结尾
+     * @param path
+     * @return
+     */
+    public static String wrapEndFileSeparator(String path){
+        String r = path;
+        while (r.endsWith(slash_double) || r.endsWith(backslash_double)){
+            r = r.substring(0,r.length() - 2) + File.separator ;
+        }
+        if (r.endsWith(slash) || r.endsWith(backslash)){
+            r = r.substring(0,r.length() - 1) + File.separator ;
+        }else{
+            r = r + File.separator ;
+
+        }
+            return r;
+    }
+    public static String unwrapStartFileSeparator(String path){
+        String r = wrapStartFileSeparator(path);
+        return r.substring(1);
+    }
+    public static String unwrapEndFileSeparator(String path){
+        String r = wrapEndFileSeparator(path);
+        return r.substring(0,r.length() - 1);
+    }
 }
