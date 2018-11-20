@@ -11,4 +11,6 @@ import feihua.jdbc.api.pojo.PageResultDto;
  */
 public interface ApiCmsContentPoService extends feihua.jdbc.api.service.ApiBaseService<CmsContentPo, CmsContentDto, String> {
     PageResultDto<CmsContentDto> searchCmsContentsDsf(SearchCmsContentsConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto);
+
+    CmsContentPo selectByContentIdAndChannelIdAndSiteId(String contentId,String channelId,String siteId);
 }

@@ -10,4 +10,6 @@ import feihua.jdbc.api.pojo.PageResultDto;
  */
 public interface ApiCmsChannelPoService extends feihua.jdbc.api.service.ApiBaseTreeService<CmsChannelPo, CmsChannelDto, String> {
     PageResultDto<CmsChannelDto> searchCmsChannelsDsf(com.feihua.framework.cms.dto.SearchCmsChannelsConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto);
+
+    CmsChannelPo selectByPathAndSiteId(String channelPath,String siteId);
 }

@@ -3,9 +3,11 @@ package feihua.jdbc.api.utils;
 
 import com.feihua.utils.thread.ThreadContext;
 import feihua.jdbc.api.pojo.Page;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * Created by yw on 2016/1/26.
@@ -15,6 +17,29 @@ public class PageUtils {
     private static  final String THREAD_LOCAL_PAGE_EKEY = "thread_local_page_ekey";
     private static String THREAD_LOCAL_PAGE_ENABLE_EKEY = "threadlocalPageEnableKey";
 
+    public static Page getPageFromMap(Map map) {
+
+        Object _pageNo = map.get("pageNo");
+
+        Object _pageSize = map.get("pageSize");
+        Object _pageable = map.get("pageable");
+        String pageNo = null;
+
+        String pageSize = null;
+        String pageable = null;
+
+        if (_pageNo != null) {
+            pageNo = _pageNo.toString();
+        }
+        if (_pageSize != null) {
+            pageSize = _pageSize.toString();
+        }
+        if (_pageable != null) {
+            pageable = _pageable.toString();
+        }
+
+        return getPage(pageNo,pageSize,pageable);
+    }
     /**
      * 从request获取page
      *
@@ -24,7 +49,14 @@ public class PageUtils {
     public static Page getPageFromRequest(HttpServletRequest request) {
         String pageNo = request.getParameter("pageNo");
         String pageSize = request.getParameter("pageSize");
+        String pageable = request.getParameter("pageable");
+
+        return getPage(pageNo,pageSize,pageable);
+    }
+
+    private  static Page getPage(String pageNo,String pageSize,String pageable){
         Page page = new Page();
+        page.setPageable(BooleanUtils.toBoolean(pageable));
         if(!StringUtils.isEmpty(pageNo)){
             page.setPageNo(Integer.parseInt(pageNo));
             page.setPageable(true);
@@ -34,7 +66,6 @@ public class PageUtils {
         }
         return page;
     }
-
 
     /**
      * 将page放到threadlocal中

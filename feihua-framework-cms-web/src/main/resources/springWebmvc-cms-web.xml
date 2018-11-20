@@ -9,8 +9,40 @@
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context.xsd">
     <!-- 自动扫描且只扫描@Controller -->
-    <context:component-scan base-package="com.feihua.framework.cms" use-default-filters="false">
+    <context:component-scan base-package="com.feihua.framework.cms.admin.rest.mvc,com.feihua.framework.cms.front.web.mvc" use-default-filters="false">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
+    <!-- 配置freeMarker视图解析器 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+        <property name="contentType" value="text/html; charset=utf-8"/>
+        <property name="cache" value="false"/>
+        <property name="exposeRequestAttributes" value="true"/>
+        <property name="exposeSessionAttributes" value="true"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="requestContextAttribute" value="request"/>
+    </bean>
+    <!-- 配置freeMarker的模板路径 -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value=""/>
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="tag_syntax">auto_detect</prop>
+                <prop key="template_update_delay">0</prop>
+                <prop key="defaultEncoding">UTF-8</prop>
+                <prop key="url_escaping_charset">UTF-8</prop>
+                <prop key="locale">zh_CN</prop>
+                <prop key="boolean_format">true,false</prop>
+                <prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>
+                <prop key="date_format">yyyy-MM-dd</prop>
+                <prop key="time_format">HH:mm:ss</prop>
+            </props>
+        </property>
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="cms_chanel_list" value-ref="channelListDirective"/>
+            </map>
+        </property>
+    </bean>
 </beans>
