@@ -17,4 +17,17 @@
     </context:component-scan>
     <bean class="com.feihua.framework.message.handler.impl.MessageUsersHandlerImpl"/>
     <bean class="com.feihua.framework.message.handler.impl.PcMessageSendHandleImpl"/>
+
+    <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
+        <property name="basePackage" value="com.feihua.framework.message.mapper"/>
+        <property name="cacheConfig">
+            <map>
+                <entry key="com.feihua.framework.message.mapper.BaseMessageTargetClientUserRelPoMapper">
+                    <list>
+                        <value>com.feihua.framework.message.mapper.BaseMessagePoMapper.searchUserMessage</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
+    </bean>
 </beans>

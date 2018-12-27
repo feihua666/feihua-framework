@@ -41,7 +41,7 @@ public class LocationMsgHandler implements MsgTypeHandler {
         weixinUserPoUpdateCondition.setLatitude(requestLocationMessage.getLatitude());
         weixinUserPoUpdateCondition.setLongitude(requestLocationMessage.getLongitude());
         weixinUserPoUpdateCondition.setPrecisions(requestLocationMessage.getPrecision());
-        apiWeixinUserPoService.preUpdate(weixinUserPoCondition, BasePo.DEFAULT_USER_ID);
+        weixinUserPoCondition = apiWeixinUserPoService.preUpdate(weixinUserPoCondition, BasePo.DEFAULT_USER_ID);
         apiWeixinUserPoService.updateByPrimaryKeySelective(weixinUserPoUpdateCondition);
 
         return "";

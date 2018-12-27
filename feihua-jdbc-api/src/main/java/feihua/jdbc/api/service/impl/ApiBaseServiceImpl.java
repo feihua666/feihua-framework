@@ -10,6 +10,7 @@ import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.converters.DateConverter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ import java.util.Map;
  * Created by yangwei
  * Created at 2017/8/17 14:49
  */
-public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,PK>implements ApiBaseService<PO,DTO,PK> {
+public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDbDto,PK>implements ApiBaseService<PO,DTO,PK> {
 
     public final static Logger logger = LoggerFactory.getLogger(ApiBaseServiceImpl.class);
 
@@ -158,6 +159,14 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
 
         return r;
     }
+    public int deleteByPrimaryKeys(List<PK> ids){
+        int r = crudDao.deleteByPrimaryKeys(ids);
+        if(r >= 1){
+            logger.info("deleteByPrimaryKeys data:{}", ids.toString());
+        }
+
+        return r;
+    }
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int deleteFlagByPrimaryKeyWithUpdateUser(PK id, PK userId) {
@@ -168,7 +177,7 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
             if(BasePo.YesNo.Y.name().equals(po.getDelFlag())){
                 return r;
             }
-            preUpdate(po,userId);
+            po = preUpdate(po,userId);
             po.setDelFlag(BasePo.YesNo.Y.name());
             r = crudDao.updateByPrimaryKey(po);
             if(r == 1){
@@ -181,17 +190,43 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int deleteFlagByPrimaryKey(PK id) {
-        PO po = crudDao.selectByPrimaryKey(id);
         int r = 0;
-        if(po != null){
-            po.setDelFlag(BasePo.YesNo.Y.name());
-            r = crudDao.updateByPrimaryKey(po);
+        if(id != null){
+            r = crudDao.deleteFlagByPrimaryKey(id);
             if(r == 1){
                 logger.info("deleteFlagByPrimaryKey data:{}", id);
             }
         }
 
         return r;
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int deleteFlagByPrimaryKeys(List<PK> ids) {
+        int r = 0;
+        if(ids != null && !ids.isEmpty()){
+            r = crudDao.deleteFlagByPrimaryKeys(ids);
+            if(r >= 1){
+                logger.info("deleteFlagByPrimaryKeys data:{}", ids.toString());
+            }
+        }
+
+        return r;
+    }
+    public int deleteFlagByPrimaryKeysWithUpdateUser(List<PK> ids, PK userId){
+        int r = 0;
+        if(ids != null && !ids.isEmpty()){
+            r = crudDao.deleteFlagByPrimaryKeysWithUpdateUser(ids,userId);
+            if(r >= 1){
+                logger.info("deleteFlagByPrimaryKeysWithUpdateUser data:{}", ids.toString());
+            }
+        }
+        return r;
+    }
+    public int deleteFlagBatchByPrimaryKeysWithUpdateUser(List<PO> pos, PK userId){
+        List<PK> ids = this.toPrimaryKeysSimple(pos);
+
+        return this.deleteFlagByPrimaryKeysWithUpdateUser(ids,userId);
     }
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -215,15 +250,11 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
     @Override
     public int deleteFlagSelectiveWithUpdateUser(PO record, PK userId) {
         int r = 0;
-        List<PO> dbList = selectListSimple(record);
-        if(dbList != null && !dbList.isEmpty()){
-            for (PO po : dbList) {
-                preUpdate(po,userId);
-                po.setDelFlag(BasePo.YesNo.Y.name());
-            }
-            r = updateBatchByPrimaryKey(dbList);
+        if(record != null){
+
+            r = crudDao.deleteFlagSelectiveWithUpdateUser(record,userId);
             if(r > 0){
-                logger.info("deleteFlagSelective data:{}", ToStringBuilder.reflectionToString(dbList, ToStringStyle.SHORT_PREFIX_STYLE));
+                logger.info("deleteFlagSelectiveWithUpdateUser data:{}", ToStringBuilder.reflectionToString(record, ToStringStyle.SHORT_PREFIX_STYLE));
             }
         }
         return r;
@@ -232,7 +263,7 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
     @Override
     public int updateByPrimaryKeySelective(PO record) {
         int r = crudDao.updateByPrimaryKeySelective(record);
-        if(r == 1){
+        if(r >= 1){
             logger.info("updateByPrimaryKeySelective data:{}", ToStringBuilder.reflectionToString(record, ToStringStyle.SHORT_PREFIX_STYLE));
         }
         return r;
@@ -250,7 +281,7 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
     @Override
     public int update(PO entity, PO condition) {
         int r = crudDao.update(entity,condition);
-        if(r == 1){
+        if(r >= 1){
             logger.info("update data:{},condition:{}", ToStringBuilder.reflectionToString(entity, ToStringStyle.SHORT_PREFIX_STYLE)
             ,ToStringBuilder.reflectionToString(condition, ToStringStyle.SHORT_PREFIX_STYLE));
         }
@@ -260,7 +291,7 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
     @Override
     public int updateSelective(PO entity, PO condition) {
         int r = crudDao.updateSelective(entity,condition);
-        if(r == 1){
+        if(r >= 1){
             logger.info("updateSelective data:{},condition:{}", ToStringBuilder.reflectionToString(entity, ToStringStyle.SHORT_PREFIX_STYLE)
                     ,ToStringBuilder.reflectionToString(condition, ToStringStyle.SHORT_PREFIX_STYLE));
         }
@@ -270,8 +301,17 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
     @Override
     public int updateBatchByPrimaryKey(List<PO> entities) {
         int r = crudDao.updateBatchByPrimaryKey(entities);
-        if(r == 1){
+        if(r >= 1){
             logger.info("updateBatchByPrimaryKey data:{}", ToStringBuilder.reflectionToString(entities, ToStringStyle.SHORT_PREFIX_STYLE));
+        }
+        return r;
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int updateBatchByPrimaryKeySelective(List<PO> entities) {
+        int r = crudDao.updateBatchByPrimaryKeySelective(entities);
+        if(r >= 1){
+            logger.info("updateBatchByPrimaryKeySelective data:{}", ToStringBuilder.reflectionToString(entities, ToStringStyle.SHORT_PREFIX_STYLE));
         }
         return r;
     }
@@ -279,7 +319,7 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
     @Override
     public int updateBatchByPrimaryKeys(List<PK> primaryKeys, PO entity) {
         int r = crudDao.updateBatchByPrimaryKeys(primaryKeys,entity);
-        if(r == 1){
+        if(r >= 1){
             logger.info("updateBatchByPrimaryKeys data:{},condition:{}", ToStringBuilder.reflectionToString(entity, ToStringStyle.SHORT_PREFIX_STYLE)
                     ,ToStringBuilder.reflectionToString(primaryKeys, ToStringStyle.SHORT_PREFIX_STYLE));
         }
@@ -290,7 +330,7 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
     @Override
     public int updateBatchByPrimaryKeysSelective(List<PK> primaryKeys, PO entity) {
         int r = crudDao.updateBatchByPrimaryKeysSelective(primaryKeys,entity);
-        if(r == 1){
+        if(r >= 1){
             logger.info("updateBatchByPrimaryKeysSelective data:{},condition:{}", ToStringBuilder.reflectionToString(entity, ToStringStyle.SHORT_PREFIX_STYLE)
                     ,ToStringBuilder.reflectionToString(primaryKeys, ToStringStyle.SHORT_PREFIX_STYLE));
         }
@@ -485,18 +525,29 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
 
 
     @Override
-    public void preInsert(PO po, PK userId) {
+    public PO preInsert(PO po, PK userId) {
         po.setCreateBy(userId);
         po.setCreateAt(new Date());
         po.setUpdateBy(userId);
         po.setUpdateAt(new Date());
         po.setDelFlag(BasePo.YesNo.N.name());
+        return po;
     }
 
     @Override
-    public void preUpdate(PO po, PK userId) {
+    public PO preUpdate(PO po, PK userId) {
         po.setUpdateBy(userId);
         po.setUpdateAt(new Date());
+        return po;
+    }
+    @Override
+    public PO preSave(PO po, PK userId) {
+
+        if(po.getId() != null && !"".equals(po.getId())){
+            return preUpdate(po,userId);
+        }else {
+            return preInsert(po,userId);
+        }
     }
 
     public DTO wrapDto(PO po) {
@@ -576,5 +627,90 @@ public abstract class ApiBaseServiceImpl<PO extends BasePo,DTO extends BaseDto,P
         }
 
         return null;
+    }
+
+    @Override
+    public List<PK> toPrimaryKeysSimple(List<PO> pos) {
+        if (pos == null || pos.isEmpty()) return null;
+        List<PK> list = new ArrayList<>(pos.size());
+        for (PO po : pos) {
+            list.add((PK) po.getId());
+        }
+        return list;
+    }
+
+    @Override
+    public List<PK> toPrimaryKeys(List<DTO> dtos) {
+        if (dtos == null || dtos.isEmpty()) return null;
+        List<PK> list = new ArrayList<>(dtos.size());
+        for (DTO dto : dtos) {
+            list.add((PK) dto.getId());
+        }
+        return list;
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int batchSave(List<PO> savePos, List<PO> dbPos,PK currentUserId) {
+        int r = 0;
+        boolean existInDb = (dbPos != null && !dbPos.isEmpty());
+        if(savePos != null && !savePos.isEmpty()){
+            List<PO> toBeInsertPos = new ArrayList<>();
+            List<PO> toBeUpdatePos = new ArrayList<>();
+
+            if (existInDb){
+                List<PK> dbPoIds = this.toPrimaryKeysSimple(dbPos);
+                List<PK> toBeUpdatePoIds = new ArrayList<>();
+
+                for (PO savePo : savePos) {
+                    if(savePo.getId() != null && !"".equals(savePo.getId())){
+                        // 如果存在id
+                        toBeUpdatePos.add(savePo);
+                        toBeUpdatePoIds.add((PK) savePo.getId());
+                    }else {
+                        // 不存在id
+                        toBeInsertPos.add(savePo);
+                    }
+                }
+
+                if(toBeUpdatePoIds.isEmpty()){
+                    // 如果没有需要更新的，将db中的都删除
+                    deleteFlagByPrimaryKeysWithUpdateUser(dbPoIds,currentUserId);
+
+                }else {
+                    // 如果有需要更新的，再将 需要删除的提取出来
+                    List<PK> toBeDeletePoIds = new ArrayList<>();
+                    toBeDeletePoIds.addAll(dbPoIds);
+                    toBeDeletePoIds.removeAll(toBeUpdatePoIds);
+                    deleteFlagByPrimaryKeysWithUpdateUser(toBeDeletePoIds,currentUserId);
+                }
+
+                // 最后
+                if (toBeInsertPos != null && !toBeInsertPos.isEmpty()) {
+                    r += insertBatch(toBeInsertPos);
+                }
+                if (toBeUpdatePos != null && !toBeUpdatePos.isEmpty()) {
+                    r += updateBatchByPrimaryKeySelective(toBeUpdatePos);
+                }
+
+
+            }else{
+                //如果db中不存在，都是添加
+                if (savePos != null && !savePos.isEmpty()) {
+                    r += insertBatch(savePos);
+                }
+            }
+        }else{
+            if (existInDb){
+                List<PK> ids = this.toPrimaryKeysSimple(dbPos);
+                deleteFlagByPrimaryKeysWithUpdateUser(ids,currentUserId);
+            }
+        }
+        return r;
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public int batchSave(List<PO> savePos, PO selectCondition,PK currentUserId) {
+        List<PO> dbPos = crudDao.selectList(selectCondition);
+        return batchSave(savePos,dbPos,currentUserId);
     }
 }

@@ -1,5 +1,6 @@
 package com.feihua.framework.base.modules.rel.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-03-18 10:14:07
 */
-public class BaseUserDataScopeRelDto extends BaseDto {
+public class BaseUserDataScopeRelDto extends BaseDbDto<String> {
     private String id;
 
     private String userId;

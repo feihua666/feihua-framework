@@ -1,10 +1,15 @@
 package com.feihua.framework.cms.admin.rest.mvc;
 
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.cms.CmsConstants;
+import com.feihua.framework.cms.dto.CmsSiteTemplateModelDto;
+import com.feihua.framework.cms.dto.CmsTemplateModelContextDto;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
+import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
+import com.feihua.utils.io.FileUtils;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
@@ -27,13 +32,19 @@ import com.feihua.framework.cms.api.ApiCmsSitePoService;
 import com.feihua.framework.cms.admin.rest.dto.AddCmsSiteFormDto;
 import com.feihua.framework.cms.admin.rest.dto.UpdateCmsSiteFormDto;
 import com.feihua.framework.cms.po.CmsSitePo;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 站点管理
  * Created by yangwei
  */
 @RestController
 @RequestMapping("/cms")
-public class CmsSiteController extends SuperController {
+public class CmsSiteController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(CmsSiteController.class);
 
@@ -57,8 +68,13 @@ public class CmsSiteController extends SuperController {
             basePo.setName(dto.getName());
             basePo.setDomain(dto.getDomain());
             basePo.setPath(dto.getPath());
+            basePo.setTemplate(dto.getTemplate());
+            basePo.setTemplatePath(dto.getTemplatePath());
+            basePo.setStaticPath(dto.getStaticPath());
+            basePo.setDeployPath(dto.getDeployPath());
+            basePo.setIsMain(dto.getIsMain());
 
-        apiCmsSitePoService.preInsert(basePo,getLoginUser().getId());
+        basePo = apiCmsSitePoService.preInsert(basePo,getLoginUser().getId());
         CmsSiteDto r = apiCmsSitePoService.insert(basePo);
         if (r == null) {
             // 添加失败
@@ -127,14 +143,18 @@ public class CmsSiteController extends SuperController {
             basePo.setName(dto.getName());;
             basePo.setDomain(dto.getDomain());;
             basePo.setPath(dto.getPath());;
-
+        basePo.setTemplate(dto.getTemplate());
+        basePo.setTemplatePath(dto.getTemplatePath());
+        basePo.setStaticPath(dto.getStaticPath());
+        basePo.setDeployPath(dto.getDeployPath());
+        basePo.setIsMain(dto.getIsMain());
 
         // 用条件更新，乐观锁机制
         CmsSitePo basePoCondition = new CmsSitePo();
         basePoCondition.setId(id);
         basePoCondition.setDelFlag(BasePo.YesNo.N.name());
         basePoCondition.setUpdateAt(dto.getUpdateTime());
-        apiCmsSitePoService.preUpdate(basePo,getLoginUser().getId());
+        basePo = apiCmsSitePoService.preUpdate(basePo,getLoginUser().getId());
         int r = apiCmsSitePoService.updateSelective(basePo,basePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在
@@ -162,9 +182,9 @@ public class CmsSiteController extends SuperController {
     public ResponseEntity getById(@PathVariable String id){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
-        CmsSiteDto baseDataScopeDto = apiCmsSitePoService.selectByPrimaryKey(id,false);
-        if(baseDataScopeDto != null){
-            resultData.setData(baseDataScopeDto);
+        CmsSiteDto cmsSiteDto = apiCmsSitePoService.selectByPrimaryKey(id,false);
+        if(cmsSiteDto != null){
+            resultData.setData(cmsSiteDto);
             return new ResponseEntity(resultData, HttpStatus.OK);
         }else{
             resultData.setCode(ResponseCode.E404_100001.getCode());
@@ -193,6 +213,71 @@ public class CmsSiteController extends SuperController {
         if(CollectionUtils.isNotEmpty(list.getData())){
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
+            return new ResponseEntity(resultData, HttpStatus.OK);
+        }else{
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+    /**
+     * 站点首页地址
+     * @param id
+     * @return
+     */
+    @RepeatFormValidator
+    @RequestMapping(value = "/site/{id}/address",method = RequestMethod.GET)
+    public ResponseEntity indexAddress(@PathVariable String id){
+
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        CmsSiteDto cmsSiteDto = apiCmsSitePoService.selectByPrimaryKey(id,false);
+        if(cmsSiteDto != null){
+            CmsTemplateModelContextDto cmsTemplateModelContextDto = new CmsTemplateModelContextDto(true);
+            CmsSiteTemplateModelDto cmsSiteTemplateModelDto = new CmsSiteTemplateModelDto(cmsSiteDto,cmsTemplateModelContextDto);
+            resultData.setData(cmsSiteTemplateModelDto);
+            return new ResponseEntity(resultData, HttpStatus.OK);
+        }else{
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * 单资源,站点模板路径
+     * @return
+     */
+    @RepeatFormValidator
+    @RequestMapping(value = "/site/templatepath",method = RequestMethod.GET)
+    public ResponseEntity templatepath(){
+
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        List<String> templatePathStr = super.getFileNames(null,true);
+        if(templatePathStr != null && !templatePathStr.isEmpty()){
+            resultData.setData(templatePathStr);
+            return new ResponseEntity(resultData, HttpStatus.OK);
+        }else{
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * 单资源,站点首页模板
+     * @return
+     */
+    @RepeatFormValidator
+    @RequestMapping(value = "/site/template",method = RequestMethod.GET)
+    public ResponseEntity template(String templatePath){
+
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        List<String> templatePathStr = super.getFileNames(templatePath,false);
+        if(templatePathStr != null && !templatePathStr.isEmpty()){
+            resultData.setData(templatePathStr);
             return new ResponseEntity(resultData, HttpStatus.OK);
         }else{
             resultData.setCode(ResponseCode.E404_100001.getCode());

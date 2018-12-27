@@ -66,7 +66,7 @@ public class BaseAreaController extends BaseController {
         baseAreaPo.setSequence(addAreaFormDto.getSequence());
         baseAreaPo.setParentId(addAreaFormDto.getParentId());
 
-        apiBaseAreaPoService.preInsert(baseAreaPo,getLoginUser().getId());
+        baseAreaPo = apiBaseAreaPoService.preInsert(baseAreaPo,getLoginUser().getId());
         BaseAreaDto r = apiBaseAreaPoService.insert(baseAreaPo);
         if (r == null) {
             // 添加失败
@@ -152,7 +152,7 @@ public class BaseAreaController extends BaseController {
         baseAreaPoCondition.setId(id);
         baseAreaPoCondition.setDelFlag(BasePo.YesNo.N.name());
         baseAreaPoCondition.setUpdateAt(updateAreaFormDto.getUpdateTime());
-        apiBaseAreaPoService.preUpdate(baseAreaPo,getLoginUser().getId());
+        baseAreaPo = apiBaseAreaPoService.preUpdate(baseAreaPo,getLoginUser().getId());
         int r = apiBaseAreaPoService.updateSelective(baseAreaPo,baseAreaPoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

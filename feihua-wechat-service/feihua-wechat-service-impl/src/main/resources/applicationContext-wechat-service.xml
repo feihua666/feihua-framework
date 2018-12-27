@@ -15,4 +15,8 @@
     <context:component-scan use-default-filters="false" base-package="com.feihua.wechat">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
+
+    <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
+        <property name="basePackage" value="com.feihua.wechat.mapper"/>
+    </bean>
 </beans>

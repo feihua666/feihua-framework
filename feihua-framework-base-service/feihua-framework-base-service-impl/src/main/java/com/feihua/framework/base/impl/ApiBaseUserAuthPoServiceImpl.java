@@ -75,7 +75,7 @@ public class ApiBaseUserAuthPoServiceImpl extends ApiBaseServiceImpl<BaseUserAut
             baseUserAuthCondition.setUserId(userId);
             baseUserAuthCondition.setIdentityType(identityType);
             baseUserAuthCondition.setDelFlag(BasePo.YesNo.N.name());
-            this.preUpdate(baseUserAuthPo,currentUserId);
+            baseUserAuthPo = this.preUpdate(baseUserAuthPo,currentUserId);
             r += this.updateSelective(baseUserAuthPo,baseUserAuthCondition);
         }
 

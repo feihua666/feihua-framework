@@ -68,7 +68,7 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
 
         baseMessageTargetClientPo.setTargetClient(dto.getTargetClient());
         baseMessageTargetClientPo.setSubTargetClient(dto.getSubTargetClient());
-        apiBaseMessageTargetClientPoService.preInsert(baseMessageTargetClientPo,dto.getCurrentUserId());
+        baseMessageTargetClientPo = apiBaseMessageTargetClientPoService.preInsert(baseMessageTargetClientPo,dto.getCurrentUserId());
         baseMessageTargetClientPo = apiBaseMessageTargetClientPoService.insertSelectiveSimple(baseMessageTargetClientPo);
         return baseMessageTargetClientPo;
     }
@@ -118,7 +118,7 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
             baseMessageTargetClientUserRelPo.setIsRead(BasePo.YesNo.N.name());
             baseMessageTargetClientUserRelPo.setTargetClientId(baseMessageTargetClientPoDb.getId());
             baseMessageTargetClientUserRelPo.setUserId(userPo.getId());
-            apiBaseMessageTargetClientUserRelPoService.preInsert(baseMessageTargetClientUserRelPo,dto.getCurrentUserId());
+            baseMessageTargetClientUserRelPo = apiBaseMessageTargetClientUserRelPoService.preInsert(baseMessageTargetClientUserRelPo,dto.getCurrentUserId());
             apiBaseMessageTargetClientUserRelPoService.insert(baseMessageTargetClientUserRelPo);
 
             doMessageSend(dto,baseMessagePo,userPo);

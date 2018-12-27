@@ -27,6 +27,11 @@
         <module>feihua-framework-message-rest</module>
         <module>feihua-framework-cms-service</module>
         <module>feihua-framework-cms-web</module>
+        <module>feihua-framework-mq-service</module>
+        <module>feihua-framework-spider-service</module>
+        <module>feihua-framework-spider-rest</module>
+        <module>feihua-framework-scheduler-service</module>
+        <module>feihua-framework-scheduler-rest</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -37,8 +42,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
+
+        <jsoup.version>1.11.3</jsoup.version>
+        <selenium-java.version>3.141.59</selenium-java.version>
+        <selenium-server.version>3.0.1</selenium-server.version>
+
         <!-- 1.25 -->
-        <fastdsf.version>1.25</fastdsf.version>
+        <fastdsf.version>1.27-RELEASE</fastdsf.version>
         <thumbnailator.version>0.4.8</thumbnailator.version>
         <!-- 阿里云oss文件存储 -->
         <aliyun-sdk-oss.version>2.8.1</aliyun-sdk-oss.version>
@@ -74,10 +84,11 @@
         <httpclient.version>4.5.3</httpclient.version>
 
         <!-- poi -->
-        <poi.version>3.9</poi.version>
+        <poi.version>4.0.1</poi.version>
 
         <!-- spring -->
         <spring.version>5.0.7.RELEASE</spring.version>
+        <spring-rabbit.version>2.1.2.RELEASE</spring-rabbit.version>
 
         <!-- servlet -->
         <servlet-jstl.version>1.2</servlet-jstl.version>
@@ -111,10 +122,34 @@
         <druid.version>1.1.10</druid.version>
         <!-- mysql数据库驱动 -->
         <mysql.version>5.1.46</mysql.version>
+        <!-- 定时任务 -->
+        <quartz.version>2.3.0</quartz.version>
+        <dom4j.version>1.6.1</dom4j.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>${selenium-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-firefox-driver</artifactId>
+                <version>${selenium-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-server</artifactId>
+                <version>${selenium-server.version}</version>
+            </dependency>
+            <dependency>
+                <!-- jsoup HTML parser library @ https://jsoup.org/ -->
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.csource</groupId>
                 <artifactId>fastdfs-client-java</artifactId>
@@ -319,6 +354,11 @@
                 <artifactId>spring-web</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.amqp</groupId>
+                <artifactId>spring-rabbit</artifactId>
+                <version>${spring-rabbit.version}</version>
+            </dependency>
             <!-- spring test 包 -->
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -443,10 +483,48 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
             </dependency>
+            <!-- 定时任务 -->
+            <dependency>
+                <groupId>org.quartz-scheduler</groupId>
+                <artifactId>quartz</artifactId>
+                <version>${quartz.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dom4j</groupId>
+                <artifactId>dom4j</artifactId>
+                <version>${dom4j.version}</version>
+            </dependency>
         </dependencies>
+
     </dependencyManagement>
 
     <dependencies>
+
+        <!-- LOGGING begin -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jul-to-slf4j</artifactId>
+        </dependency>
+
+        <!-- log实现 logback -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <!-- LOGGING end -->
     </dependencies>
     <build>
         <plugins>
@@ -506,24 +584,18 @@
                 </includes>
                 <filtering>true</filtering>
             </resource>
+            <resource>
+                <directory>src/test/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
         </resources>
     </build>
     <repositories>
         <repository>
-            <id>nexus</id>
-            <name>Team Nexus Repository</name>
-            <url>http://mvn.268xue.com:1011/content/groups/public/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>nexus3d</id>
-            <name>Team Nexus Repository 3d </name>
-            <url>http://mvn.268xue.com:1011/content/repositories/thirdparty/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <id>maven.yonyoucloud.com</id>
+            <url>http://maven.yonyoucloud.com/nexus/content/repositories/releases/</url>
         </repository>
         <repository>
             <id>central.maven.org</id>

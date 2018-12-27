@@ -3,10 +3,13 @@ package com.feihua.framework.mybatis.orm;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.NestedIOException;
 import org.springframework.core.io.Resource;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 由于mybatis的原因，如果有xml有错误，spring报不出错，会一直启动，这里修改，如果有错，退出
@@ -24,10 +27,5 @@ public class SqlSessionBeanFactory extends SqlSessionFactoryBean {
             System.exit(1);
         }
         return null;
-    }
-
-    @Override
-    public void setMapperLocations(Resource[] mapperLocations) {
-        super.setMapperLocations(mapperLocations);
     }
 }

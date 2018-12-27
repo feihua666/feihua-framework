@@ -267,7 +267,7 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
         userPo.setLocked(addParamDto.getLocked());
         userPo.setDataOfficeId(addParamDto.getDataOfficeId());
         userPo.setPhoto(addParamDto.getPhoto());
-        this.preInsert(userPo,addParamDto.getCurrentUserId());
+        userPo = this.preInsert(userPo,addParamDto.getCurrentUserId());
         userPo = this.insertSimple(userPo);
 
         //插入帐号信息
@@ -278,7 +278,7 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
         baseUserAuthPo.setVerified(BasePo.YesNo.Y.name());
         //密码信息
         baseUserAuthPo.setCredential(addParamDto.getPassword());
-        apiBaseUserAuthPoService.preInsert(baseUserAuthPo,addParamDto.getCurrentUserId());
+        baseUserAuthPo = apiBaseUserAuthPoService.preInsert(baseUserAuthPo,addParamDto.getCurrentUserId());
         apiBaseUserAuthPoService.insertSelectiveSimple(baseUserAuthPo);
         return userPo;
     }

@@ -70,7 +70,7 @@ public class BaseFunctionResouceController extends BaseController {
         baseFunctionResourcePo.setSequence(addFunctionResourceFormDto.getSequence());
         baseFunctionResourcePo.setParentId(addFunctionResourceFormDto.getParentId());
 
-        apiBaseFunctionResourcePoService.preInsert(baseFunctionResourcePo,getLoginUser().getId());
+        baseFunctionResourcePo = apiBaseFunctionResourcePoService.preInsert(baseFunctionResourcePo,getLoginUser().getId());
         BaseFunctionResourceDto r = apiBaseFunctionResourcePoService.insert(baseFunctionResourcePo);
         if (r == null) {
             // 添加失败
@@ -160,7 +160,7 @@ public class BaseFunctionResouceController extends BaseController {
         baseFunctionResourcePoCondition.setId(id);
         baseFunctionResourcePoCondition.setDelFlag(BasePo.YesNo.N.name());
         baseFunctionResourcePoCondition.setUpdateAt(updateFunctionResourceFormDto.getUpdateTime());
-        apiBaseFunctionResourcePoService.preUpdate(baseFunctionResourcePo,getLoginUser().getId());
+        baseFunctionResourcePo = apiBaseFunctionResourcePoService.preUpdate(baseFunctionResourcePo,getLoginUser().getId());
         int r = apiBaseFunctionResourcePoService.updateSelective(baseFunctionResourcePo,baseFunctionResourcePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

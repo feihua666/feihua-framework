@@ -1,7 +1,6 @@
 package feihua.jdbc.api.service;
 
-import feihua.jdbc.api.pojo.BaseDto;
-import feihua.jdbc.api.pojo.BasePo;
+import feihua.jdbc.api.pojo.*;
 
 import java.util.List;
 
@@ -18,6 +17,8 @@ public interface ApiBaseTreeService<PO extends BasePo,DTO extends BaseDto,PK> ex
      * @return
      */
     public List<PO> getChildren(PK primaryKey);
+    List<PO> getChildren(PK primaryKey, Orderby orderby);
+    PageResultDto<PO> getChildren(PK primaryKey, PageAndOrderbyParamDto pageAndOrderbyParamDto);
 
     /**
      * 获取所有子节点
@@ -25,6 +26,8 @@ public interface ApiBaseTreeService<PO extends BasePo,DTO extends BaseDto,PK> ex
      * @return
      */
     public List<PO> getChildrenAll(PK primaryKey);
+    List<PO> getChildrenAll(PK primaryKey, Orderby orderby);
+    PageResultDto<PO> getChildrenAll(PK primaryKey, PageAndOrderbyParamDto pageAndOrderbyParamDto);
 
     /**
      * 获取下一级的叶子节点
@@ -32,11 +35,14 @@ public interface ApiBaseTreeService<PO extends BasePo,DTO extends BaseDto,PK> ex
      * @return
      */
     public List<PO> getChildrenLeaf(PK primaryKey);
-
+    List<PO> getChildrenLeaf(PK primaryKey, Orderby orderby);
+    PageResultDto<PO> getChildrenLeaf(PK primaryKey, PageAndOrderbyParamDto pageAndOrderbyParamDto);
     /**
      * 获取所有父节点
      * @param primaryKey
      * @return
      */
     public List<PO> getParents(PK primaryKey);
+    List<PO> getParents(PK primaryKey, Orderby orderby);
+    PageResultDto<PO> getParents(PK primaryKey, PageAndOrderbyParamDto pageAndOrderbyParamDto);
 }

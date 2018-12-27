@@ -1,6 +1,7 @@
 package com.feihua.framework.mybatis.orm.interceptor;
 
 
+import com.feihua.framework.mybatis.orm.MybatisMapperConfig;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -10,6 +11,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -32,6 +34,8 @@ public  class CacheInterceptor implements Interceptor {
 	private static Set<String>   updateStatementOnCommit = new HashSet<>();
 
 	CacheManager cachingManager = CacheManager.getInstance();
+	@Autowired
+	private Map<String, MybatisMapperConfig> mybatisMapperConfigs;
 
 	public Object intercept(Invocation invocation) throws Throwable {
 		String name = invocation.getMethod().getName();
@@ -160,7 +164,7 @@ public  class CacheInterceptor implements Interceptor {
 		
 		if(!cachingManager.isInitialized())
 		{
-			cachingManager.initialize(properties);
+			cachingManager.initialize(properties,mybatisMapperConfigs);
 		}
 	}
 }

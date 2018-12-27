@@ -80,7 +80,7 @@ public class BaseMessageController extends SuperController {
         basePo.setMsgLevel(addFormDto.getMsgLevel());
         basePo.setMsgState(DictEnum.MessageState.to_be_sended.name());
 
-        apiBaseMessagePoService.preInsert(basePo,getLoginUser().getId());
+        basePo = apiBaseMessagePoService.preInsert(basePo,getLoginUser().getId());
         BaseMessageDto r = apiBaseMessagePoService.insert(basePo);
         if (r == null) {
             // 添加失败
@@ -177,7 +177,7 @@ public class BaseMessageController extends SuperController {
         basePoCondition.setId(id);
         basePoCondition.setDelFlag(BasePo.YesNo.N.name());
         basePoCondition.setUpdateAt(updateFormDto.getUpdateTime());
-        apiBaseMessagePoService.preUpdate(basePo,getLoginUser().getId());
+        basePo = apiBaseMessagePoService.preUpdate(basePo,getLoginUser().getId());
         int r = apiBaseMessagePoService.updateSelective(basePo,basePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在
@@ -310,7 +310,7 @@ public class BaseMessageController extends SuperController {
         basePo.setMsgLevel(baseMessageDtoDb.getMsgLevel());
         basePo.setMsgState(DictEnum.MessageState.to_be_sended.name());
 
-        apiBaseMessagePoService.preInsert(basePo,getLoginUser().getId());
+        basePo = apiBaseMessagePoService.preInsert(basePo,getLoginUser().getId());
         BaseMessageDto r = apiBaseMessagePoService.insert(basePo);
         if (r == null) {
             // 复制失败

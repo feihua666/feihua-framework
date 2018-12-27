@@ -68,6 +68,20 @@ public class ApiCmsChannelPoServiceImpl extends ApiBaseTreeServiceImpl<CmsChanne
         dto.setUpdateAt(po.getUpdateAt());
         dto.setChannelType(po.getChannelType());
         dto.setTemplate(po.getTemplate());
+
+        dto.setParentId1(po.getParentId1());
+        dto.setParentId2(po.getParentId2());
+        dto.setParentId3(po.getParentId3());
+        dto.setParentId4(po.getParentId4());
+        dto.setParentId5(po.getParentId5());
+        dto.setParentId6(po.getParentId6());
+        dto.setParentId7(po.getParentId7());
+        dto.setParentId8(po.getParentId8());
+        dto.setParentId9(po.getParentId9());
+        dto.setParentId10(po.getParentId10());
+
+
+
         return dto;
     }
 }

@@ -21,6 +21,8 @@ public class CalendarUtils {
     private static final ThreadLocal<SimpleDateFormat> threadLocalLenient = new ThreadLocal<SimpleDateFormat>();
     private static final Calendar calendar = Calendar.getInstance();
     private static final Object object = new Object();
+    private static final String time_zero = "00:00:00";
+    private static final String time_last = "23:59:59";
 
     /**
      * 获取SimpleDateFormat 
@@ -721,6 +723,24 @@ public class CalendarUtils {
      */
     public static String getTime(Date date) {
         return dateToString(date, DateStyle.HH_MM_SS);
+    }
+
+    /**
+     * 将日期时间设置到0点
+     * @param date
+     * @return
+     */
+    public static Date resetTimeToZero(Date date){
+        return stringToDate(dateToString(date, DateStyle.YYYY_MM_DD) + " " + time_zero);
+    }
+
+    /**
+     * 将日期时间设置到23:59:59
+     * @param date
+     * @return
+     */
+    public static Date resetTimeToLast(Date date){
+        return stringToDate(dateToString(date, DateStyle.YYYY_MM_DD) + " " + time_last);
     }
 
     /**

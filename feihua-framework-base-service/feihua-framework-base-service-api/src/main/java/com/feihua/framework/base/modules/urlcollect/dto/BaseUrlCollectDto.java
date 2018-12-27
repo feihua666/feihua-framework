@@ -1,5 +1,6 @@
 package com.feihua.framework.base.modules.urlcollect.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-10-26 19:12:51
 */
-public class BaseUrlCollectDto extends BaseDto {
+public class BaseUrlCollectDto extends BaseDbDto<String> {
     private String id;
 
     private String url;

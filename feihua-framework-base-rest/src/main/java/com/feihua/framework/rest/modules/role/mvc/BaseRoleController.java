@@ -91,7 +91,7 @@ public class BaseRoleController extends BaseController {
         baseRolePo.setParentId(addRoleFormDto.getParentId());
         baseRolePo.setDataOfficeId(addRoleFormDto.getDataOfficeId());
 
-        apiBaseRolePoService.preInsert(baseRolePo,getLoginUser().getId());
+        baseRolePo = apiBaseRolePoService.preInsert(baseRolePo,getLoginUser().getId());
         BaseRoleDto roleDto = apiBaseRolePoService.insert(baseRolePo);
         if(roleDto == null){
             logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
@@ -187,7 +187,7 @@ public class BaseRoleController extends BaseController {
         updateConditionBaseRolePo.setId(id);
         updateConditionBaseRolePo.setUpdateAt(updateRoleFormDto.getUpdateTime());
 
-        apiBaseRolePoService.preUpdate(baseRolePo,getLoginUser().getId());
+        baseRolePo = apiBaseRolePoService.preUpdate(baseRolePo,getLoginUser().getId());
         int r = apiBaseRolePoService.updateSelective(baseRolePo,updateConditionBaseRolePo);
         if(r == 0){
             // 更新失败，资源不存在

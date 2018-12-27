@@ -97,7 +97,7 @@ public class ApiBaseMessagePoServiceImpl extends ApiBaseServiceImpl<BaseMessageP
             BaseMessageTargetClientUserRelPo baseMessageTargetClientUserRelPo = apiBaseMessageTargetClientUserRelPoService.selectByClientIdAndUserId(baseMessageTargetClientPo.getId(),userId,BasePo.YesNo.N.name());
             if (baseMessageTargetClientUserRelPo != null) {
                 baseMessageTargetClientUserRelPo.setIsRead(BasePo.YesNo.Y.name());
-                apiBaseMessageTargetClientUserRelPoService.preUpdate(baseMessageTargetClientUserRelPo,targetClientParamsDto.getCurrentUserId());
+                baseMessageTargetClientUserRelPo = apiBaseMessageTargetClientUserRelPoService.preUpdate(baseMessageTargetClientUserRelPo,targetClientParamsDto.getCurrentUserId());
                 int r =  apiBaseMessageTargetClientUserRelPoService.updateByPrimaryKey(baseMessageTargetClientUserRelPo);
                 // 检查该用户对该消息的其它客户端是否已全部已读，如果全部已读，标记该用户所有客户端消息已读
 
@@ -105,7 +105,7 @@ public class ApiBaseMessagePoServiceImpl extends ApiBaseServiceImpl<BaseMessageP
                     BaseMessageUserStatePo baseMessageUserStatePo = apiBaseMessageUserStatePoService.selectByMessageIdAndUserId(messageId,userId,BasePo.YesNo.N.name());
                     if (baseMessageUserStatePo != null) {
                         baseMessageUserStatePo.setIsRead(BasePo.YesNo.Y.name());
-                        apiBaseMessageUserStatePoService.preUpdate(baseMessageUserStatePo, targetClientParamsDto.getCurrentUserId());
+                        baseMessageUserStatePo = apiBaseMessageUserStatePoService.preUpdate(baseMessageUserStatePo, targetClientParamsDto.getCurrentUserId());
                         apiBaseMessageUserStatePoService.updateByPrimaryKeySelective(baseMessageUserStatePo);
                     }
                 }
@@ -157,7 +157,7 @@ public class ApiBaseMessagePoServiceImpl extends ApiBaseServiceImpl<BaseMessageP
             baseMessagePo.setContent(dto.getContent());
             baseMessagePo.setMsgType(dto.getMsgType());
             baseMessagePo.setMsgLevel(dto.getMsgLevel());
-            this.preInsert(baseMessagePo,dto.getCurrentUserId());
+            baseMessagePo = this.preInsert(baseMessagePo,dto.getCurrentUserId());
             baseMessagePo = this.insertSimple(baseMessagePo);
         }else {
             baseMessagePo = this.selectByPrimaryKeySimple(dto.getMessageId(),false);
@@ -192,7 +192,7 @@ public class ApiBaseMessagePoServiceImpl extends ApiBaseServiceImpl<BaseMessageP
                     userStatePo.setIsCanRead(BasePo.YesNo.Y.name());
                     userStatePo.setUserId(userPo.getId());
                     userStatePo.setIsRead(BasePo.YesNo.N.name());
-                    apiBaseMessageUserStatePoService.preInsert(userStatePo,dto.getCurrentUserId());
+                    userStatePo = apiBaseMessageUserStatePoService.preInsert(userStatePo,dto.getCurrentUserId());
                     userStatePos.add(userStatePo);
                 }
                 apiBaseMessageUserStatePoService.insertBatch(userStatePos);

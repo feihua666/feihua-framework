@@ -1,13 +1,12 @@
 package com.feihua.framework.cms.directive;
 
+import com.feihua.framework.cms.DefaultObjectWrapperBuilderFactory;
 import com.feihua.framework.cms.ParamsRequiredException;
+import com.feihua.framework.cms.dto.CmsTemplateModelContextDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import freemarker.core.Environment;
-import freemarker.template.TemplateDirectiveBody;
-import freemarker.template.TemplateDirectiveModel;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateModel;
+import freemarker.template.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +24,17 @@ public abstract class AbstractDirective implements
     protected static final String param_channel_id = "channelId";
     protected static final String param_content_id = "contentId";
     protected static final String param_channel_parent_id = "parentId";
+
+
+    protected static final String param_iterator_type = "iteratorType";
+
+    protected static final String param_iterator_type_value_default = "default";
+    protected static final String param_iterator_type_value_var = "var";
+
+    protected CmsTemplateModelContextDto getContextDto(){
+        CmsTemplateModelContextDto cmsTemplateModelContextDto = new CmsTemplateModelContextDto(true);
+        return cmsTemplateModelContextDto;
+    }
 
     @Override
     public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body) throws TemplateException, IOException {
@@ -51,6 +61,44 @@ public abstract class AbstractDirective implements
     protected String getParentId(Map params){
         return getParam(param_channel_parent_id,params);
     }
+    protected String getParentId1(Map params){
+        return getParam(param_channel_parent_id + "1",params);
+    }
+    protected String getParentId2(Map params){
+        return getParam(param_channel_parent_id + "2",params);
+    }
+    protected String getParentId3(Map params){
+        return getParam(param_channel_parent_id + "3",params);
+    }
+    protected String getParentId4(Map params){
+        return getParam(param_channel_parent_id + "4",params);
+    }
+    protected String getParentId5(Map params){
+        return getParam(param_channel_parent_id + "5",params);
+    }
+    protected String getParentId6(Map params){
+        return getParam(param_channel_parent_id + "6",params);
+    }
+    protected String getParentId7(Map params){
+        return getParam(param_channel_parent_id + "7",params);
+    }
+    protected String getParentId8(Map params){
+        return getParam(param_channel_parent_id + "8",params);
+    }
+    protected String getParentId9(Map params){
+        return getParam(param_channel_parent_id + "9",params);
+    }
+    protected String getParentId10(Map params){
+        return getParam(param_channel_parent_id + "10",params);
+    }
+    protected String getIteratorType(Map params){
+        String type =  getParam(param_iterator_type,params);
+        if (!param_iterator_type_value_var.equals(type)){
+            return param_iterator_type_value_default;
+        }
+
+        return type;
+    }
 
     protected String getParam(String paramName,Map params){
         Object obj = params.get(paramName);
@@ -69,5 +117,9 @@ public abstract class AbstractDirective implements
         if (loopVars != null && index >= 0 && loopVars.length > index ) {
             loopVars[index] = loopVar;
         }
+    }
+
+    protected TemplateModel wrapTemplateModel(Object obj) throws TemplateModelException {
+        return DefaultObjectWrapperBuilderFactory.getDefaultObjectWrapper().wrap(obj);
     }
 }

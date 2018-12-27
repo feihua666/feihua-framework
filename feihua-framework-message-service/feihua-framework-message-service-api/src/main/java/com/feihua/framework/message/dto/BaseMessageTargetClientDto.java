@@ -1,5 +1,6 @@
 package com.feihua.framework.message.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-11-01 19:06:58
 */
-public class BaseMessageTargetClientDto extends BaseDto {
+public class BaseMessageTargetClientDto extends BaseDbDto<String> {
     private String id;
 
     private String messageId;

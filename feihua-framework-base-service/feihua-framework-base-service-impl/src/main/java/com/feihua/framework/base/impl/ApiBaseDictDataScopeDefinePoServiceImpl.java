@@ -65,7 +65,7 @@ public class ApiBaseDictDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
             BaseDictDataScopeDefinePo insertDictDataScopeDefinePo = new BaseDictDataScopeDefinePo();
             insertDictDataScopeDefinePo.setDataScopeId(dictDataScopeDefineParamDto.getDataScopeId());
             insertDictDataScopeDefinePo.setType(dictDataScopeDefineParamDto.getType());
-            this.preInsert(insertDictDataScopeDefinePo,dictDataScopeDefineParamDto.getCurrentUserId());
+            insertDictDataScopeDefinePo = this.preInsert(insertDictDataScopeDefinePo,dictDataScopeDefineParamDto.getCurrentUserId());
 
             result = this.insert(insertDictDataScopeDefinePo);
 
@@ -73,7 +73,7 @@ public class ApiBaseDictDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
         }else{
             // 如果已经存在，更新
             dictDataScopeDefinePo.setType(dictDataScopeDefineParamDto.getType());
-            this.preUpdate(dictDataScopeDefinePo,dictDataScopeDefineParamDto.getCurrentUserId());
+            dictDataScopeDefinePo = this.preUpdate(dictDataScopeDefinePo,dictDataScopeDefineParamDto.getCurrentUserId());
             // 这里没有考虑乐观锁
             int r = this.updateByPrimaryKey(dictDataScopeDefinePo);
             if(r == 1){

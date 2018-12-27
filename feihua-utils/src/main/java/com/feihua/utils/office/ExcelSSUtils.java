@@ -16,12 +16,7 @@ import java.io.InputStream;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -164,11 +159,11 @@ public class ExcelSSUtils {
 	 * 设置单元格对齐方式
 	 * @param workbook
 	 * @param cell 单元格
-	 * @param align 对齐方式 （CellStyle.center等使用）
+	 * @param horizontalAlignment 对齐方式 （CellStyle.center等使用）
 	 */
-	public static void setAlignment(Workbook workbook,Cell cell,short align){
+	public static void setAlignment(Workbook workbook,Cell cell,HorizontalAlignment horizontalAlignment){
 		CellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setAlignment(align);
+		cellStyle.setAlignment(horizontalAlignment);
 		cell.setCellStyle(cellStyle);
 	}
 	/**
@@ -189,7 +184,7 @@ public class ExcelSSUtils {
 		if(cell == null){
 			cell = createCell(row,cellNum);
 		}
-		cell.setCellType(Cell.CELL_TYPE_STRING);
+		cell.setCellType(CellType.STRING);
 		cell.setCellValue(value);
 		return cell;
 	}

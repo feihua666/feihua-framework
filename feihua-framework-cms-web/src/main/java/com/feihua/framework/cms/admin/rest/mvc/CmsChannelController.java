@@ -1,11 +1,12 @@
 package com.feihua.framework.cms.admin.rest.mvc;
 
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.cms.CmsConstants;
 import com.feihua.framework.cms.admin.rest.dto.AddCmsChannelFormDto;
 import com.feihua.framework.cms.admin.rest.dto.UpdateCmsChannelFormDto;
 import com.feihua.framework.cms.api.ApiCmsChannelPoService;
-import com.feihua.framework.cms.dto.CmsChannelDto;
-import com.feihua.framework.cms.dto.SearchCmsChannelsConditionDto;
+import com.feihua.framework.cms.api.ApiCmsSitePoService;
+import com.feihua.framework.cms.dto.*;
 import com.feihua.framework.cms.po.CmsChannelPo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,13 +40,14 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/cms")
-public class CmsChannelController extends SuperController {
+public class CmsChannelController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(CmsChannelController.class);
 
     @Autowired
     private ApiCmsChannelPoService apiCmsChannelPoService;
-
+    @Autowired
+    private ApiCmsSitePoService apiCmsSitePoService;
     /**
      * 单资源，添加
      * @param dto
@@ -64,13 +67,15 @@ public class CmsChannelController extends SuperController {
         basePo.setPath(dto.getPath());
         basePo.setSequence(dto.getSequence());
         basePo.setSiteId(dto.getSiteId());
+        basePo.setChannelType(dto.getChannelType());
         basePo.setParentId(dto.getParentId());
+        basePo.setTemplate(dto.getTemplate());
         basePo.setIv(0);
         basePo.setUv(0);
         basePo.setPv(0);
 
 
-        apiCmsChannelPoService.preInsert(basePo,getLoginUser().getId());
+        basePo = apiCmsChannelPoService.preInsert(basePo,getLoginUser().getId());
         CmsChannelDto r = apiCmsChannelPoService.insert(basePo);
         if (r == null) {
             // 添加失败
@@ -140,7 +145,9 @@ public class CmsChannelController extends SuperController {
         basePo.setPath(dto.getPath());
         basePo.setSequence(dto.getSequence());
         basePo.setSiteId(dto.getSiteId());
+        basePo.setChannelType(dto.getChannelType());
         basePo.setParentId(dto.getParentId());
+        basePo.setTemplate(dto.getTemplate());
 
 
         // 用条件更新，乐观锁机制
@@ -148,7 +155,7 @@ public class CmsChannelController extends SuperController {
         basePoCondition.setId(id);
         basePoCondition.setDelFlag(BasePo.YesNo.N.name());
         basePoCondition.setUpdateAt(dto.getUpdateTime());
-        apiCmsChannelPoService.preUpdate(basePo,getLoginUser().getId());
+        basePo = apiCmsChannelPoService.preUpdate(basePo,getLoginUser().getId());
         int r = apiCmsChannelPoService.updateSelective(basePo,basePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在
@@ -195,7 +202,7 @@ public class CmsChannelController extends SuperController {
     @RepeatFormValidator
     @RequiresPermissions("channel:search")
     @RequestMapping(value = "/channels",method = RequestMethod.GET)
-    public ResponseEntity search(SearchCmsChannelsConditionDto dto, boolean includeParent){
+    public ResponseEntity search(SearchCmsChannelsConditionDto dto, boolean includeParent,boolean includeSite){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
@@ -206,14 +213,23 @@ public class CmsChannelController extends SuperController {
 
         if(CollectionUtils.isNotEmpty(list.getData())){
             //父级
-            if (includeParent) {
+            if (includeParent || includeSite) {
                 Map<String,CmsChannelDto> parentDtoMap = new HashMap<>();
                 CmsChannelDto parentDto = null;
+                Map<String, CmsSiteDto> siteDtoMap = new HashMap<>();
+                CmsSiteDto siteDto = null;
+
                 for (CmsChannelDto cmsChannelDto : list.getData()) {
-                    if(StringUtils.isNotEmpty(cmsChannelDto.getParentId())){
+                    if(includeParent && StringUtils.isNotEmpty(cmsChannelDto.getParentId())){
                         parentDto = apiCmsChannelPoService.selectByPrimaryKey(cmsChannelDto.getParentId());
                         if (parentDto != null) {
                             parentDtoMap.put(cmsChannelDto.getParentId(),parentDto);
+                        }
+                    }
+                    if(includeSite && StringUtils.isNotEmpty(cmsChannelDto.getSiteId())){
+                        siteDto = apiCmsSitePoService.selectByPrimaryKey(cmsChannelDto.getSiteId());
+                        if (siteDto != null) {
+                            siteDtoMap.put(cmsChannelDto.getSiteId(),siteDto);
                         }
                     }
                 }
@@ -221,9 +237,72 @@ public class CmsChannelController extends SuperController {
                 if (!parentDtoMap.isEmpty()) {
                     resultData.addData("parent",parentDtoMap);
                 }
+                if (!siteDtoMap.isEmpty()) {
+                    resultData.addData("site",siteDtoMap);
+                }
             }
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
+            return new ResponseEntity(resultData, HttpStatus.OK);
+        }else{
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    /**
+     * 栏目首页地址
+     * @param id
+     * @return
+     */
+    @RepeatFormValidator
+    @RequestMapping(value = "/channel/{id}/address",method = RequestMethod.GET)
+    public ResponseEntity indexAddress(@PathVariable String id){
+
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        CmsChannelDto cmsChannelDto = apiCmsChannelPoService.selectByPrimaryKey(id,false);
+        if(cmsChannelDto != null){
+            CmsSiteDto cmsSiteDto = apiCmsSitePoService.selectByPrimaryKey(cmsChannelDto.getSiteId(),false);
+            CmsTemplateModelContextDto cmsTemplateModelContextDto = new CmsTemplateModelContextDto(true);
+            CmsSiteTemplateModelDto cmsSiteTemplateModelDto = new CmsSiteTemplateModelDto(cmsSiteDto,cmsTemplateModelContextDto);
+            CmsChannelTemplateModelDto cmsChannelTemplateModelDto = new CmsChannelTemplateModelDto(cmsChannelDto, cmsTemplateModelContextDto);
+
+            resultData.setData(cmsSiteTemplateModelDto);
+            resultData.addData("channel",cmsChannelTemplateModelDto);
+            return new ResponseEntity(resultData, HttpStatus.OK);
+        }else{
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+    /**
+     * 单资源,栏目首页模板
+     * @return
+     */
+    @RepeatFormValidator
+    @RequestMapping(value = "/channel/template",method = RequestMethod.GET)
+    public ResponseEntity template(String siteId){
+
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        CmsSiteDto cmsSiteDto = apiCmsSitePoService.selectByPrimaryKey(siteId,false);
+        if (cmsSiteDto == null) {
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+        String siteTemplatePath = cmsSiteDto.getTemplatePath();
+        if(StringUtils.isEmpty(siteTemplatePath)){
+            siteTemplatePath = CmsConstants.templatePathDefault;
+        }
+        List<String> templatePathStr = super.getFileNames(siteTemplatePath + CmsConstants.templateChannelPath,false);
+        if(templatePathStr != null && !templatePathStr.isEmpty()){
+            resultData.setData(templatePathStr);
             return new ResponseEntity(resultData, HttpStatus.OK);
         }else{
             resultData.setCode(ResponseCode.E404_100001.getCode());

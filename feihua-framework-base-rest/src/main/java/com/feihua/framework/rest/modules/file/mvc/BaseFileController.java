@@ -56,7 +56,7 @@ public class BaseFileController extends BaseController {
         BaseFilePo basePo = new BaseFilePo();
         //todo
 
-        apiBaseFilePoService.preInsert(basePo,getLoginUser().getId());
+        basePo = apiBaseFilePoService.preInsert(basePo,getLoginUser().getId());
         BaseFileDto r = apiBaseFilePoService.insert(basePo);
         if (r == null) {
             // 添加失败
@@ -136,7 +136,7 @@ public class BaseFileController extends BaseController {
         basePoCondition.setId(id);
         basePoCondition.setDelFlag(BasePo.YesNo.N.name());
         basePoCondition.setUpdateAt(updateFormDto.getUpdateTime());
-        apiBaseFilePoService.preUpdate(basePo,getLoginUser().getId());
+        basePo = apiBaseFilePoService.preUpdate(basePo,getLoginUser().getId());
         int r = apiBaseFilePoService.updateSelective(basePo,basePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

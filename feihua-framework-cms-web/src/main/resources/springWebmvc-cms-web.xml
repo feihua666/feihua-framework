@@ -41,7 +41,10 @@
         </property>
         <property name="freemarkerVariables">
             <map>
-                <entry key="cms_chanel_list" value-ref="channelListDirective"/>
+                <entry key="cms_channel_list" value-ref="channelListDirective"/>
+                <entry key="cms_content_list" value-ref="contentListDirective"/>
+                <entry key="cms_site_list" value-ref="siteListDirective"/>
+                <entry key="cms_category_list" value-ref="categoryListDirective"/>
             </map>
         </property>
     </bean>

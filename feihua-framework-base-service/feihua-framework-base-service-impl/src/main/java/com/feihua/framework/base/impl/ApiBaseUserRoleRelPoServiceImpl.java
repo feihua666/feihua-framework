@@ -86,7 +86,7 @@ public class ApiBaseUserRoleRelPoServiceImpl extends ApiBaseServiceImpl<BaseUser
                 userRoleRelPo.setRoleId(roleId);
                 userRoleRelPo.setUserId(userBindRolesParamDto.getUserId());
                 userRoleRelPo.setDelFlag(BasePo.YesNo.N.name());
-                this.preInsert(userRoleRelPo,userBindRolesParamDto.getCurrentUserId());
+                userRoleRelPo = this.preInsert(userRoleRelPo,userBindRolesParamDto.getCurrentUserId());
                 addList.add(userRoleRelPo);
             }
             return this.insertBatch(addList);
@@ -110,7 +110,7 @@ public class ApiBaseUserRoleRelPoServiceImpl extends ApiBaseServiceImpl<BaseUser
                 userRoleRelPo.setUserId(userId);
                 userRoleRelPo.setRoleId(roleBindUsersParamDto.getRoleId());
                 userRoleRelPo.setDelFlag(BasePo.YesNo.N.name());
-                this.preInsert(userRoleRelPo,roleBindUsersParamDto.getCurrentUserId());
+                userRoleRelPo = this.preInsert(userRoleRelPo,roleBindUsersParamDto.getCurrentUserId());
                 addList.add(userRoleRelPo);
             }
             return this.insertBatch(addList);

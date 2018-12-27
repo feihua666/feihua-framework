@@ -79,7 +79,7 @@ public class BaseOfficeController extends BaseController {
         baseOfficePo.setDeputyUserId(addOfficeFormDto.getDeputyUserId());
         baseOfficePo.setParentId(addOfficeFormDto.getParentId());
 
-        apiBaseOfficePoService.preInsert(baseOfficePo,getLoginUser().getId());
+        baseOfficePo = apiBaseOfficePoService.preInsert(baseOfficePo,getLoginUser().getId());
         BaseOfficeDto r = apiBaseOfficePoService.insert(baseOfficePo);
         if (r == null) {
             // 添加失败
@@ -173,7 +173,7 @@ public class BaseOfficeController extends BaseController {
         baseOfficePoCondition.setId(id);
         baseOfficePoCondition.setDelFlag(BasePo.YesNo.N.name());
         baseOfficePoCondition.setUpdateAt(updateOfficeFormDto.getUpdateTime());
-        apiBaseOfficePoService.preUpdate(baseOfficePo,getLoginUser().getId());
+        baseOfficePo = apiBaseOfficePoService.preUpdate(baseOfficePo,getLoginUser().getId());
         int r = apiBaseOfficePoService.updateSelective(baseOfficePo,baseOfficePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

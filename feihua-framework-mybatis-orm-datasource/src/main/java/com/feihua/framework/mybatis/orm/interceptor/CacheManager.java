@@ -1,6 +1,7 @@
 package com.feihua.framework.mybatis.orm.interceptor;
 
 import com.feihua.framework.jedis.utils.JedisUtils;
+import com.feihua.framework.mybatis.orm.MybatisMapperConfig;
 import com.feihua.framework.mybatis.orm.cache.MybatisOrmCache;
 import com.feihua.framework.mybatis.orm.cache.RedisCache;
 import org.apache.ibatis.cache.Cache;
@@ -41,7 +42,7 @@ public class CacheManager {
 		return initialized;
 	}
 	
-	public void initialize(Properties properties) {
+	public void initialize(Properties properties,Map<String, MybatisMapperConfig> mybatisMapperConfigs) {
 		//cacheEnabled
 		String cacheEnabled = properties.getProperty("cacheEnabled", "true");
 		if("true".equals(cacheEnabled))
@@ -49,28 +50,18 @@ public class CacheManager {
 			this.cacheEnabled = true;
 		}
 		//依赖关系
-		String dependency = properties.getProperty("dependency");
-		if(!("".equals(dependency) || dependency==null))
-		{
-			InputStream inputStream;
-			try
-			{
-				inputStream = Resources.getResourceAsStream(dependency);
-				XPathParser parser = new XPathParser(inputStream);
-				List<XNode> statements = parser.evalNodes("/dependencies/statements/statement");
-				for(XNode node :statements)
-				{
-					Set<String> temp = new HashSet<>();
-					List<XNode> obs = node.evalNodes("observer");
-					for(XNode observer:obs)
-					{
-						temp.add(observer.getStringAttribute("id"));
+		if (mybatisMapperConfigs != null) {
+			MybatisMapperConfig mybatisMapperConfig = null;
+			Map<String,Set<String>> cacheConfig = null;
+			for (Map.Entry<String, MybatisMapperConfig> stringMybatisMapperConfigEntry : mybatisMapperConfigs.entrySet()) {
+				mybatisMapperConfig = stringMybatisMapperConfigEntry.getValue();
+				cacheConfig = mybatisMapperConfig.getCacheConfig();
+				if (cacheConfig != null) {
+					for (String cudStatement : cacheConfig.keySet()) {
+						Set<String> queryStatements = cacheConfig.get(cudStatement);
+						this.statements.put(cudStatement, queryStatements);
 					}
-					this.statements.put(node.getStringAttribute("id"), temp);
 				}
-				initialized = true;
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
 

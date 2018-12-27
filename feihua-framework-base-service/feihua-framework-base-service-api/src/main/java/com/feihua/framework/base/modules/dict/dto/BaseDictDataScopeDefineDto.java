@@ -1,5 +1,6 @@
 package com.feihua.framework.base.modules.dict.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-03-26 12:58:35
 */
-public class BaseDictDataScopeDefineDto extends BaseDto {
+public class BaseDictDataScopeDefineDto extends BaseDbDto<String> {
     private String id;
 
     private String dataScopeId;

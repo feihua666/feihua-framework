@@ -21,5 +21,10 @@
             <artifactId>feihua-wechat-service-api</artifactId>
             <version>${feihua-framework.version}</version>
         </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-mybatis-orm-datasource</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
     </dependencies>
 </project>

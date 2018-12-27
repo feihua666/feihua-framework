@@ -84,7 +84,7 @@ public class ApiBaseUserDataScopeRelPoServiceImpl extends ApiBaseServiceImpl<Bas
                 baseUserDataScopeRelPo.setUserId(userBindDataScopesParamDto.getUserId());
                 baseUserDataScopeRelPo.setDataScopeId(dataScopeId);
                 baseUserDataScopeRelPo.setDelFlag(BasePo.YesNo.N.name());
-                this.preInsert(baseUserDataScopeRelPo,userBindDataScopesParamDto.getCurrentUserId());
+                baseUserDataScopeRelPo = this.preInsert(baseUserDataScopeRelPo,userBindDataScopesParamDto.getCurrentUserId());
                 insertedList.add(baseUserDataScopeRelPo );
             }
             return this.insertBatch(insertedList);
@@ -107,7 +107,7 @@ public class ApiBaseUserDataScopeRelPoServiceImpl extends ApiBaseServiceImpl<Bas
                 baseUserDataScopeRelPo.setDataScopeId(dataScopeBindUsersParamDto.getDataScopeId());
                 baseUserDataScopeRelPo.setDataScopeId(roleId);
                 baseUserDataScopeRelPo.setDelFlag(BasePo.YesNo.N.name());
-                this.preInsert(baseUserDataScopeRelPo,dataScopeBindUsersParamDto.getCurrentUserId());
+                baseUserDataScopeRelPo = this.preInsert(baseUserDataScopeRelPo,dataScopeBindUsersParamDto.getCurrentUserId());
                 insertedList.add(baseUserDataScopeRelPo );
             }
             return this.insertBatch(insertedList);

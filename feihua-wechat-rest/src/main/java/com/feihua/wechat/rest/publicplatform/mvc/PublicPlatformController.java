@@ -164,7 +164,7 @@ public class PublicPlatformController extends SuperController {
             // 根据accessToken获取用户信息
             WeixinUserPo userPo = PublicUtils.getAuthorizeWeixinUser(authorizeAccessToken);
 
-            apiWeixinUserPoService.preInsert(userPo, BasePo.DEFAULT_USER_ID);
+            userPo = apiWeixinUserPoService.preInsert(userPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(userPo);
 
             //调用监听

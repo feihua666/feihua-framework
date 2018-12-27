@@ -66,7 +66,7 @@ public class BaseDataScopeController extends BaseController {
         baseDataScopePo.setType(addDataScopeFormDto.getType());
         baseDataScopePo.setDataOfficeId(addDataScopeFormDto.getDataOfficeId());
 
-        apiBaseDataScopePoService.preInsert(baseDataScopePo,getLoginUser().getId());
+        baseDataScopePo = apiBaseDataScopePoService.preInsert(baseDataScopePo,getLoginUser().getId());
         BaseDataScopeDto r = apiBaseDataScopePoService.insert(baseDataScopePo);
         if (r == null) {
             // 添加失败
@@ -141,7 +141,7 @@ public class BaseDataScopeController extends BaseController {
         baseDataScopePoCondition.setId(id);
         baseDataScopePoCondition.setDelFlag(BasePo.YesNo.N.name());
         baseDataScopePoCondition.setUpdateAt(updateDataScopeFormDto.getUpdateTime());
-        apiBaseDataScopePoService.preUpdate(baseDataScopePo,getLoginUser().getId());
+        baseDataScopePo = apiBaseDataScopePoService.preUpdate(baseDataScopePo,getLoginUser().getId());
         int r = apiBaseDataScopePoService.updateSelective(baseDataScopePo,baseDataScopePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

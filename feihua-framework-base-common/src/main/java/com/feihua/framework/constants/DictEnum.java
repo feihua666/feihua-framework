@@ -148,13 +148,22 @@ public class DictEnum {
     }
 
     /**
-     * 文件上专与导出分类
+     * 文件上传与导出分类
+     */
+    public enum UploadDownloadType {
+        export,    //导出
+        upload   //上传
+    }
+    /**
+     * 文件分类
      */
     public enum FileType {
-        file_type_export,    //导出
-        file_type_upload,   //上传
+        image,    //图片
+        video,   //视频
+        audio,   //音频
+        pdf,      //pdf
+        other      //其它
     }
-
     /**
      * 平台分类
      */
@@ -221,4 +230,14 @@ public class DictEnum {
         multi_role,           // 角色绑定的人
         multi_area           // 区域下的人
     }
+    public enum CmsContentType {
+        article, // 文章/图文
+        library, // 文库
+        gallery, //图库
+        download, //下载
+        vedio, //视频
+        audio, //音频
+    }
+
+
 }

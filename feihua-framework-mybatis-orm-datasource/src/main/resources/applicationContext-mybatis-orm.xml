@@ -29,14 +29,14 @@
     <!-- MyBatis begin -->
     <bean id="mysqlSessionFactory" class="com.feihua.framework.mybatis.orm.SqlSessionBeanFactory">
         <property name="dataSource" ref="multipleDataSource"/>
-        <property name="mapperLocations" value="classpath:com/feihua/framework/mybatis/orm/mapper/NativeSqlMapper.xml,${mapperLocations}"/>
+        <!-- 不使用該路径配置，使用默认规则，即：mapper接口和xml放在同一个路径下 -->
+        <!--<property name="mapperLocations" value="classpath:com/feihua/framework/mybatis/orm/mapper/NativeSqlMapper.xml,${mapperLocations}"/>-->
         <property name="configLocation" value="classpath:mybatis-config.xml"/>
         <property name="plugins">
             <array>
                 <bean class="com.feihua.framework.mybatis.orm.interceptor.CacheInterceptor">
                     <property name="properties">
                         <value>
-                            dependency=mybatis-cache-dependencys.xml
                             cacheEnabled=true
                         </value>
                     </property>
@@ -64,12 +64,18 @@
     </bean>
     <!-- 扫描basePackage下所有接口 -->
     <bean id="mapperScannerConfigurer" class="com.feihua.framework.mybatis.orm.MyMapperScannerConfigurer">
-        <property name="mybasePackage"  value="com.feihua.framework.mybatis.orm.mapper,${mapperScannerConfigurer.basePackage}"/>
-        <property name="basePackage"  value="com.feihua.framework.mybatis.orm.mapper,${mapperScannerConfigurer.basePackage}"/>
         <property name="sqlSessionFactoryBeanName" value="mysqlSessionFactory"/>
+        <!-- 默认不配置該路径，但 org.mybatis.spring.mapper.MapperScannerConfigurer 会有校验所有重写了afterPropertiesSet方法，
+        请使用 com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig 类 并配置basePackage-->
+        <!--<property name="basePackage"  value="com.feihua.framework.mybatis.orm.mapper,${mapperScannerConfigurer.basePackage}"/>-->
         <!--这个一定不要设成true 到 目前（2018年7月18日 17:29:51） 这玩意害人-->
         <property name="processPropertyPlaceHolders" value="false"/>
     </bean>
+
+    <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
+        <property name="basePackage" value="com.feihua.framework.mybatis.orm.mapper"/>
+    </bean>
+
     <!-- 定义事务 -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="multipleDataSource"/>

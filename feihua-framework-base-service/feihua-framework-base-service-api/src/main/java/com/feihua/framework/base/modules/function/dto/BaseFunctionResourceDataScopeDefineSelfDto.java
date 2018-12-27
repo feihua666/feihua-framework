@@ -1,5 +1,6 @@
 package com.feihua.framework.base.modules.function.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-03-19 14:24:58
 */
-public class BaseFunctionResourceDataScopeDefineSelfDto extends BaseDto {
+public class BaseFunctionResourceDataScopeDefineSelfDto extends BaseDbDto<String> {
     private String id;
 
     private String functionResourceDataScopeDefineId;

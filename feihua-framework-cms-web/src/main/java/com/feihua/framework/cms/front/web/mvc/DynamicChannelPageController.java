@@ -1,14 +1,15 @@
 package com.feihua.framework.cms.front.web.mvc;
 
 import com.feihua.exception.PageNotFoundException;
+import com.feihua.framework.cms.CmsConstants;
+import com.feihua.framework.cms.api.ApiCmsChannelPoService;
 import com.feihua.framework.cms.api.ApiCmsSitePoService;
+import com.feihua.framework.cms.dto.CmsChannelTemplateModelDto;
+import com.feihua.framework.cms.dto.CmsSiteTemplateModelDto;
 import com.feihua.framework.cms.po.CmsChannelPo;
 import com.feihua.framework.cms.po.CmsSitePo;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.io.FileUtils;
-import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
-import feihua.jdbc.api.utils.OrderbyUtils;
-import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,22 +20,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.File;
-
-import static com.feihua.framework.cms.front.web.mvc.DynamicBaseController.requestPathPrefix;
-
 /**
  * cms前端页面访问入口
  * Created by yangwei
  */
 @Controller
-@RequestMapping(requestPathPrefix)
+@RequestMapping(CmsConstants.requestPathPrefix)
 public class DynamicChannelPageController extends DynamicBaseController {
 
     private static Logger logger = LoggerFactory.getLogger(DynamicChannelPageController.class);
-
+    @Autowired
+    private ApiCmsSitePoService apiCmsSitePoService;
+    @Autowired
+    private ApiCmsChannelPoService apiCmsChannelPoService;
 
     @RequestMapping(value = {"/{siteContextPath}/channel/{channelId}/index.htm"},method = RequestMethod.GET)
     public String channelStandardWithSiteContext(@PathVariable String siteContextPath,@PathVariable String channelId, Model model){
@@ -157,14 +155,15 @@ public class DynamicChannelPageController extends DynamicBaseController {
     private String channelDynamic(CmsSitePo cmsSitePo, CmsChannelPo cmsChannelPo,Model model){
         if (cmsChannelPo != null) {
             // 查找栏目模板的过程
-            model.addAttribute("channel",cmsChannelPo);
-            model.addAttribute("site",cmsSitePo);
+            model.addAttribute(CmsConstants.model_channel,new CmsChannelTemplateModelDto(apiCmsChannelPoService.wrapDto(cmsChannelPo),getContextDto()));
+            model.addAttribute(CmsConstants.model_site,new CmsSiteTemplateModelDto(apiCmsSitePoService.wrapDto(cmsSitePo),getContextDto()));
 
-            String template = indexHtml;
+
+            String template = CmsConstants.indexHtml;
             if(!StringUtils.isEmpty(cmsChannelPo.getTemplate())){
                 template = cmsChannelPo.getTemplate();
             }
-            String templatePath = getTemplatePathForViewResolver(cmsSitePo) + templateChannelPath + FileUtils.wrapStartFileSeparator(template);
+            String templatePath = getTemplatePathForViewResolver(cmsSitePo) + CmsConstants.templateChannelPath + RequestUtils.wrapStartSlash(template);
             return templatePath;
         }else{
             // 不存在栏目，直接抛出异常
