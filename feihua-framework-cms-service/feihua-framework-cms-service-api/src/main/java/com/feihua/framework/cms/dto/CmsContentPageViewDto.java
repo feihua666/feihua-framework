@@ -1,5 +1,6 @@
 package com.feihua.framework.cms.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-11-09 17:01:20
 */
-public class CmsContentPageViewDto extends BaseDto {
+public class CmsContentPageViewDto extends BaseDbDto<String> {
     private String id;
 
     private String contentId;

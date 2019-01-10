@@ -1151,4 +1151,27 @@
       #{item}
     </foreach>
   </update>
+    <select id="computeIv" resultType="int">
+      select count(1)
+      from cms_channel_page_view
+      where del_flag = 'N' and CHANNEL_ID = #{channelId} and CREATE_AT between #{dateStart} and #{dateEnd}
+      group by host
+    </select>
+  <select id="existHost" resultType="int">
+    select count(1)
+    from cms_channel_page_view
+    where del_flag = 'N' and host = #{host} and CREATE_AT between #{dateStart} and #{dateEnd}
+  </select>
+  <select id="computeUv" resultType="int">
+    select count(1)
+    from cms_channel_page_view
+    where del_flag = 'N' and CHANNEL_ID = #{channelId} and CREATE_AT between #{dateStart} and #{dateEnd}
+    group by cookie
+  </select>
+  <select id="existCookie" resultType="int">
+    select count(1)
+    from cms_channel_page_view
+    where del_flag = 'N' and cookie = #{cookie} and CREATE_AT between #{dateStart} and #{dateEnd}
+  </select>
+
 </mapper>

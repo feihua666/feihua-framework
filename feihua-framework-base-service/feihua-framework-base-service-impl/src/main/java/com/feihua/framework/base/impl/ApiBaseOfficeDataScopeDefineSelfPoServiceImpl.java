@@ -35,7 +35,7 @@ public class ApiBaseOfficeDataScopeDefineSelfPoServiceImpl extends ApiBaseServic
                 BaseOfficeDataScopeDefineSelfPo baseCommonDataScopeDefineOfficeSelfPo = new BaseOfficeDataScopeDefineSelfPo();
                 baseCommonDataScopeDefineOfficeSelfPo.setOfficeDataScopeDefineId(officeDataScopeDefineId);
                 baseCommonDataScopeDefineOfficeSelfPo.setOfficeId(officeId);
-                this.preInsert(baseCommonDataScopeDefineOfficeSelfPo,currentUserId);
+                baseCommonDataScopeDefineOfficeSelfPo = this.preInsert(baseCommonDataScopeDefineOfficeSelfPo,currentUserId);
                 preInsertList.add(baseCommonDataScopeDefineOfficeSelfPo);
             }
             // 批量插入自定义机构

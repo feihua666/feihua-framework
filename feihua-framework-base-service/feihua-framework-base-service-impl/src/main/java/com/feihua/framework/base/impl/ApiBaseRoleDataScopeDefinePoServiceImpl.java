@@ -66,7 +66,7 @@ public class ApiBaseRoleDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
             dbRoleDataScopeDefinePo = new BaseRoleDataScopeDefinePo();
             dbRoleDataScopeDefinePo.setDataScopeId(roleDataScope.getDataScopeId());
             dbRoleDataScopeDefinePo.setType(roleDataScope.getType());
-            this.preInsert(dbRoleDataScopeDefinePo,roleDataScope.getCurrentUserId());
+            dbRoleDataScopeDefinePo = this.preInsert(dbRoleDataScopeDefinePo,roleDataScope.getCurrentUserId());
             dbRoleDataScopeDefinePo = this.insertSimple(dbRoleDataScopeDefinePo);
             if(dbRoleDataScopeDefinePo == null){
                 throw new BaseException("add roleDataScopeDefine return null","E500");
@@ -85,7 +85,7 @@ public class ApiBaseRoleDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
         // 如果已经设置
         else{
             dbRoleDataScopeDefinePo.setType(roleDataScope.getType());
-            this.preUpdate(dbRoleDataScopeDefinePo,roleDataScope.getCurrentUserId());
+            dbRoleDataScopeDefinePo = this.preUpdate(dbRoleDataScopeDefinePo,roleDataScope.getCurrentUserId());
             // 这里没有用乐观锁
             int updateR = this.updateByPrimaryKeySelective(dbRoleDataScopeDefinePo);
             // 更新失败

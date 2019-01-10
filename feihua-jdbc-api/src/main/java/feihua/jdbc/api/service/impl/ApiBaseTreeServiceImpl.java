@@ -1,6 +1,7 @@
 package feihua.jdbc.api.service.impl;
 
 
+import com.github.pagehelper.PageHelper;
 import feihua.jdbc.api.pojo.*;
 import feihua.jdbc.api.service.ApiBaseTreeService;
 import org.slf4j.Logger;
@@ -17,7 +18,7 @@ import java.util.Map;
  * Created by yangwei
  * Created at 2017/8/17 14:49
  */
-public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends BaseDto,PK> extends ApiBaseServiceImpl<PO ,DTO,PK> implements ApiBaseTreeService<PO ,DTO,PK> {
+public abstract class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends BaseDbDto,PK> extends ApiBaseServiceImpl<PO ,DTO,PK> implements ApiBaseTreeService<PO ,DTO,PK> {
 
     public final static Logger logger = LoggerFactory.getLogger(ApiBaseTreeServiceImpl.class);
 
@@ -32,8 +33,8 @@ public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends
      * @param userId
      */
     @Override
-    public void preInsert(PO po, PK userId) {
-        super.preInsert(po,userId);
+    public PO preInsert(PO po, PK userId) {
+        po = super.preInsert(po,userId);
         if(po.getParentId() == null || "".equals(po.getParentId())){
             po.setParentId(BaseTreePo.defaultRootParentId);
         }
@@ -56,6 +57,7 @@ public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends
         }
             //变更当前节点
             moveNode(po,parentEntity);
+        return  po;
     }
 
     /**
@@ -64,8 +66,8 @@ public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends
      * @param userId
      */
     @Override
-    public void preUpdate(PO po, PK userId) {
-        super.preUpdate(po,userId);
+    public PO preUpdate(PO po, PK userId) {
+        po = super.preUpdate(po,userId);
         if(po.getParentId() == null || "".equals(po.getParentId())){
             po.setParentId(BaseTreePo.defaultRootParentId);
         }
@@ -92,6 +94,7 @@ public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends
 
 
         }
+        return  po;
     }
     /**
      * 下移下级节点
@@ -119,7 +122,25 @@ public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends
         return super.selectSimple(condition);
 
     }
+    @Override
+    public List<PO> getChildren(PK primaryKey, Orderby orderby) {
+        Map<String,Object> condition = new HashMap<>();
+        condition.put(BasePo.PROPERTY_DEL_FLAG,BasePo.YesNo.N.name());
+        condition.put(BaseTreePo.PROPERTY_PARENT_ID,primaryKey);
+        orderbyStart(orderby);
+        return super.selectSimple(condition);
+    }
 
+    @Override
+    public PageResultDto<PO> getChildren(PK primaryKey, PageAndOrderbyParamDto pageAndOrderbyParamDto) {
+        Map<String,Object> condition = new HashMap<>();
+        condition.put(BasePo.PROPERTY_DEL_FLAG,BasePo.YesNo.N.name());
+        condition.put(BaseTreePo.PROPERTY_PARENT_ID,primaryKey);
+        com.github.pagehelper.Page p = pageAndOrderbyStart(pageAndOrderbyParamDto);
+        p = PageHelper.getLocalPage();
+        List<PO> list = super.selectSimple(condition);
+        return new PageResultDto<PO>(list,wrapPage(p));
+    }
     @Override
     public List<PO> getChildrenAll(PK primaryKey) {
         BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
@@ -132,6 +153,35 @@ public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends
         return null;
     }
 
+
+
+    @Override
+    public List<PO> getChildrenAll(PK primaryKey, Orderby orderby) {
+        BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
+        if(currentPo != null){
+            Map<String,Object> condition = new HashMap<>();
+            condition.put(BasePo.PROPERTY_DEL_FLAG,BasePo.YesNo.N.name());
+            condition.put(BaseTreePo.PROPERTY_PARENT_ID + currentPo.getLevel(),primaryKey);
+            orderbyStart(orderby);
+            return super.selectSimple(condition);
+        }
+        return null;
+    }
+
+    @Override
+    public PageResultDto<PO> getChildrenAll(PK primaryKey, PageAndOrderbyParamDto pageAndOrderbyParamDto) {
+        BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
+        if(currentPo != null){
+            Map<String,Object> condition = new HashMap<>();
+            condition.put(BasePo.PROPERTY_DEL_FLAG,BasePo.YesNo.N.name());
+            condition.put(BaseTreePo.PROPERTY_PARENT_ID + currentPo.getLevel(),primaryKey);
+            com.github.pagehelper.Page p = pageAndOrderbyStart(pageAndOrderbyParamDto);
+            p = PageHelper.getLocalPage();
+            List<PO> list = super.selectSimple(condition);
+            return new PageResultDto<PO>(list,wrapPage(p));
+        }
+        return null;
+    }
     @Override
     public List<PO> getChildrenLeaf(PK primaryKey) {
         BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
@@ -147,27 +197,92 @@ public abstract   class ApiBaseTreeServiceImpl<PO extends BaseTreePo,DTO extends
         return null;
     }
 
+
+    @Override
+    public List<PO> getChildrenLeaf(PK primaryKey, Orderby orderby) {
+        BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
+        if(currentPo != null){
+            Map<String,Object> condition = new HashMap<>();
+            condition.put(BasePo.PROPERTY_DEL_FLAG,BasePo.YesNo.N.name());
+            condition.put(BaseTreePo.PROPERTY_PARENT_ID + currentPo.getLevel(),primaryKey);
+            if(currentPo.getLevel() < BaseTreePo.maxLevel){
+                condition.put(BaseTreePo.PROPERTY_PARENT_ID + currentPo.getLevel()+1,BaseTreePo.defaultParentIdX);
+            }
+            orderbyStart(orderby);
+            return super.selectSimple(condition);
+        }
+        return null;
+    }
+
+    @Override
+    public PageResultDto<PO> getChildrenLeaf(PK primaryKey, PageAndOrderbyParamDto pageAndOrderbyParamDto) {
+        BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
+        if(currentPo != null){
+            Map<String,Object> condition = new HashMap<>();
+            condition.put(BasePo.PROPERTY_DEL_FLAG,BasePo.YesNo.N.name());
+            condition.put(BaseTreePo.PROPERTY_PARENT_ID + currentPo.getLevel(),primaryKey);
+            if(currentPo.getLevel() < BaseTreePo.maxLevel){
+                condition.put(BaseTreePo.PROPERTY_PARENT_ID + currentPo.getLevel()+1,BaseTreePo.defaultParentIdX);
+            }
+            com.github.pagehelper.Page p = pageAndOrderbyStart(pageAndOrderbyParamDto);
+            p = PageHelper.getLocalPage();
+            List<PO> list = super.selectSimple(condition);
+            return new PageResultDto<PO>(list,wrapPage(p));
+        }
+        return null;
+    }
+
+
     @Override
     public List<PO> getParents(PK primaryKey) {
         BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
         if(currentPo != null){
             List<PK> primaryKeys = new ArrayList<>();
-            primaryKeys.add((PK) currentPo.getParentId1());
-            primaryKeys.add((PK) currentPo.getParentId2());
-            primaryKeys.add((PK) currentPo.getParentId3());
-            primaryKeys.add((PK) currentPo.getParentId4());
-            primaryKeys.add((PK) currentPo.getParentId5());
-            primaryKeys.add((PK) currentPo.getParentId6());
-            primaryKeys.add((PK) currentPo.getParentId7());
-            primaryKeys.add((PK) currentPo.getParentId8());
-            primaryKeys.add((PK) currentPo.getParentId9());
-            primaryKeys.add((PK) currentPo.getParentId10());
+            com(primaryKeys,currentPo);
 
             return super.selectByPrimaryKeysSimple(primaryKeys,false);
         }
         return null;
     }
 
+    @Override
+    public List<PO> getParents(PK primaryKey, Orderby orderby) {
+        BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
+        if(currentPo != null){
+            List<PK> primaryKeys = new ArrayList<>();
+            com(primaryKeys,currentPo);
+            orderbyStart(orderby);
+            return super.selectByPrimaryKeysSimple(primaryKeys,false);
+        }
+        return null;
+    }
+
+    @Override
+    public PageResultDto<PO> getParents(PK primaryKey, PageAndOrderbyParamDto pageAndOrderbyParamDto) {
+        BaseTreePo currentPo = super.selectByPrimaryKeySimple(primaryKey,false);
+        if(currentPo != null){
+            List<PK> primaryKeys = new ArrayList<>();
+            com(primaryKeys,currentPo);
+            com.github.pagehelper.Page p = pageAndOrderbyStart(pageAndOrderbyParamDto);
+            p = PageHelper.getLocalPage();
+            List<PO> list = super.selectByPrimaryKeysSimple(primaryKeys,false);
+            return new PageResultDto<PO>(list,wrapPage(p));
+        }
+        return null;
+    }
+
+    private void com(List<PK> primaryKeys,BaseTreePo currentPo){
+        primaryKeys.add((PK) currentPo.getParentId1());
+        primaryKeys.add((PK) currentPo.getParentId2());
+        primaryKeys.add((PK) currentPo.getParentId3());
+        primaryKeys.add((PK) currentPo.getParentId4());
+        primaryKeys.add((PK) currentPo.getParentId5());
+        primaryKeys.add((PK) currentPo.getParentId6());
+        primaryKeys.add((PK) currentPo.getParentId7());
+        primaryKeys.add((PK) currentPo.getParentId8());
+        primaryKeys.add((PK) currentPo.getParentId9());
+        primaryKeys.add((PK) currentPo.getParentId10());
+    }
     /**
      * 移动一个节点作为目标节点下级
      * @param entity 要移动的节点

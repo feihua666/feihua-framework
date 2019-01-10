@@ -34,7 +34,7 @@ public class ApiBaseFunctionResourceDataScopeDefineSelfPoServiceImpl extends Api
                 BaseFunctionResourceDataScopeDefineSelfPo baseCommonDataScopeDefineOfficeSelfPo = new BaseFunctionResourceDataScopeDefineSelfPo();
                 baseCommonDataScopeDefineOfficeSelfPo.setFunctionResourceDataScopeDefineId(functionResourceDataScopeDefineId);
                 baseCommonDataScopeDefineOfficeSelfPo.setFunctionResourceId(functionResourceId);
-                this.preInsert(baseCommonDataScopeDefineOfficeSelfPo,currentUserId);
+                baseCommonDataScopeDefineOfficeSelfPo = this.preInsert(baseCommonDataScopeDefineOfficeSelfPo,currentUserId);
                 preInsertList.add(baseCommonDataScopeDefineOfficeSelfPo);
             }
             // 批量插入

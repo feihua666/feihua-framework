@@ -50,6 +50,12 @@ public interface UpdateDao<PO extends BasePo,PK> extends BaseDao<PO,PK> {
      * @return
      */
     public int updateBatchByPrimaryKey(@Param("entities") List<PO> entities);
+    /**
+     * 批量更新，根据各自id更新,空值不更新
+     * @param entities
+     * @return
+     */
+    public int updateBatchByPrimaryKeySelective(@Param("entities") List<PO> entities);
 
     /**
      * 批量更新，将所有主键匹配更新为实体内容

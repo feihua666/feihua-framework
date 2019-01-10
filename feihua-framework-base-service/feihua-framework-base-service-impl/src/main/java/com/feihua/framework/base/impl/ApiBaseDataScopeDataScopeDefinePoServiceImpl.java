@@ -61,7 +61,7 @@ public class ApiBaseDataScopeDataScopeDefinePoServiceImpl extends ApiBaseService
             dbDataScopeDataScopeDefinePo = new BaseDataScopeDataScopeDefinePo();
             dbDataScopeDataScopeDefinePo.setDataScopeId(dataScopeDataScope.getDataScopeId());
             dbDataScopeDataScopeDefinePo.setType(dataScopeDataScope.getType());
-            this.preInsert(dbDataScopeDataScopeDefinePo,dataScopeDataScope.getCurrentUserId());
+            dbDataScopeDataScopeDefinePo = this.preInsert(dbDataScopeDataScopeDefinePo,dataScopeDataScope.getCurrentUserId());
             dbDataScopeDataScopeDefinePo = this.insertSimple(dbDataScopeDataScopeDefinePo);
             if(dbDataScopeDataScopeDefinePo == null){
                 throw new BaseException("add dataScopeDataScopeDefine return null","E500");
@@ -80,7 +80,7 @@ public class ApiBaseDataScopeDataScopeDefinePoServiceImpl extends ApiBaseService
         // 如果已经设置
         else{
             dbDataScopeDataScopeDefinePo.setType(dataScopeDataScope.getType());
-            this.preUpdate(dbDataScopeDataScopeDefinePo,dataScopeDataScope.getCurrentUserId());
+            dbDataScopeDataScopeDefinePo = this.preUpdate(dbDataScopeDataScopeDefinePo,dataScopeDataScope.getCurrentUserId());
             // 这里没有用乐观锁
             int updateR = this.updateByPrimaryKeySelective(dbDataScopeDataScopeDefinePo);
             // 更新失败

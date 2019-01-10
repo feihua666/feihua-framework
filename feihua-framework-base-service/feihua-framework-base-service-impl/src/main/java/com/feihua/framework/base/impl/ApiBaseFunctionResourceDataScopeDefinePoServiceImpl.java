@@ -59,7 +59,7 @@ public class ApiBaseFunctionResourceDataScopeDefinePoServiceImpl extends ApiBase
             dbFunctionResourceDataScopeDefinePo = new BaseFunctionResourceDataScopeDefinePo();
             dbFunctionResourceDataScopeDefinePo.setRoleId(functionResourceDataScope.getRoleId());
             dbFunctionResourceDataScopeDefinePo.setType(functionResourceDataScope.getType());
-            this.preInsert(dbFunctionResourceDataScopeDefinePo,functionResourceDataScope.getCurrentUserId());
+            dbFunctionResourceDataScopeDefinePo = this.preInsert(dbFunctionResourceDataScopeDefinePo,functionResourceDataScope.getCurrentUserId());
             dbFunctionResourceDataScopeDefinePo = this.insertSimple(dbFunctionResourceDataScopeDefinePo);
             if(dbFunctionResourceDataScopeDefinePo == null){
                 throw new BaseException("add functionResourceDataScopeDefine return null","E500");
@@ -78,7 +78,7 @@ public class ApiBaseFunctionResourceDataScopeDefinePoServiceImpl extends ApiBase
         // 如果已经设置
         else{
             dbFunctionResourceDataScopeDefinePo.setType(functionResourceDataScope.getType());
-            this.preUpdate(dbFunctionResourceDataScopeDefinePo,functionResourceDataScope.getCurrentUserId());
+            dbFunctionResourceDataScopeDefinePo = this.preUpdate(dbFunctionResourceDataScopeDefinePo,functionResourceDataScope.getCurrentUserId());
             // 这里没有用乐观锁
             int updateR = this.updateByPrimaryKeySelective(dbFunctionResourceDataScopeDefinePo);
             // 更新失败

@@ -43,7 +43,7 @@ public class UnSubscribeMsgHandler implements MsgTypeHandler {
             WeixinUserPo weixinUserPoUpdateCondition = new WeixinUserPo();
             weixinUserPoUpdateCondition.setStatus(DictEnum.WeixinUserStatus.unsubscribe.name());
             weixinUserPoUpdateCondition.setId(weixinUserPoDb.getId());
-            apiWeixinUserPoService.preUpdate(weixinUserPoCondition, BasePo.DEFAULT_USER_ID);
+            weixinUserPoCondition = apiWeixinUserPoService.preUpdate(weixinUserPoCondition, BasePo.DEFAULT_USER_ID);
             apiWeixinUserPoService.updateByPrimaryKeySelective(weixinUserPoUpdateCondition);
         }
 

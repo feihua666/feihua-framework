@@ -140,7 +140,7 @@ public class ImportAreaTest {
         newentity.setParentId(parentId);
         newentity.setName(name);
         newentity.setType(type);
-        sysAreaService.preInsert(newentity,"0");
+        newentity = sysAreaService.preInsert(newentity,"0");
         sysAreaService.insert(newentity);
         return newentity;
     }

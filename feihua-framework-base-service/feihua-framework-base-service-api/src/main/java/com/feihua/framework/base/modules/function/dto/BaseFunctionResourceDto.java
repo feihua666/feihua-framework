@@ -1,5 +1,6 @@
 package com.feihua.framework.base.modules.function.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-01-19 20:14:24
 */
-public class BaseFunctionResourceDto extends BaseDto {
+public class BaseFunctionResourceDto extends BaseDbDto<String> {
     private String id;
 
     private String name;

@@ -84,7 +84,7 @@ public class BaseDictController extends BaseController {
         baseDictPo.setDataAreaId(addDictFormDto.getDataAreaId());
         baseDictPo.setDataOfficeId(addDictFormDto.getDataOfficeId());
 
-        apiBaseDictPoService.preInsert(baseDictPo,getLoginUser().getId());
+        baseDictPo = apiBaseDictPoService.preInsert(baseDictPo,getLoginUser().getId());
         BaseDictDto r = apiBaseDictPoService.insert(baseDictPo);
         if (r == null) {
             // 添加失败
@@ -178,7 +178,7 @@ public class BaseDictController extends BaseController {
         baseDictPoCondition.setId(id);
         baseDictPoCondition.setDelFlag(BasePo.YesNo.N.name());
         baseDictPoCondition.setUpdateAt(updateDictFormDto.getUpdateTime());
-        apiBaseDictPoService.preUpdate(baseDictPo,getLoginUser().getId());
+        baseDictPo = apiBaseDictPoService.preUpdate(baseDictPo,getLoginUser().getId());
         int r = apiBaseDictPoService.updateSelective(baseDictPo,baseDictPoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

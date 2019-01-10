@@ -4,6 +4,8 @@ import feihua.jdbc.api.dao.DeleteDao;
 import feihua.jdbc.api.pojo.BaseDto;
 import feihua.jdbc.api.pojo.BasePo;
 
+import java.util.List;
+
 /**
  * deleteservice
  * Created by yangwei
@@ -17,6 +19,8 @@ public interface DeleteBaseService<PO extends BasePo,PK> {
      * @return
      */
     int deleteByPrimaryKey(PK id);
+
+    int deleteByPrimaryKeys(List<PK> ids);
 
     /**
      * @see feihua.jdbc.api.service.DeleteBaseService#deleteFlagByPrimaryKey(java.lang.Object) 同时将记录更新人和更新时间
@@ -33,6 +37,11 @@ public interface DeleteBaseService<PO extends BasePo,PK> {
      */
     int deleteFlagByPrimaryKey(PK id);
 
+    int deleteFlagByPrimaryKeys(List<PK> ids);
+
+    int deleteFlagByPrimaryKeysWithUpdateUser(List<PK> ids, PK userId);
+
+    int deleteFlagBatchByPrimaryKeysWithUpdateUser(List<PO> pos, PK userId);
     /**
      * @see DeleteDao#deleteSelective(feihua.jdbc.api.pojo.BasePo)
      * @param entity

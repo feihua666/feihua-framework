@@ -76,7 +76,7 @@ public class BaseMessageTemplateController extends SuperController {
         basePo.setCode(addFormDto.getCode());
         basePo.setContent(addFormDto.getContent());
 
-        apiBaseMessageTemplatePoService.preInsert(basePo,getLoginUser().getId());
+        basePo = apiBaseMessageTemplatePoService.preInsert(basePo,getLoginUser().getId());
         BaseMessageTemplateDto r = apiBaseMessageTemplatePoService.insert(basePo);
         if (r == null) {
             // 添加失败
@@ -167,7 +167,7 @@ public class BaseMessageTemplateController extends SuperController {
         basePoCondition.setId(id);
         basePoCondition.setDelFlag(BasePo.YesNo.N.name());
         basePoCondition.setUpdateAt(updateFormDto.getUpdateTime());
-        apiBaseMessageTemplatePoService.preUpdate(basePo,getLoginUser().getId());
+        basePo = apiBaseMessageTemplatePoService.preUpdate(basePo,getLoginUser().getId());
         int r = apiBaseMessageTemplatePoService.updateSelective(basePo,basePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

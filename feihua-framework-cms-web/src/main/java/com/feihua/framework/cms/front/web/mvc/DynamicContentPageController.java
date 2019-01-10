@@ -1,16 +1,17 @@
 package com.feihua.framework.cms.front.web.mvc;
 
 import com.feihua.exception.PageNotFoundException;
-import com.feihua.framework.cms.api.ApiCmsSitePoService;
+import com.feihua.framework.cms.CmsConstants;
+import com.feihua.framework.cms.api.*;
+import com.feihua.framework.cms.dto.CmsChannelTemplateModelDto;
+import com.feihua.framework.cms.dto.CmsContentTemplateModelDto;
+import com.feihua.framework.cms.dto.CmsSiteTemplateModelDto;
 import com.feihua.framework.cms.po.CmsChannelPo;
 import com.feihua.framework.cms.po.CmsContentPo;
 import com.feihua.framework.cms.po.CmsSitePo;
-import com.feihua.framework.rest.mvc.SuperController;
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.io.FileUtils;
-import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
-import feihua.jdbc.api.utils.OrderbyUtils;
-import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,20 +22,40 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-
-import static com.feihua.framework.cms.front.web.mvc.DynamicBaseController.requestPathPrefix;
-
 /**
  * cms前端页面访问入口
  * Created by yangwei
  */
 @Controller
-@RequestMapping(requestPathPrefix)
+@RequestMapping(CmsConstants.requestPathPrefix)
 public class DynamicContentPageController extends DynamicBaseController {
 
     private static Logger logger = LoggerFactory.getLogger(DynamicContentPageController.class);
+    @Autowired
+    private ApiCmsSitePoService apiCmsSitePoService;
+    @Autowired
+    private ApiCmsChannelPoService apiCmsChannelPoService;
+    @Autowired
+    private ApiCmsContentPoService apiCmsContentPoService;
+    @Autowired
+    private ApiCmsContentAttachmentPoService apiCmsContentAttachmentPoService;
+    @Autowired
+    private ApiCmsContentAudioPoService apiCmsContentAudioPoService;
+    @Autowired
+    private ApiCmsContentVedioPoService apiCmsContentVedioPoService;
+    @Autowired
+    private ApiCmsContentVedioOtherPlayerPoService apiCmsContentVedioOtherPlayerPoService;
+    @Autowired
+    private ApiCmsContentGalleryPoService apiCmsContentGalleryPoService;
+    @Autowired
+    private ApiCmsContentLibraryPoService apiCmsContentLibraryPoService;
+    @Autowired
+    private ApiCmsContentLibraryImagePoService apiCmsContentLibraryImagePoService;
+    @Autowired
+    private ApiCmsContentDownloadPoService apiCmsContentDownloadPoService;
+    @Autowired
+    private ApiCmsContentDownloadImagePoService apiCmsContentDownloadImagePoService;
+
 
     @RequestMapping(value = {"/{siteContextPath}/channel/{channelId}/content/{contentId}/index.htm"},method = RequestMethod.GET)
     public String contentStandardWithSiteContext(@PathVariable String siteContextPath, @PathVariable String channelId,@PathVariable String contentId, Model model){
@@ -166,19 +187,44 @@ public class DynamicContentPageController extends DynamicBaseController {
     private String contentDynamic(CmsSitePo cmsSitePo, CmsChannelPo cmsChannelPo, CmsContentPo cmsContentPo, Model model){
         if (cmsChannelPo != null) {
             // 查找栏目模板的过程
-            model.addAttribute("channel",cmsChannelPo);
-            model.addAttribute("site",cmsSitePo);
-            model.addAttribute("content",cmsContentPo);
+            CmsChannelTemplateModelDto cmsChannelTemplateModelDto =  new CmsChannelTemplateModelDto(apiCmsChannelPoService.wrapDto(cmsChannelPo),getContextDto());
+            model.addAttribute(CmsConstants.model_channel,cmsChannelTemplateModelDto);
+            model.addAttribute(CmsConstants.model_site,new CmsSiteTemplateModelDto(apiCmsSitePoService.wrapDto(cmsSitePo),getContextDto()));
+            CmsContentTemplateModelDto cmsContentTemplateModelDto = new CmsContentTemplateModelDto(apiCmsContentPoService.wrapDto(cmsContentPo),cmsChannelTemplateModelDto,getContextDto());
+            cmsContentTemplateModelDto.setAttachments(apiCmsContentAttachmentPoService.wrapDtos(apiCmsContentAttachmentPoService.selectBySiteIdAndContentId(cmsContentTemplateModelDto.getSiteId(),cmsContentTemplateModelDto.getId())));
+            setAddionalByContentType(cmsContentTemplateModelDto);
+            model.addAttribute(CmsConstants.model_content,cmsContentTemplateModelDto);
 
-            String template = indexHtml;
+            String template = CmsConstants.indexHtml;
             if(!StringUtils.isEmpty(cmsContentPo.getTemplate())){
                 template = cmsContentPo.getTemplate();
             }
-            String templatePath = getTemplatePathForViewResolver(cmsSitePo) + templateContentPath + FileUtils.wrapStartFileSeparator(template);
+            String templatePath = getTemplatePathForViewResolver(cmsSitePo) + CmsConstants.templateContentPath + RequestUtils.wrapStartSlash(template);
             return templatePath;
         }else{
             // 不存在栏目，直接抛出异常
             throw new PageNotFoundException("");
+        }
+    }
+    private void setAddionalByContentType(CmsContentTemplateModelDto dto){
+        String siteId = dto.getSiteId();
+        String contentId = dto.getId();
+        if (DictEnum.CmsContentType.audio.name().equals(dto.getContentType())) {
+            dto.setAudio(apiCmsContentAudioPoService.wrapDto(apiCmsContentAudioPoService.selectBySiteIdAndContentId(siteId,contentId)));
+        } else if (DictEnum.CmsContentType.vedio.name().equals(dto.getContentType())) {
+            dto.setVedio(apiCmsContentVedioPoService.wrapDto(apiCmsContentVedioPoService.selectBySiteIdAndContentId(siteId,contentId)));
+            dto.setVedioOtherPlayers(apiCmsContentVedioOtherPlayerPoService.wrapDtos( apiCmsContentVedioOtherPlayerPoService.selectBySiteIdAndContentIdAndVedioId(siteId,contentId,dto.getVedio().getId())));
+
+        }else if (DictEnum.CmsContentType.gallery.name().equals(dto.getContentType())) {
+            dto.setGallerys(apiCmsContentGalleryPoService.wrapDtos(apiCmsContentGalleryPoService.selectBySiteIdAndContentId(siteId,contentId)));
+        } else if (DictEnum.CmsContentType.library.name().equals(dto.getContentType())) {
+            dto.setLibrary(apiCmsContentLibraryPoService.wrapDto(apiCmsContentLibraryPoService.selectBySiteIdAndContentId(siteId,contentId)));
+            dto.setLibraryImages(apiCmsContentLibraryImagePoService.wrapDtos( apiCmsContentLibraryImagePoService.selectBySiteIdAndContentIdAndLibraryId(siteId,contentId,dto.getLibrary().getId())));
+
+        } else if (DictEnum.CmsContentType.download.name().equals(dto.getContentType())) {
+            dto.setDownload(apiCmsContentDownloadPoService.wrapDto(apiCmsContentDownloadPoService.selectBySiteIdAndContentId(siteId,contentId)));
+            dto.setDownloadImages(apiCmsContentDownloadImagePoService.wrapDtos( apiCmsContentDownloadImagePoService.selectBySiteIdAndContentIdAndDownloadId(siteId,contentId,dto.getDownload().getId())));
+
         }
     }
 }

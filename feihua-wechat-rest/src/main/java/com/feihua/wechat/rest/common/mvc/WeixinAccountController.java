@@ -63,7 +63,7 @@ public class WeixinAccountController extends SuperController {
         //todo
         BeanUtils.copyProperties(dto, basePo);
 
-        apiWeixinAccountPoService.preInsert(basePo, getLoginUser().getId());
+        basePo = apiWeixinAccountPoService.preInsert(basePo, getLoginUser().getId());
         WeixinAccountDto r = apiWeixinAccountPoService.insert(basePo);
         if (r == null) {
             // 添加失败
@@ -131,7 +131,7 @@ public class WeixinAccountController extends SuperController {
         WeixinAccountPo basePo = new WeixinAccountPo();
         //todo
         BeanUtils.copyProperties(dto, basePo);
-        apiWeixinAccountPoService.preUpdate(basePo, getLoginUser().getId());
+        basePo = apiWeixinAccountPoService.preUpdate(basePo, getLoginUser().getId());
         int r = apiWeixinAccountPoService.updateByPrimaryKeySelective(basePo);
         if (r <= 0) {
             // 更新失败，资源不存在

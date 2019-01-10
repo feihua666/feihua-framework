@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit.xsd"
+>
+    <!-- 定义扫描的包路径 -->
+    <context:component-scan use-default-filters="false" base-package="com.feihua.framework.mq.impl">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
+    </context:component-scan>
+
+    <rabbit:connection-factory id="connectionFactory"
+                               username="guest" password="guest" host="127.0.0.1" port="5672" />
+
+    <!--通过指定下面的admin信息，当前proceducer中的exchange和queue会在rabbitmq服务器上自动生成 -->
+    <rabbit:admin connection-factory="connectionFactory" />
+
+    <!-- 标准的建立Queue的参数 -->
+    <rabbit:queue-arguments id="amqpQueueArguments">
+        <!-- 暂时没有 -->
+    </rabbit:queue-arguments>
+
+    <rabbit:queue queue-arguments="amqpQueueArguments" id="amqpTemplateReplyQueue" name="amqpTemplateReplyQueue"/>
+
+    <!--定义rabbit template用于数据的接收和发送 -->
+    <rabbit:template id="amqpTemplate" exchange="directExChange"  connection-factory="connectionFactory">
+    </rabbit:template>
+
+
+    <!--定义fanout-exchange 发布订阅 Publish/Subscribe 所有绑定的队列都发送-->
+    <rabbit:fanout-exchange name="fanoutExChange" durable="true" auto-delete="false">
+        <rabbit:bindings>
+            <rabbit:binding queue="queueTest"></rabbit:binding>
+        </rabbit:bindings>
+
+    </rabbit:fanout-exchange>
+
+
+    <!--定义direct-exchange routing 发送到与routing key 相等的队列上-->
+    <rabbit:direct-exchange name="directExChange" durable="true" auto-delete="false">
+        <rabbit:bindings>
+            <rabbit:binding queue="queueTest" key="queueTest" ></rabbit:binding>
+            <rabbit:binding queue="queueEmail" key="queueEmail" ></rabbit:binding>
+            <rabbit:binding queue="queueSms" key="queueSms" ></rabbit:binding>
+        </rabbit:bindings>
+
+    </rabbit:direct-exchange>
+
+    <!--定义topic-exchange 发送到与routing key 匹配的队列上-->
+    <rabbit:topic-exchange name="topicExChange"
+                           durable="true" auto-delete="false">
+        <rabbit:bindings>
+            <rabbit:binding queue="queueTest" pattern="queueTest"></rabbit:binding>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+
+
+    <!--定义queue -->
+    <rabbit:queue id="queueTest" name="queueTest" queue-arguments="amqpQueueArguments"/>
+    <rabbit:queue id="queueEmail" name="queueEmail" queue-arguments="amqpQueueArguments"/>
+    <rabbit:queue id="queueSms" name="queueSms" queue-arguments="amqpQueueArguments"/>
+
+</beans>

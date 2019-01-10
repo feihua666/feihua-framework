@@ -18,6 +18,7 @@ public class Orderby implements Serializable{
     List<Statement> statements = new ArrayList<>();
 
     public List<Statement> getStatements() {
+        if (this.statements.isEmpty()) return statements;
         Collections.sort(this.statements,new Comparator<Statement>(){
             @Override
             public int compare(Statement s1, Statement s2) {

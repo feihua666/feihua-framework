@@ -1,5 +1,6 @@
 package com.feihua.framework.base.modules.user.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-04-19 14:30:11
 */
-public class BaseUserDto extends BaseDto {
+public class BaseUserDto extends BaseDbDto<String> {
     private String id;
 
     private String serialNo;

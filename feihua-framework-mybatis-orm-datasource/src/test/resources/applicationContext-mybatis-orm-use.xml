@@ -18,7 +18,6 @@
             <list>
                 <value>classpath:jdbc-default.properties</value>
                 <value>classpath:jdbc-b.properties</value>
-                <value>classpath:mybatis-orm-config.properties</value>
             </list>
         </property>
     </bean>
@@ -31,5 +30,7 @@
         <entry key="dataSourceDefault" value-ref="dataSourceDefault"/>
         <entry key="dataSourceB" value-ref="dataSourceB" />
     </util:map>
-
+    <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
+        <property name="basePackage" value="com.feihua.framework.mybatis.orm.test.mapper"/>
+    </bean>
 </beans>

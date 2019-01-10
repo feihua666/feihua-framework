@@ -78,6 +78,11 @@ public class ApiCmsSitePoServiceImpl extends ApiBaseServiceImpl<CmsSitePo, CmsSi
         dto.setTemplate(po.getTemplate());
         dto.setTemplatePath(po.getTemplatePath());
         dto.setStaticPath(po.getStaticPath());
+        dto.setDeployPath(po.getDeployPath());
+        dto.setIsMain(po.getIsMain());
+        dto.setPv(po.getPv());
+        dto.setIv(po.getIv());
+        dto.setUv(po.getUv());
         return dto;
     }
 }

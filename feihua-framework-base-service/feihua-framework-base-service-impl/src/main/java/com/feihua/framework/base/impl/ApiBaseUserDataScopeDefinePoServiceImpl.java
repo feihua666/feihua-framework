@@ -55,7 +55,7 @@ public class ApiBaseUserDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
             BaseUserDataScopeDefinePo insertUserDataScopeDefinePo = new BaseUserDataScopeDefinePo();
             insertUserDataScopeDefinePo.setDataScopeId(userDataScopeDefineParamDto.getDataScopeId());
             insertUserDataScopeDefinePo.setType(userDataScopeDefineParamDto.getType());
-            this.preInsert(insertUserDataScopeDefinePo,userDataScopeDefineParamDto.getCurrentUserId());
+            insertUserDataScopeDefinePo = this.preInsert(insertUserDataScopeDefinePo,userDataScopeDefineParamDto.getCurrentUserId());
 
             result = this.insert(insertUserDataScopeDefinePo);
 
@@ -63,7 +63,7 @@ public class ApiBaseUserDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
         }else{
             // 如果已经存在，更新
             userDataScopeDefinePo.setType(userDataScopeDefineParamDto.getType());
-            this.preUpdate(userDataScopeDefinePo,userDataScopeDefineParamDto.getCurrentUserId());
+            userDataScopeDefinePo = this.preUpdate(userDataScopeDefinePo,userDataScopeDefineParamDto.getCurrentUserId());
             // 这里没有考虑乐观锁
             int r = this.updateByPrimaryKey(userDataScopeDefinePo);
             if(r == 1){

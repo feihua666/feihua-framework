@@ -48,33 +48,43 @@ public class PdfUtils {
         } catch (IOException e) {
             logger.error(e.getMessage(),e);
         }
+        List<BufferedImage> images = pdf2Image(pdDocument,formatName,dpi);
+        StringBuffer imgFilePath = null;
+        for (int i = 0; i < images.size(); i++) {
+            BufferedImage image = images.get(i);
+            String name = file.getName();
+            String imgFilePathPrefix = dstImgFolder + File.separator + name;
+            imgFilePath = new StringBuffer();
+            imgFilePath.append(imgFilePathPrefix);
+            imgFilePath.append("_");
+            imgFilePath.append(String.valueOf(i + 1));
+            imgFilePath.append(".");
+            imgFilePath.append(formatName);
+            File dstFile = new File(imgFilePath.toString());
+            try {
+                ImageIO.write(image, formatName, dstFile);
+            } catch (IOException e) {
+                logger.error(e.getMessage(),e);
+            }
+            r.add(imgFilePath.toString());
+        }
+        return r;
+    }
+    public static List<BufferedImage> pdf2Image(PDDocument pdDocument,String formatName, int dpi) {
+        List<BufferedImage> result = new ArrayList<>();
         if (pdDocument != null) {
             PDFRenderer renderer = new PDFRenderer(pdDocument);
-				/* dpi越大转换后越清晰，相对转换速度越慢 */
+            /* dpi越大转换后越清晰，相对转换速度越慢 */
             int pages = pdDocument .getNumberOfPages();
             StringBuffer imgFilePath = null;
             for (int i = 0; i < pages; i++) {
-                String name = file.getName();
-                String imgFilePathPrefix = dstImgFolder + File.separator + name;
-                imgFilePath = new StringBuffer();
-                imgFilePath.append(imgFilePathPrefix);
-                imgFilePath.append("_");
-                imgFilePath.append(String.valueOf(i + 1));
-                imgFilePath.append(".");
-                imgFilePath.append(formatName);
-                File dstFile = new File(imgFilePath.toString());
                 BufferedImage image = null;
                 try {
                     image = renderer.renderImageWithDPI(i, dpi);
+                    result.add(image);
                 } catch (IOException e) {
                     logger.error(e.getMessage(),e);
                 }
-                try {
-                    ImageIO.write(image, formatName, dstFile);
-                } catch (IOException e) {
-                    logger.error(e.getMessage(),e);
-                }
-                r.add(imgFilePath.toString());
             }
             try {
                 pdDocument.close();
@@ -82,6 +92,6 @@ public class PdfUtils {
                 logger.error(e.getMessage(),e);
             }
         }
-        return r;
+        return result;
     }
 }

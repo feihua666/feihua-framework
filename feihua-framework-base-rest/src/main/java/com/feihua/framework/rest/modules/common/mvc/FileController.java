@@ -6,11 +6,16 @@ import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.utils.AliOssClientHelper;
 import com.feihua.framework.utils.FileHelper;
 import com.feihua.utils.graphic.ImageUtils;
+import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.utils.http.httpServletResponse.ResponseUtils;
+import com.feihua.utils.http.httpclient.HttpClientUtils;
 import com.feihua.utils.io.FileUtils;
+import com.feihua.utils.io.StreamUtils;
+import com.feihua.utils.pdf.PdfUtils;
 import com.feihua.utils.properties.PropertiesUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +34,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,12 +50,21 @@ public class FileController extends BaseController{
     private static Logger logger = LoggerFactory.getLogger(FileController.class);
 
 
+
     @Autowired(required = false)
     private AliOssClientHelper aliOssClientHelper;
 
+    /**
+     *
+     * @param file
+     * @param path
+     * @param fileType
+     * @return
+     * @throws IOException
+     */
     @RequiresPermissions("user")
     @RequestMapping(value = "/upload/file",method = RequestMethod.POST)
-    public ResponseEntity fileUpload(MultipartFile file,String path,String fileType) throws IOException {
+    public ResponseEntity fileUpload(MultipartFile file,String path,String fileType,boolean convertImage) throws IOException {
         logger.info("文件上传开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         ResponseJsonRender resultData = new ResponseJsonRender();
@@ -69,16 +85,17 @@ public class FileController extends BaseController{
                     logger.info("文件上传结束，失败");
                     return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);
                 }
-                // 默认上传
-                if(StringUtils.isEmpty(fileType)){
-                    fileType = DictEnum.FileType.file_type_upload.name();
-                }
                 String resultPath;
                 InputStream inputStream = file.getInputStream();
+
                 // 如果启用压缩
                 if(PropertiesUtils.getBoolean("file.image.compress")){
                     //
-                    if(StringUtils.containsAny(originalFileExtention,"jpg","bmp","png","jpeg")){
+                    if(StringUtils.containsAny(originalFileExtention,
+                            ImageUtils.IMAGE_TYPE_JPEG,
+                            ImageUtils.IMAGE_TYPE_BMP,
+                            ImageUtils.IMAGE_TYPE_PNG,
+                            ImageUtils.IMAGE_TYPE_JPG)){
                         BufferedImage image = ImageIO.read(inputStream);
                         inputStream = ImageUtils.compressImage(image,ImageUtils.IMAGE_TYPE_JPEG,Float.parseFloat(PropertiesUtils.getProperty("file.image.quality")));
                     }else{
@@ -87,11 +104,55 @@ public class FileController extends BaseController{
 
                 }
 
+                List<String> imageUrls = new ArrayList<>();
                 // 如果开启阿里oss上传
                 if (PropertiesUtils.getBoolean("file.alioss")) {
+                    // 如果需要转为图片，则转图片，目前只劫持pdf转图片
+                    if(convertImage){
+                        ByteArrayOutputStream byteArrayOutputStream = StreamUtils.inputStreamToByteArrayOutputStream(inputStream);
+                        PDDocument pdDocument = null;
+                        try {
+                            pdDocument = PDDocument.load(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(),e);
+                        }
+                        List<BufferedImage> images = PdfUtils.pdf2Image(pdDocument,"png",300);
+
+                        for (int i = 0; i < images.size(); i++) {
+                            BufferedImage image = images.get(i);
+                            String imageUrl = aliOssClientHelper.getAbsolutePath(aliOssClientHelper.uploadFile(path,file.getOriginalFilename() + ".png",ImageUtils.bufferedImageToInputStream(image,"png"),null));
+                            imageUrls.add(imageUrl);
+
+                        }
+                        inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                    }
+
                     resultPath = aliOssClientHelper.getAbsolutePath(aliOssClientHelper.uploadFile(path,file.getOriginalFilename(),inputStream,null));
                 }else{
+                    // 如果需要转为图片，则转图片，目前只劫持pdf转图片
+                    if(convertImage){
+                        ByteArrayOutputStream byteArrayOutputStream = StreamUtils.inputStreamToByteArrayOutputStream(inputStream);
+                        PDDocument pdDocument = null;
+                        try {
+                            pdDocument = PDDocument.load(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(),e);
+                        }
+                        List<BufferedImage> images = PdfUtils.pdf2Image(pdDocument,"png",300);
+
+                        for (int i = 0; i < images.size(); i++) {
+                            BufferedImage image = images.get(i);
+                            String imageUrl = FileHelper.saveToDisk(ImageUtils.bufferedImageToInputStream(image,"png"),file.getOriginalFilename() + ".png",path);
+                            imageUrl = RequestUtils.convertToSlash(imageUrl);
+                            imageUrls.add(imageUrl);
+
+                        }
+                        inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+                    }
                     resultPath = FileHelper.saveToDisk(inputStream,file.getOriginalFilename(),path);
+                    if(StringUtils.isNotEmpty(resultPath)){
+                        resultPath = RequestUtils.convertToSlash(resultPath);
+                    }
                 }
 
 
@@ -104,11 +165,18 @@ public class FileController extends BaseController{
                 baseFilePo.setType(fileType);
                 baseFilePo.setDuration("0");
                 baseFilePo.setDataUserId(getLoginUser().getId());
-                baseFilePo.service().preInsert(baseFilePo,getLoginUser().getId());
+                baseFilePo = baseFilePo.service().preInsert(baseFilePo,getLoginUser().getId());
                 baseFilePo.service().insertSimple(baseFilePo);
 
                 Map<String,Object> map = new HashMap<>();
                 map.put("path",resultPath);
+                map.put("ext",originalFileExtention);
+                map.put("filename",file.getOriginalFilename());
+                map.put("type",fileType);
+                map.put("size",file.getSize() + "bytes");
+                if(!imageUrls.isEmpty()){
+                    map.put("imageUrls",imageUrls);
+                }
                 resultData.setData(map);
 
                 logger.info("上传文件的路径path:{}",resultPath);
@@ -141,7 +209,10 @@ public class FileController extends BaseController{
 
         try {
             //判断是否为图片访问
-            if(StringUtils.endsWithAny(realPath.toLowerCase(),"jpg","bmp","png","jpeg")){
+            if(StringUtils.endsWithAny(realPath.toLowerCase(),ImageUtils.IMAGE_TYPE_JPEG,
+                    ImageUtils.IMAGE_TYPE_BMP,
+                    ImageUtils.IMAGE_TYPE_PNG,
+                    ImageUtils.IMAGE_TYPE_JPG)){
                 // 如果切割文件不存在，切割
                 if(!FileUtils.exists(realPath)){
                     // 提取切割参数
@@ -166,12 +237,10 @@ public class FileController extends BaseController{
                         if (image.getHeight() > height)
                         image = ImageUtils.cutImage(image,0,(image.getHeight() - height) / 2,width,height);
                         ImageUtils.outPutImage(image,ImageUtils.IMAGE_TYPE_JPEG,realPath);
-                        //contentType = "image/*";
                     }else{
                         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     }
                 }else{
-                    //contentType = "image/*";
                 }
 
             }
@@ -185,5 +254,10 @@ public class FileController extends BaseController{
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
+    }
+
+    @RequestMapping(value = {"/proxy"},method = RequestMethod.GET)
+    public String proxyGet(HttpServletRequest request, HttpServletResponse response,String url) throws IOException {
+        return HttpClientUtils.httpGet(url);
     }
 }

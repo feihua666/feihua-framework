@@ -66,7 +66,7 @@ public class ApiBaseOfficeDataScopeDefinePoServiceImpl extends ApiBaseServiceImp
             dbOfficeDataScopeDefinePo = new BaseOfficeDataScopeDefinePo();
             dbOfficeDataScopeDefinePo.setDataScopeId(officeDataScope.getDataScopeId());
             dbOfficeDataScopeDefinePo.setType(officeDataScope.getType());
-            this.preInsert(dbOfficeDataScopeDefinePo,officeDataScope.getCurrentUserId());
+            dbOfficeDataScopeDefinePo = this.preInsert(dbOfficeDataScopeDefinePo,officeDataScope.getCurrentUserId());
             dbOfficeDataScopeDefinePo = this.insertSimple(dbOfficeDataScopeDefinePo);
             if(dbOfficeDataScopeDefinePo == null){
                 throw new BaseException("add officeDataScopeDefine return null","E500");
@@ -85,7 +85,7 @@ public class ApiBaseOfficeDataScopeDefinePoServiceImpl extends ApiBaseServiceImp
         // 如果已经设置
         else{
             dbOfficeDataScopeDefinePo.setType(officeDataScope.getType());
-            this.preUpdate(dbOfficeDataScopeDefinePo,officeDataScope.getCurrentUserId());
+            dbOfficeDataScopeDefinePo = this.preUpdate(dbOfficeDataScopeDefinePo,officeDataScope.getCurrentUserId());
             // 这里没有用乐观锁
             int updateR = this.updateByPrimaryKeySelective(dbOfficeDataScopeDefinePo);
             // 更新失败

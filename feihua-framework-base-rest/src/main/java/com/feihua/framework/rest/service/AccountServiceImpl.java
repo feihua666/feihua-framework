@@ -239,7 +239,7 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         baseUserAuthPo.setLastTime(new Date());
         baseUserAuthPo.setLastIp(su.getHost());
 
-        apiBaseUserAuthPoService.preUpdate(baseUserAuthPo,su.getId());
+        baseUserAuthPo = apiBaseUserAuthPoService.preUpdate(baseUserAuthPo,su.getId());
         apiBaseUserAuthPoService.updateSelective(baseUserAuthPo,baseUserAuthPoCondition);
     }
 }

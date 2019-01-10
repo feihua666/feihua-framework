@@ -62,7 +62,7 @@ public class BaseUrlCollectController extends BaseController {
         basePo.setDataUserId(getLoginUser().getId());
 
 
-        apiBaseUrlCollectPoService.preInsert(basePo,getLoginUser().getId());
+        basePo = apiBaseUrlCollectPoService.preInsert(basePo,getLoginUser().getId());
         BaseUrlCollectDto r = apiBaseUrlCollectPoService.insert(basePo);
         if (r == null) {
             // 添加失败
@@ -142,7 +142,7 @@ public class BaseUrlCollectController extends BaseController {
         basePoCondition.setId(id);
         basePoCondition.setDelFlag(BasePo.YesNo.N.name());
         basePoCondition.setUpdateAt(updateFormDto.getUpdateTime());
-        apiBaseUrlCollectPoService.preUpdate(basePo,getLoginUser().getId());
+        basePo = apiBaseUrlCollectPoService.preUpdate(basePo,getLoginUser().getId());
         int r = apiBaseUrlCollectPoService.updateSelective(basePo,basePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

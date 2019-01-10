@@ -16,4 +16,8 @@
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Component"/>
     </context:component-scan>
+
+    <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
+        <property name="basePackage" value="com.feihua.framework.cms.mapper"/>
+    </bean>
 </beans>

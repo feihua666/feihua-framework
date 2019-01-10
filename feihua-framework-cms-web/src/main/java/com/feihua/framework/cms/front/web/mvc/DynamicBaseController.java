@@ -1,8 +1,10 @@
 package com.feihua.framework.cms.front.web.mvc;
 
+import com.feihua.framework.cms.CmsConstants;
 import com.feihua.framework.cms.api.ApiCmsChannelPoService;
 import com.feihua.framework.cms.api.ApiCmsContentPoService;
 import com.feihua.framework.cms.api.ApiCmsSitePoService;
+import com.feihua.framework.cms.dto.CmsTemplateModelContextDto;
 import com.feihua.framework.cms.po.CmsChannelPo;
 import com.feihua.framework.cms.po.CmsContentPo;
 import com.feihua.framework.cms.po.CmsSitePo;
@@ -27,19 +29,6 @@ import java.util.List;
 public class DynamicBaseController extends SuperController {
     private static Logger logger = LoggerFactory.getLogger(DynamicBaseController.class);
 
-    protected static final String dot = ".";
-    protected static final String indexHtml = "index.html";
-    protected static final String indexHtm = "index.htm";
-    protected static final String index = "index";
-    protected static final String webinfPath = File.separator + "WEB-INF";
-    protected static final String templatePathDefault = File.separator + "default";
-    /**
-     * WEB-INF/template-cms
-     */
-    protected static final String templateRootPath = File.separator + "template-cms";
-    protected static final String requestPathPrefix = "/cms/front";
-    protected static final String templateChannelPath = File.separator + "channel";
-    protected static final String templateContentPath = File.separator + "content";
 
     @Autowired
     private ApiCmsSitePoService apiCmsSitePoService;
@@ -48,8 +37,13 @@ public class DynamicBaseController extends SuperController {
     @Autowired
     private ApiCmsContentPoService apiCmsContentPoService;
 
+    protected CmsTemplateModelContextDto getContextDto(){
+        CmsTemplateModelContextDto cmsTemplateModelContextDto = new CmsTemplateModelContextDto(true);
+        return cmsTemplateModelContextDto;
+    }
+
     protected String prependRequestPathPrefix(String param){
-        return requestPathPrefix + RequestUtils.wrapStartSlash(param);
+        return CmsConstants.requestPathPrefix + RequestUtils.wrapStartSlash(param);
     }
 
     /**
@@ -58,12 +52,12 @@ public class DynamicBaseController extends SuperController {
      * @return
      */
     protected String getTemplatePathForViewResolver(CmsSitePo cmsSitePo){
-        String _templatePathDefault = templatePathDefault;
+        String _templatePathDefault = CmsConstants.templatePathDefault;
         if(!StringUtils.isEmpty(cmsSitePo.getTemplatePath())){
             _templatePathDefault = cmsSitePo.getTemplatePath();
         }
 
-        return webinfPath + templateRootPath + FileUtils.wrapStartFileSeparator(_templatePathDefault);
+        return CmsConstants.webinfPath + CmsConstants.templateRootPath + RequestUtils.wrapStartSlash(_templatePathDefault);
     }
 
     protected CmsSitePo getMainSiteByDomain(){

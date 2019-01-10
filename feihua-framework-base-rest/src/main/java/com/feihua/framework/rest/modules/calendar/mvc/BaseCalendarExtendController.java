@@ -83,7 +83,7 @@ public class BaseCalendarExtendController extends BaseController {
         basePo.setWorkOrRest(addFormDto.getWorkOrRest());
         basePo.setHoliday(addFormDto.getHoliday());
 
-        apiBaseCalendarExtendPoService.preInsert(basePo,getLoginUser().getId());
+        basePo = apiBaseCalendarExtendPoService.preInsert(basePo,getLoginUser().getId());
         BaseCalendarExtendDto r = apiBaseCalendarExtendPoService.insert(basePo);
         if (r == null) {
             // 添加失败
@@ -179,7 +179,7 @@ public class BaseCalendarExtendController extends BaseController {
         basePoCondition.setId(id);
         basePoCondition.setDelFlag(BasePo.YesNo.N.name());
         basePoCondition.setUpdateAt(updateFormDto.getUpdateTime());
-        apiBaseCalendarExtendPoService.preUpdate(basePo,getLoginUser().getId());
+        basePo = apiBaseCalendarExtendPoService.preUpdate(basePo,getLoginUser().getId());
         int r = apiBaseCalendarExtendPoService.updateSelective(basePo,basePoCondition);
         if (r <= 0) {
             // 更新失败，资源不存在

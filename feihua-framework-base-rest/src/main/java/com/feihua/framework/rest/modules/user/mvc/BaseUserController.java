@@ -138,7 +138,7 @@ public class BaseUserController extends BaseController {
         baseUserAuthPo.setIdentifier(mobile);
         baseUserAuthPo.setCredential(apiBaseUserAuthPoService.selectCredential(id,DictEnum.LoginType.MOBILE.name()));
 
-        apiBaseUserAuthPoService.preInsert(baseUserAuthPo,getLoginUser().getId());
+        baseUserAuthPo = apiBaseUserAuthPoService.preInsert(baseUserAuthPo,getLoginUser().getId());
         BaseUserAuthPo insertBaseUserAuthPo = apiBaseUserAuthPoService.insertSelectiveSimple(baseUserAuthPo);
 
         if (insertBaseUserAuthPo == null) {
@@ -203,7 +203,7 @@ public class BaseUserController extends BaseController {
         baseUserPo.setDataOfficeId(updateUserFormDto.getDataOfficeId());
         baseUserPo.setGender(updateUserFormDto.getGender());
         baseUserPo.setNickname(updateUserFormDto.getNickname());
-        apiBaseUserPoService.preUpdate(baseUserPo,getLoginUser().getId());
+        baseUserPo = apiBaseUserPoService.preUpdate(baseUserPo,getLoginUser().getId());
 
         BaseUserPo baseUserCondition = new BaseUserPo();
         baseUserCondition.setId(id);
@@ -278,7 +278,7 @@ public class BaseUserController extends BaseController {
         baseUserPo.setId(id);
         baseUserPo.setPhoto(photoUrl);
 
-        apiBaseUserPoService.preUpdate(baseUserPo,getLoginUser().getId());
+        baseUserPo = apiBaseUserPoService.preUpdate(baseUserPo,getLoginUser().getId());
         int r = apiBaseUserPoService.updateByPrimaryKeySelective(baseUserPo);
 
         if (r <= 0) {
@@ -432,7 +432,7 @@ public class BaseUserController extends BaseController {
         baseUserPo.setId(getLoginUser().getId());
         baseUserPo.setPhoto(photoUrl);
 
-        apiBaseUserPoService.preUpdate(baseUserPo,getLoginUser().getId());
+        baseUserPo = apiBaseUserPoService.preUpdate(baseUserPo,getLoginUser().getId());
         int r = apiBaseUserPoService.updateByPrimaryKeySelective(baseUserPo);
 
         if (r <= 0) {

@@ -38,7 +38,7 @@ public class ApiBaseRoleDataScopeDefineSelfPoServiceImpl extends ApiBaseServiceI
                 BaseRoleDataScopeDefineSelfPo baseCommonDataScopeDefineRoleSelfPo = new BaseRoleDataScopeDefineSelfPo();
                 baseCommonDataScopeDefineRoleSelfPo.setRoleDataScopeDefineId(roleDataScopeDefineId);
                 baseCommonDataScopeDefineRoleSelfPo.setRoleId(roleId);
-                this.preInsert(baseCommonDataScopeDefineRoleSelfPo,currentUserId);
+                baseCommonDataScopeDefineRoleSelfPo = this.preInsert(baseCommonDataScopeDefineRoleSelfPo,currentUserId);
                 preInsertList.add(baseCommonDataScopeDefineRoleSelfPo);
             }
             // 批量插入自定义角色

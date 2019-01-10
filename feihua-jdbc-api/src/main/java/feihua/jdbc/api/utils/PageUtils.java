@@ -17,12 +17,16 @@ public class PageUtils {
     private static  final String THREAD_LOCAL_PAGE_EKEY = "thread_local_page_ekey";
     private static String THREAD_LOCAL_PAGE_ENABLE_EKEY = "threadlocalPageEnableKey";
 
+    private static final String key_pageNo = "pageNo";
+    private static final String key_pageSize = "pageSize";
+    private static final String key_pageable = "pageable";
+
     public static Page getPageFromMap(Map map) {
 
-        Object _pageNo = map.get("pageNo");
+        Object _pageNo = map.get(key_pageNo);
 
-        Object _pageSize = map.get("pageSize");
-        Object _pageable = map.get("pageable");
+        Object _pageSize = map.get(key_pageSize);
+        Object _pageable = map.get(key_pageable);
         String pageNo = null;
 
         String pageSize = null;
@@ -47,9 +51,9 @@ public class PageUtils {
      * @return
      */
     public static Page getPageFromRequest(HttpServletRequest request) {
-        String pageNo = request.getParameter("pageNo");
-        String pageSize = request.getParameter("pageSize");
-        String pageable = request.getParameter("pageable");
+        String pageNo = request.getParameter(key_pageNo);
+        String pageSize = request.getParameter(key_pageSize);
+        String pageable = request.getParameter(key_pageable);
 
         return getPage(pageNo,pageSize,pageable);
     }
@@ -59,7 +63,9 @@ public class PageUtils {
         page.setPageable(BooleanUtils.toBoolean(pageable));
         if(!StringUtils.isEmpty(pageNo)){
             page.setPageNo(Integer.parseInt(pageNo));
-            page.setPageable(true);
+            if(StringUtils.isEmpty(pageable)){
+                page.setPageable(true);
+            }
         }
         if(!StringUtils.isEmpty(pageSize)){
             page.setPageSize(Integer.parseInt(pageSize));

@@ -51,6 +51,13 @@ public interface UpdateBaseService<PO extends BasePo,PK> {
     public int updateBatchByPrimaryKey(List<PO> entities);
 
     /**
+     * @see feihua.jdbc.api.dao.UpdateDao#updateBatchByPrimaryKeySelective(java.util.List)
+     * @param entities
+     * @return
+     */
+    public int updateBatchByPrimaryKeySelective(List<PO> entities);
+
+    /**
      * @see UpdateDao#updateBatchByPrimaryKeys(java.util.List, feihua.jdbc.api.pojo.BasePo)
      * @param primaryKeys
      * @param entity

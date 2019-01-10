@@ -2,8 +2,17 @@ package com.feihua.framework.mybatis.orm;
 
 import com.feihua.utils.properties.PropertiesUtils;
 import org.mybatis.spring.mapper.MapperScannerConfigurer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.PropertyResourceConfigurer;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+
+import java.util.List;
+import java.util.Map;
 
 import static org.springframework.util.Assert.notNull;
 
@@ -14,26 +23,40 @@ import static org.springframework.util.Assert.notNull;
  * Created at 2018/7/18 18:15
  */
 public class MyMapperScannerConfigurer extends MapperScannerConfigurer{
-    private String mybasePackage;
+
+    private Map<String,MybatisMapperConfig> mybatisMapperConfigs;
+    private ApplicationContext applicationContext;
+    private static String cofigName = DefaultMybatisMapperConfig.class.getName();
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
 
-        if(mybasePackage.indexOf("${")>=0 && mybasePackage.indexOf("}") > 0){
-            String express = mybasePackage.substring(mybasePackage.indexOf("${"),mybasePackage.indexOf("}") + 1);
-            PropertiesUtils.addPropertyPath(new String[]{"classpath:mybatis-orm-config.properties"});
-            String _basePackage =  PropertiesUtils.getProperty(express.substring(2,express.length()-1)).toString();
-            _basePackage = mybasePackage.replace(express,_basePackage);
-            setBasePackage(_basePackage);
+        if (mybatisMapperConfigs == null) {
+            String names[] = applicationContext.getBeanDefinitionNames();
+            DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
+            BeanDefinition beanDefinition = null;
+            for (String name : names) {
+                    beanDefinition = ((ConfigurableApplicationContext) applicationContext)
+                            .getBeanFactory().getBeanDefinition(name);
+                if(cofigName.equals(beanDefinition.getBeanClassName())){
+                    factory.registerBeanDefinition(name, beanDefinition);
+                }
+            }
+            mybatisMapperConfigs = factory.getBeansOfType(MybatisMapperConfig.class);
         }
-
+        StringBuffer sb = new StringBuffer();
+        for (String key : mybatisMapperConfigs.keySet()) {
+            sb.append(",");
+            sb.append(mybatisMapperConfigs.get(key).getBasePackage());
+        }
+        setBasePackage(sb.substring(1));
         super.postProcessBeanDefinitionRegistry(registry);
     }
-
-    public String getMybasePackage() {
-        return mybasePackage;
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+        super.setApplicationContext(this.applicationContext);
     }
-
-    public void setMybasePackage(String mybasePackage) {
-        this.mybasePackage = mybasePackage;
+    @Override
+    public void afterPropertiesSet() throws Exception {
     }
 }

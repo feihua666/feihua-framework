@@ -54,7 +54,7 @@ public class SubscribeMsgHandler implements MsgTypeHandler {
         if (weixinUserPoDb == null) {
             WeixinUserPo weixinUserPo = PublicUtils.getWeixinUser(requestSubscribeMessage.getFromUserName(), which);
             weixinUserPo.setStatus(DictEnum.WeixinUserStatus.subscribe.name());
-            apiWeixinUserPoService.preInsert(weixinUserPo, BasePo.DEFAULT_USER_ID);
+            weixinUserPo = apiWeixinUserPoService.preInsert(weixinUserPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(weixinUserPo);
             //调用监听
             apiWeixinUserListener.onAddWexinUser(weixinUserDto);
@@ -62,7 +62,7 @@ public class SubscribeMsgHandler implements MsgTypeHandler {
             WeixinUserPo weixinUserPo = new WeixinUserPo();
             weixinUserPo.setId(weixinUserPoDb.getId());
             weixinUserPo.setStatus(DictEnum.WeixinUserStatus.subscribe.name());
-            apiWeixinUserPoService.preUpdate(weixinUserPo, BasePo.DEFAULT_USER_ID);
+            weixinUserPo = apiWeixinUserPoService.preUpdate(weixinUserPo, BasePo.DEFAULT_USER_ID);
             apiWeixinUserPoService.updateByPrimaryKeySelective(weixinUserPo);
         }
 

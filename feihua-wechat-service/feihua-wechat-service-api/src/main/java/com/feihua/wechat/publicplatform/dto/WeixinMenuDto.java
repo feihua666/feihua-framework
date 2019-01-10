@@ -1,5 +1,6 @@
 package com.feihua.wechat.publicplatform.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-08-17 14:59:27
 */
-public class WeixinMenuDto extends BaseDto {
+public class WeixinMenuDto extends BaseDbDto<String> {
     private String id;
 
     private String name;

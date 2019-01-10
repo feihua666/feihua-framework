@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -128,6 +129,33 @@ public class RequestUtils {
             remoteAddr = request.getHeader("WL-Proxy-Client-IP");
         }
         return remoteAddr != null ? remoteAddr : request.getRemoteAddr();
+    }
+
+    /**
+     * 获取取cookie
+     * @param request
+     * @return
+     */
+    public static Cookie[] getCookies(HttpServletRequest request){
+        return request.getCookies();
+    }
+
+    /**
+     * 根据cookie名获取
+     * @param name
+     * @param request
+     * @return
+     */
+    public static Cookie getCookieByName(String name,HttpServletRequest request){
+        Cookie[]  cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if(cookie.getName().equals(name)){
+                    return cookie;
+                }
+            }
+        }
+        return null;
     }
     /**
      * 是否是Ajax异步请求
@@ -291,12 +319,12 @@ public class RequestUtils {
         }
         return r;
     }
-    public static String unwrapStartFileSeparator(String path){
-        String r = wrapStartFileSeparator(path);
+    public static String unwrapStartSlash(String path){
+        String r = wrapStartSlash(path);
         return r.substring(1);
     }
-    public static String unwrapEndFileSeparator(String path){
-        String r = wrapEndFileSeparator(path);
+    public static String unwrapEndSlash(String path){
+        String r = wrapEndSlash(path);
         return r.substring(0,r.length() - 1);
     }
 }

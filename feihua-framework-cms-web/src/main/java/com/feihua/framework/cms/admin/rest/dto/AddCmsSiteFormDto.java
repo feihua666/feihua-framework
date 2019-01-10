@@ -16,6 +16,16 @@ public class AddCmsSiteFormDto {
 
     private String path;
 
+    private String templatePath;
+
+    private String template;
+
+    private String staticPath;
+
+    private String deployPath;
+
+    private String isMain;
+
     public String getName() {
         return name;
     }
@@ -38,5 +48,45 @@ public class AddCmsSiteFormDto {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public String getTemplatePath() {
+        return templatePath;
+    }
+
+    public void setTemplatePath(String templatePath) {
+        this.templatePath = templatePath;
+    }
+
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
+    }
+
+    public String getStaticPath() {
+        return staticPath;
+    }
+
+    public void setStaticPath(String staticPath) {
+        this.staticPath = staticPath;
+    }
+
+    public String getDeployPath() {
+        return deployPath;
+    }
+
+    public void setDeployPath(String deployPath) {
+        this.deployPath = deployPath;
+    }
+
+    public String getIsMain() {
+        return isMain;
+    }
+
+    public void setIsMain(String isMain) {
+        this.isMain = isMain;
     }
 }

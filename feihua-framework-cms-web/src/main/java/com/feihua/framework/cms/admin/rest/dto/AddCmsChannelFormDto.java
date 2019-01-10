@@ -18,7 +18,10 @@ public class AddCmsChannelFormDto {
 
     private String siteId;
 
+    private String channelType;
+
     private String parentId;
+    private String template;
 
     public String getName() {
         return name;
@@ -52,11 +55,27 @@ public class AddCmsChannelFormDto {
         this.siteId = siteId;
     }
 
+    public String getChannelType() {
+        return channelType;
+    }
+
+    public void setChannelType(String channelType) {
+        this.channelType = channelType;
+    }
+
     public String getParentId() {
         return parentId;
     }
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getTemplate() {
+        return template;
+    }
+
+    public void setTemplate(String template) {
+        this.template = template;
     }
 }

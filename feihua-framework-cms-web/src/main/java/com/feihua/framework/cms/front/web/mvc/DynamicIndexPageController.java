@@ -1,7 +1,9 @@
 package com.feihua.framework.cms.front.web.mvc;
 
 import com.feihua.exception.PageNotFoundException;
+import com.feihua.framework.cms.CmsConstants;
 import com.feihua.framework.cms.api.ApiCmsSitePoService;
+import com.feihua.framework.cms.dto.CmsSiteTemplateModelDto;
 import com.feihua.framework.cms.po.CmsSitePo;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.io.FileUtils;
@@ -17,16 +19,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.List;
-
-import static com.feihua.framework.cms.front.web.mvc.DynamicBaseController.requestPathPrefix;
 
 /**
  * cms前端页面首页访问入口
  * Created by yangwei
  */
 @Controller
-@RequestMapping(requestPathPrefix)
+@RequestMapping(CmsConstants.requestPathPrefix)
 public class DynamicIndexPageController extends DynamicBaseController {
 
     private static Logger logger = LoggerFactory.getLogger(DynamicIndexPageController.class);
@@ -118,11 +117,11 @@ public class DynamicIndexPageController extends DynamicBaseController {
         if (cmsSitePo != null) {
             //检查是否存在静态页，如果存在静态页
             String webAppRealPath = RequestUtils.getWebappRealPath(request);
-            String indexRealPath = webAppRealPath + File.separator + FileUtils.wrapStartFileSeparator(cmsSitePo.getStaticPath()) + File.separator + indexHtml;
+            String indexRealPath = webAppRealPath + File.separator + FileUtils.wrapStartFileSeparator(cmsSitePo.getStaticPath()) + File.separator + CmsConstants.indexHtml;
             File indexFile = FileUtils.getFile(indexRealPath);
             // 如果存在静态首页，直接重定向到静态首页
             if (indexFile.exists()) {
-                return "redirect:" + RequestUtils.wrapStartSlash(cmsSitePo.getStaticPath()) + RequestUtils.wrapStartSlash(indexHtml);
+                return "redirect:" + RequestUtils.wrapStartSlash(cmsSitePo.getStaticPath()) + RequestUtils.wrapStartSlash(CmsConstants.indexHtml);
             }
             //如果静态页不存在，返回动态页内容
             return indexDynamic(cmsSitePo,model);
@@ -135,12 +134,12 @@ public class DynamicIndexPageController extends DynamicBaseController {
         if (cmsSitePo != null) {
             //存在站点
             // 查找模板
-            model.addAttribute("site",cmsSitePo);
-            String template = indexHtml;
+            model.addAttribute(CmsConstants.model_site,new CmsSiteTemplateModelDto(apiCmsSitePoService.wrapDto(cmsSitePo),getContextDto()));
+            String template = CmsConstants.indexHtml;
             if(!StringUtils.isEmpty(cmsSitePo.getTemplate())){
                 template = cmsSitePo.getTemplate();
             }
-            String templatePath = getTemplatePathForViewResolver(cmsSitePo) + FileUtils.wrapStartFileSeparator(template);
+            String templatePath = getTemplatePathForViewResolver(cmsSitePo) + RequestUtils.wrapStartSlash(template);
             return templatePath;
 
         }else {

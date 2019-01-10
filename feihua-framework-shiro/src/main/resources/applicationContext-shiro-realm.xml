@@ -11,6 +11,7 @@
         <property name="cachingEnabled" value="true"/>
         <property name="authorizationCachingEnabled" value="true"/>
         <property name="authenticationCachingEnabled" value="true"/>
+        <property name="accountService" ref="accountService"/>
     </bean>
 
     <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

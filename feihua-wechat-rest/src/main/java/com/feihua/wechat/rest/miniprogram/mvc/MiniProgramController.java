@@ -245,7 +245,7 @@ public class MiniProgramController extends SuperController {
         WeixinUserPo weixinUserPoDb = apiWeixinUserPoService.selectOneSimple(weixinUserPoCondition);
         // 如果库里没有，插入
         if (weixinUserPoDb == null) {
-            apiWeixinUserPoService.preInsert(weiXinUserPo, BasePo.DEFAULT_USER_ID);
+            weiXinUserPo = apiWeixinUserPoService.preInsert(weiXinUserPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(weiXinUserPo);
 
             //调用监听

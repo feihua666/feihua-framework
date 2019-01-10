@@ -33,7 +33,7 @@ public class ApiBaseDataScopeDataScopeDefineSelfPoServiceImpl extends ApiBaseSer
                 BaseDataScopeDataScopeDefineSelfPo baseCommonDataScopeDefineDataScopeSelfPo = new BaseDataScopeDataScopeDefineSelfPo();
                 baseCommonDataScopeDefineDataScopeSelfPo.setDataScopeDataScopeDefineId(dataScopeDataScopeDefineId);
                 baseCommonDataScopeDefineDataScopeSelfPo.setDataScopeId(dataScopeId);
-                this.preInsert(baseCommonDataScopeDefineDataScopeSelfPo,currentUserId);
+                baseCommonDataScopeDefineDataScopeSelfPo = this.preInsert(baseCommonDataScopeDefineDataScopeSelfPo,currentUserId);
                 preInsertList.add(baseCommonDataScopeDefineDataScopeSelfPo);
             }
             // 批量插入自定义角色

@@ -20,7 +20,10 @@
         <!--key 对应 MultipleDataSource 中的枚举-->
         <entry key="dataSourceDefault" value-ref="dataSourceDefault"/>
     </util:map>
-
+    <!-- map路径 -->
+    <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
+        <property name="basePackage" value="com.feihua.framework.base.mapper"/>
+    </bean>
 
     <import resource="classpath:applicationContext-jedis.xml"/>
     <import resource="classpath:applicationContext-mybatis-orm.xml"/>

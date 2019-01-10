@@ -1,5 +1,6 @@
 package com.feihua.framework.base.modules.office.dto;
 
+import feihua.jdbc.api.pojo.BaseDbDto;
 import feihua.jdbc.api.pojo.BaseDto;
 import java.util.Date;
 
@@ -9,7 +10,7 @@ import java.util.Date;
  *
  * @mbg.generated 2018-03-19 18:39:44
 */
-public class BaseOfficeDataScopeDefineDto extends BaseDto {
+public class BaseOfficeDataScopeDefineDto extends BaseDbDto<String> {
     private String id;
 
     private String dataScopeId;

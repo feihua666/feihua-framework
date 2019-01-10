@@ -19,7 +19,7 @@ public class SwfToolUtils {
     private final static Logger logger = LoggerFactory.getLogger(SwfToolUtils.class);
 
     /**
-     * pgn图片转swf
+     * png图片转swf
      * @param png2SwfCmdPath png2swf命令安装路径
      * @param pngPaths
      * @param swfPath

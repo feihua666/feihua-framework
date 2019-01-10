@@ -66,6 +66,12 @@ public class ApiCmsContentPoServiceImpl extends ApiBaseServiceImpl<CmsContentPo,
         dto.setUpdateAt(po.getUpdateAt());
         dto.setContent(po.getContent());
         dto.setTemplate(po.getTemplate());
+        dto.setContentType(po.getContentType());
+        dto.setPublishAt(po.getPublishAt());
+        dto.setOriginal(po.getOriginal());
+        dto.setProfile(po.getProfile());
+        dto.setImageDes(po.getImageDes());
+        dto.setImageUrl(po.getImageUrl());
         return dto;
     }
 }
