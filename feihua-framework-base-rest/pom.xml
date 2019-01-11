@@ -60,5 +60,10 @@
             <artifactId>json-lib</artifactId>
             <classifier>jdk15</classifier>
         </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-log-service-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
     </dependencies>
 </project>

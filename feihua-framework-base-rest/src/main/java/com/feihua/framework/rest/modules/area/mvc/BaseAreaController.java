@@ -5,6 +5,7 @@ import com.feihua.framework.base.modules.area.dto.BaseAreaDto;
 import com.feihua.framework.base.modules.area.dto.SearchAreasConditionDto;
 import com.feihua.framework.base.modules.area.po.BaseAreaPo;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.modules.area.dto.AddAreaFormDto;
@@ -52,6 +53,7 @@ public class BaseAreaController extends BaseController {
      * @param addAreaFormDto
      * @return
      */
+    @OperationLog(operation = "区域接口", content = "单资源，添加区域")
     @RepeatFormValidator
     @RequiresPermissions("base:area:add")
     @RequestMapping(value = "/area",method = RequestMethod.POST)
@@ -89,6 +91,7 @@ public class BaseAreaController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "区域接口", content = "单资源，删除区域")
     @RepeatFormValidator
     @RequiresPermissions("base:area:delete")
     @RequestMapping(value = "/area/{id}",method = RequestMethod.DELETE)
@@ -130,6 +133,7 @@ public class BaseAreaController extends BaseController {
      * @param updateAreaFormDto
      * @return
      */
+    @OperationLog(operation = "区域接口", content = "单资源，更新区域")
     @RepeatFormValidator
     @RequiresPermissions("base:area:update")
     @RequestMapping(value = "/area/{id}",method = RequestMethod.PUT)
@@ -174,6 +178,7 @@ public class BaseAreaController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "区域接口", content = "单资源，获取id区域")
     @RepeatFormValidator
     @RequiresPermissions("base:area:getById")
     @RequestMapping(value = "/area/{id}",method = RequestMethod.GET)
@@ -196,6 +201,7 @@ public class BaseAreaController extends BaseController {
      * @param dto
      * @return
      */
+    @OperationLog(operation = "区域接口", content = "复数资源，搜索区域")
     @RepeatFormValidator
     @RequiresPermissions("base:area:search")
     @RequestMapping(value = "/areas",method = RequestMethod.GET)

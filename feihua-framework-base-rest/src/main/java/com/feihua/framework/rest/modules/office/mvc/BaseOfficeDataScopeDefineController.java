@@ -6,6 +6,7 @@ import com.feihua.framework.base.modules.office.api.ApiBaseOfficeDataScopeDefine
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficeDataScopeDefineSelfPoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDataScopeDefineDto;
 import com.feihua.framework.base.modules.office.dto.OfficeDataScopeParamDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -45,6 +46,7 @@ public class BaseOfficeDataScopeDefineController extends BaseController {
      * @param officeDataScopeDefineFormDto
      * @return
      */
+    @OperationLog(operation = "机构数据范围定义接口",content = "机构数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:office:dataScope:define")
     @RequestMapping(value = "/dataScope/{dataScopeId}/office/define",method = RequestMethod.POST)
@@ -90,6 +92,7 @@ public class BaseOfficeDataScopeDefineController extends BaseController {
      * @param dataScopeId  // 数据范围id
      * @return
      */
+    @OperationLog(operation = "机构数据范围定义接口",content = "机构数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:office:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/office/define",method = RequestMethod.GET)

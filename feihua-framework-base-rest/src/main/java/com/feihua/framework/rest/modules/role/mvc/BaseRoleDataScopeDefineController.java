@@ -6,6 +6,7 @@ import com.feihua.framework.base.modules.role.api.ApiBaseRoleDataScopeDefinePoSe
 import com.feihua.framework.base.modules.role.api.ApiBaseRoleDataScopeDefineSelfPoService;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDataScopeDefineDto;
 import com.feihua.framework.base.modules.role.dto.RoleDataScopeParamDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -45,6 +46,7 @@ public class BaseRoleDataScopeDefineController extends BaseController {
      * @param roleDataScopeDefineFormDto
      * @return
      */
+    @OperationLog(operation = "角色数据范围定义接口",content = "角色数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:role:dataScope:define")
     @RequestMapping(value = "/dataScope/{dataScopeId}/role/define",method = RequestMethod.POST)
@@ -90,6 +92,7 @@ public class BaseRoleDataScopeDefineController extends BaseController {
      * @param dataScopeId  // 数据范围id
      * @return
      */
+    @OperationLog(operation = "角色数据范围定义接口",content = "获取角色数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:role:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/role/define",method = RequestMethod.GET)

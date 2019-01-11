@@ -9,6 +9,7 @@ import com.feihua.framework.base.modules.user.api.ApiBaseUserDataScopeDefinePoSe
 import com.feihua.framework.base.modules.user.dto.BaseUserDataScopeDefineDto;
 import com.feihua.framework.base.modules.user.dto.BaseUserDataScopeDefineParamDto;
 import com.feihua.framework.base.modules.user.po.BaseUserDataScopeDefinePo;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -52,6 +53,7 @@ public class BaseFunctionResourceDataScopeDefineController extends BaseControlle
      * @param functionResourceDataScopeDefineFormDto
      * @return
      */
+    @OperationLog(operation = "功能资源数据范围接口",content = "功能资源数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:functionResource:dataScope:define")
     @RequestMapping(value = "/role/{roleId}/functionResource/define",method = RequestMethod.POST)
@@ -88,6 +90,7 @@ public class BaseFunctionResourceDataScopeDefineController extends BaseControlle
      * @param roleId  // 数据范围id
      * @return
      */
+    @OperationLog(operation = "功能资源数据范围接口",content = "功能资源数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:functionResource:dataScope:define:get")
     @RequestMapping(value = "/role/{roleId}/functionResource/define",method = RequestMethod.GET)

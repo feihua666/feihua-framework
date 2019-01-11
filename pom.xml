@@ -32,6 +32,8 @@
         <module>feihua-framework-spider-rest</module>
         <module>feihua-framework-scheduler-service</module>
         <module>feihua-framework-scheduler-rest</module>
+        <module>feihua-framework-log-service</module>
+        <module>feihua-framework-log-rest</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -347,6 +349,11 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-aspects</artifactId>
                 <version>${spring.version}</version>
             </dependency>
             <dependency>

@@ -10,6 +10,7 @@ import com.feihua.framework.base.modules.dict.dto.SelectDictsConditionDto;
 import com.feihua.framework.base.modules.dict.po.BaseDictPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -61,6 +62,7 @@ public class BaseDictController extends BaseController {
      * @param addDictFormDto
      * @return
      */
+    @OperationLog(operation = "字典配置接口", content = "单资源，添加字典")
     @RepeatFormValidator
     @RequiresPermissions("base:dict:add")
     @RequestMapping(value = "/dict",method = RequestMethod.POST)
@@ -107,6 +109,7 @@ public class BaseDictController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "字典配置接口", content = "单资源，删除字典")
     @RepeatFormValidator
     @RequiresPermissions("base:dict:delete")
     @RequestMapping(value = "/dict/{id}",method = RequestMethod.DELETE)
@@ -148,6 +151,7 @@ public class BaseDictController extends BaseController {
      * @param updateDictFormDto
      * @return
      */
+    @OperationLog(operation = "字典配置接口", content = "单资源，更新字典")
     @RepeatFormValidator
     @RequiresPermissions("base:dict:update")
     @RequestMapping(value = "/dict/{id}",method = RequestMethod.PUT)
@@ -200,6 +204,7 @@ public class BaseDictController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "字典",content = "根据ID获取字典",isInsert = false)
     @RepeatFormValidator
     @RequiresPermissions("base:dict:getById")
     @RequestMapping(value = "/dict/{id}",method = RequestMethod.GET)
@@ -221,6 +226,7 @@ public class BaseDictController extends BaseController {
      * @param type
      * @return
      */
+
     @RepeatFormValidator
     // @RequiresPermissions("base:dict:search")
     // 好多地方都用到，不设置权限
@@ -270,6 +276,7 @@ public class BaseDictController extends BaseController {
      * @param dto
      * @return
      */
+    @OperationLog(operation = "字典",content = "列表查询")
     @RepeatFormValidator
     @RequiresPermissions("base:dict:search")
     @RequestMapping(value = "/dicts",method = RequestMethod.GET)

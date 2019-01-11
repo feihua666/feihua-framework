@@ -5,6 +5,7 @@ import com.feihua.framework.base.modules.dict.api.ApiBaseDictDataScopeDefinePoSe
 import com.feihua.framework.base.modules.dict.dto.BaseDictDataScopeDefineDto;
 import com.feihua.framework.base.modules.dict.dto.BaseDictDataScopeDefineParamDto;
 import com.feihua.framework.base.modules.dict.po.BaseDictDataScopeDefinePo;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -42,6 +43,7 @@ public class BaseDictDataScopeDefineController extends BaseController {
      * @param type         // 设置的数据范围类型
      * @return
      */
+    @OperationLog(operation = "字典数据范围接口", content = "字典数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:dict:dataScope:define")
     @RequestMapping(value = "/dataScope/{dataScopeId}/dictDataScope/define",method = RequestMethod.POST)
@@ -86,6 +88,7 @@ public class BaseDictDataScopeDefineController extends BaseController {
      * @param dataScopeId  // 数据范围id
      * @return
      */
+    @OperationLog(operation = "字典数据范围接口", content = "字典数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:dict:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/dictDataScope/define",method = RequestMethod.GET)

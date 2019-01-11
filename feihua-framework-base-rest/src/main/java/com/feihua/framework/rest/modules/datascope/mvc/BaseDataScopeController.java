@@ -7,6 +7,7 @@ import com.feihua.framework.base.modules.datascope.dto.SearchDataScopesCondition
 import com.feihua.framework.base.modules.datascope.po.BaseDataScopePo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -53,6 +54,7 @@ public class BaseDataScopeController extends BaseController {
      * @param addDataScopeFormDto
      * @return
      */
+    @OperationLog(operation = "数据范围配置接口", content = "单资源，添加数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:add")
     @RequestMapping(value = "/dataScope",method = RequestMethod.POST)
@@ -89,6 +91,7 @@ public class BaseDataScopeController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "数据范围配置接口", content = "单资源，删除数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:delete")
     @RequestMapping(value = "/dataScope/{id}",method = RequestMethod.DELETE)
@@ -120,6 +123,7 @@ public class BaseDataScopeController extends BaseController {
      * @param updateDataScopeFormDto
      * @return
      */
+    @OperationLog(operation = "数据范围配置接口", content = "单资源，更新数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:update")
     @RequestMapping(value = "/dataScope/{id}",method = RequestMethod.PUT)
@@ -163,6 +167,7 @@ public class BaseDataScopeController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "数据范围配置接口", content = "单资源，获取id数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:getById")
     @RequestMapping(value = "/dataScope/{id}",method = RequestMethod.GET)
@@ -185,6 +190,7 @@ public class BaseDataScopeController extends BaseController {
      * @param dto
      * @return
      */
+    @OperationLog(operation = "数据范围配置接口", content = "复数资源，搜索数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:search")
     @RequestMapping(value = "/dataScopes",method = RequestMethod.GET)

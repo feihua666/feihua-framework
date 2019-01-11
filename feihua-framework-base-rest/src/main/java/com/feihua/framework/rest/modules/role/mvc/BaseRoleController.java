@@ -9,6 +9,7 @@ import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.base.modules.role.dto.SearchRolesConditionDto;
 import com.feihua.framework.base.modules.role.po.BaseRolePo;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.modules.role.dto.AddRoleFormDto;
@@ -60,6 +61,7 @@ public class BaseRoleController extends BaseController {
      * @param addRoleFormDto
      * @return
      */
+    @OperationLog(operation = "角色接口",content = "单资源，添加角色")
     @RepeatFormValidator
     @RequiresPermissions("base:role:add")
     @RequestMapping(value = "/role",method = RequestMethod.POST)
@@ -111,6 +113,7 @@ public class BaseRoleController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "角色接口",content = "单资源，删除角色")
     @RequiresPermissions("base:role:delete")
     @RequestMapping(value = "/role/{id}",method = RequestMethod.DELETE)
     public ResponseEntity roleDeleteById(@PathVariable("id") String id){
@@ -150,6 +153,7 @@ public class BaseRoleController extends BaseController {
      * @param updateRoleFormDto
      * @return
      */
+    @OperationLog(operation = "角色接口",content = "单资源，更新角色")
     @RequiresPermissions("base:role:update")
     @RequestMapping(value = "/role/{id}",method = RequestMethod.PUT)
     public ResponseEntity roleUpdateById(@PathVariable String id,UpdateRoleFormDto updateRoleFormDto){
@@ -209,6 +213,7 @@ public class BaseRoleController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "角色接口",content = "单资源，获取id角色")
     @RequiresPermissions("base:role:id:get")
     @RequestMapping(value = "/role/{id}",method = RequestMethod.GET)
     public ResponseEntity roleById(@PathVariable("id") String id){
@@ -228,6 +233,7 @@ public class BaseRoleController extends BaseController {
      * @param dto
      * @return
      */
+    @OperationLog(operation = "角色接口",content = "多资源，搜索角色")
     @RepeatFormValidator
     @RequiresPermissions("base:role:search")
     @RequestMapping(value = "/roles",method = RequestMethod.GET)
