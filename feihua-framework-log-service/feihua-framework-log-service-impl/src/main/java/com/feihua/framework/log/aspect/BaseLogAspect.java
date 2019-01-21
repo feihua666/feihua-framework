@@ -153,18 +153,18 @@ public class BaseLogAspect {
         //请求的参数
         Object[] args = joinPoint.getArgs();
         try {
-            if (args[0] instanceof Throwable) {
-                Throwable e = (Throwable) args[0];
-                logPo.setParams(ExceptionsUtils.getStackTraceAsString(e));
-            } else {
-                String params = JSONUtils.obj2json(Arrays.asList(args));
-                logPo.setParams(params);
+            if (args != null && args.length > 0) {
+                if (args[0] instanceof Throwable) {
+                    Throwable e = (Throwable) args[0];
+                    logPo.setParams(ExceptionsUtils.getStackTraceAsString(e));
+                } else {
+                    String params = JSONUtils.obj2json(Arrays.asList(args));
+                    logPo.setParams(params);
+                }
             }
         } catch (Exception e) {
             logger.error("日志转换参数失败", e);
         }
-
-
 
         logPo.setTime(time);
         logger.info("====》Aspect Log : {}", logPo.toString());
