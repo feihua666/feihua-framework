@@ -6,7 +6,7 @@ import com.feihua.framework.log.service.dto.BaseLogDto;
 import com.feihua.framework.log.service.dto.SearchBaseLogsConditionDto;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
-import com.feihua.framework.rest.modules.common.mvc.BaseController;
+import com.feihua.framework.rest.mvc.SuperController;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/base")
-public class BaseLogController extends BaseController {
+public class BaseLogController extends SuperController {
 
     private static Logger logger = LoggerFactory.getLogger(BaseLogController.class);
 
