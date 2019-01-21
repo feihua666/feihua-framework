@@ -34,10 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by yangwei
@@ -176,6 +173,12 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(userId);
         if (officeDto != null) {
             user.setOffice(officeDto);
+        }
+
+        // 添加其它额外信息
+        Map<String,Object> addtionalAttr = getAddtionalAttr(user);
+        if (addtionalAttr != null) {
+            user.getAdditionalAttr().putAll(addtionalAttr);
         }
 
         return user;
