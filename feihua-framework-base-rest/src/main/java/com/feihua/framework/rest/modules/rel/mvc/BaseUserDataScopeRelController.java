@@ -6,6 +6,7 @@ import com.feihua.framework.base.modules.rel.api.ApiBaseUserDataScopeRelPoServic
 import com.feihua.framework.base.modules.rel.dto.BaseUserDataScopeRelDto;
 import com.feihua.framework.base.modules.rel.dto.DataScopeBindUsersParamDto;
 import com.feihua.framework.base.modules.rel.dto.UserBindDataScopesParamDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -45,6 +46,7 @@ public class BaseUserDataScopeRelController extends BaseController {
      * @param userId 用户id
      * @return
      */
+    @OperationLog(operation = "用户与数据范围关系接口",content = "用户绑定数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:user:dataScopes:rel:bind")
     @RequestMapping(value = "/user/{userId}/dataScopes/rel",method = RequestMethod.POST)
@@ -77,6 +79,7 @@ public class BaseUserDataScopeRelController extends BaseController {
      * @param userId 用户id
      * @return
      */
+    @OperationLog(operation = "用户与数据范围关系接口",content = "获取用户绑定的数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:user:dataScopes:rel:get")
     @RequestMapping(value = "/user/{userId}/dataScopes/rel",method = RequestMethod.GET)
@@ -103,6 +106,7 @@ public class BaseUserDataScopeRelController extends BaseController {
      * @param dataScopeBindUsersFormDto 要绑定的用户id
      * @return
      */
+    @OperationLog(operation = "用户与数据范围关系接口",content = "数据范围绑定用户")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:users:rel:bind")
     @RequestMapping(value = "/dataScope/{dataScopeId}/users/rel",method = RequestMethod.POST)
@@ -127,6 +131,7 @@ public class BaseUserDataScopeRelController extends BaseController {
      * @param dataScopeId 数据范围id
      * @return
      */
+    @OperationLog(operation = "用户与数据范围关系接口",content = "获取数据范围绑定的用户")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:users:rel:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/users/rel",method = RequestMethod.GET)

@@ -6,6 +6,7 @@ import com.feihua.framework.base.modules.rel.api.ApiBaseRoleDataScopeRelPoServic
 import com.feihua.framework.base.modules.rel.dto.BaseRoleDataScopeRelDto;
 import com.feihua.framework.base.modules.rel.dto.DataScopeBindRolesParamDto;
 import com.feihua.framework.base.modules.rel.dto.RoleBindDataScopesParamDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -44,6 +45,7 @@ public class BaseRoleDataScopeRelController extends BaseController {
      * @param roleId 角色id
      * @return
      */
+    @OperationLog(operation = "角色与数据范围关系接口",content = "角色绑定数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:role:dataScopes:rel:bind")
     @RequestMapping(value = "/role/{roleId}/dataScopes/rel",method = RequestMethod.POST)
@@ -75,6 +77,7 @@ public class BaseRoleDataScopeRelController extends BaseController {
      * @param roleId 角色id
      * @return
      */
+    @OperationLog(operation = "角色与数据范围关系接口",content = "获取角色绑定的数据范围")
     @RepeatFormValidator
     @RequiresPermissions("base:role:dataScopes:rel:get")
     @RequestMapping(value = "/role/{roleId}/dataScopes/rel",method = RequestMethod.GET)
@@ -101,6 +104,7 @@ public class BaseRoleDataScopeRelController extends BaseController {
      * @param dataScopeBindRolesFormDto 要绑定的角色id
      * @return
      */
+    @OperationLog(operation = "角色与数据范围关系接口",content = "数据范围绑定角色")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:roles:rel:bind")
     @RequestMapping(value = "/dataScope/{dataScopeId}/roles/rel",method = RequestMethod.POST)
@@ -125,6 +129,7 @@ public class BaseRoleDataScopeRelController extends BaseController {
      * @param dataScopeId 数据范围id
      * @return
      */
+    @OperationLog(operation = "角色与数据范围关系接口",content = "获取数据范围绑定的角色")
     @RepeatFormValidator
     @RequiresPermissions("base:dataScope:roles:rel:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/roles/rel",method = RequestMethod.GET)

@@ -1,5 +1,6 @@
 package com.feihua.framework.rest.modules.urlcollect.mvc;
 
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -44,6 +45,7 @@ public class BaseUrlCollectController extends BaseController {
      * @param addFormDto
      * @return
      */
+    @OperationLog(operation = "网址收藏管理",content = "单资源，添加")
     @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollect",method = RequestMethod.POST)
@@ -85,6 +87,7 @@ public class BaseUrlCollectController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "网址收藏管理",content = "单资源，删除")
     @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollect/{id}",method = RequestMethod.DELETE)
@@ -116,6 +119,7 @@ public class BaseUrlCollectController extends BaseController {
      * @param updateFormDto
      * @return
      */
+    @OperationLog(operation = "网址收藏管理",content = "单资源，更新")
     @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollect/{id}",method = RequestMethod.PUT)
@@ -164,6 +168,7 @@ public class BaseUrlCollectController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "网址收藏管理",content = "单资源，获取id网址收藏")
     @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollect/{id}",method = RequestMethod.GET)
@@ -186,6 +191,7 @@ public class BaseUrlCollectController extends BaseController {
      * @param urlType
      * @return
      */
+    @OperationLog(operation = "网址收藏管理",content = "单资源，获取url网址收藏")
     @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollect/self",method = RequestMethod.GET)
@@ -213,6 +219,7 @@ public class BaseUrlCollectController extends BaseController {
      * @param dto
      * @return
      */
+    @OperationLog(operation = "网址收藏管理",content = "复数资源，搜索网址收藏")
     @RepeatFormValidator
     @RequiresPermissions("urlcollect:search")
     @RequestMapping(value = "/urlcollects",method = RequestMethod.GET)
@@ -240,6 +247,7 @@ public class BaseUrlCollectController extends BaseController {
      * @param dto
      * @return
      */
+    @OperationLog(operation = "网址收藏管理",content = "复数资源，搜索网址收藏")
     @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollects/self",method = RequestMethod.GET)

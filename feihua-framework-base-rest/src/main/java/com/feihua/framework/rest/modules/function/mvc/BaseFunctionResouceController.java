@@ -4,6 +4,7 @@ import com.feihua.framework.base.modules.function.api.ApiBaseFunctionResourcePoS
 import com.feihua.framework.base.modules.function.dto.BaseFunctionResourceDto;
 import com.feihua.framework.base.modules.function.dto.SearchFunctionResourcesConditionDto;
 import com.feihua.framework.base.modules.function.po.BaseFunctionResourcePo;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.modules.function.dto.AddFunctionResourceFormDto;
@@ -52,6 +53,7 @@ public class BaseFunctionResouceController extends BaseController {
      * @param addFunctionResourceFormDto
      * @return
      */
+    @OperationLog(operation = "功能资源",content = "单资源，添加功能资源")
     @RepeatFormValidator
     @RequiresPermissions("base:functionResource:add")
     @RequestMapping(value = "/functionResource",method = RequestMethod.POST)
@@ -93,6 +95,7 @@ public class BaseFunctionResouceController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "功能资源",content = "单资源，删除功能资源")
     @RepeatFormValidator
     @RequiresPermissions("base:functionResource:delete")
     @RequestMapping(value = "/functionResource/{id}",method = RequestMethod.DELETE)
@@ -134,6 +137,7 @@ public class BaseFunctionResouceController extends BaseController {
      * @param updateFunctionResourceFormDto
      * @return
      */
+    @OperationLog(operation = "功能资源",content = "单资源，更新功能资源")
     @RepeatFormValidator
     @RequiresPermissions("base:functionResource:update")
     @RequestMapping(value = "/functionResource/{id}",method = RequestMethod.PUT)
@@ -182,6 +186,7 @@ public class BaseFunctionResouceController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "功能资源",content = "单资源，获取id功能资源")
     @RepeatFormValidator
     @RequiresPermissions("base:functionResource:getById")
     @RequestMapping(value = "/functionResource/{id}",method = RequestMethod.GET)
@@ -204,6 +209,7 @@ public class BaseFunctionResouceController extends BaseController {
      * @param dto
      * @return
      */
+    @OperationLog(operation = "功能资源",content = "复数资源，搜索功能资源")
     @RepeatFormValidator
     @RequiresPermissions(value = {"base:functionResource:search","user"},logical = Logical.OR)
     @RequestMapping(value = "/functionResources",method = RequestMethod.GET)

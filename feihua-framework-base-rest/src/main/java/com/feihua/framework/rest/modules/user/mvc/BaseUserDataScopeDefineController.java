@@ -5,6 +5,7 @@ import com.feihua.framework.base.modules.user.api.ApiBaseUserDataScopeDefinePoSe
 import com.feihua.framework.base.modules.user.dto.BaseUserDataScopeDefineDto;
 import com.feihua.framework.base.modules.user.dto.BaseUserDataScopeDefineParamDto;
 import com.feihua.framework.base.modules.user.po.BaseUserDataScopeDefinePo;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -42,6 +43,7 @@ public class BaseUserDataScopeDefineController extends BaseController {
      * @param type         // 设置的数据范围类型
      * @return
      */
+    @OperationLog(operation = "用户数据范围接口", content = "用户数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:user:dataScope:define")
     @RequestMapping(value = "/dataScope/{dataScopeId}/userDataScope/define",method = RequestMethod.POST)
@@ -86,6 +88,7 @@ public class BaseUserDataScopeDefineController extends BaseController {
      * @param dataScopeId  // 数据范围id
      * @return
      */
+    @OperationLog(operation = "用户数据范围接口", content = "用户数据范围定义")
     @RepeatFormValidator
     @RequiresPermissions("base:user:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/userDataScope/define",method = RequestMethod.GET)

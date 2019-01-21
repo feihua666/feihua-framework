@@ -5,6 +5,7 @@ import com.feihua.framework.base.modules.dict.api.ApiBaseDictPoService;
 import com.feihua.framework.base.modules.dict.dto.BaseDictDto;
 import com.feihua.framework.base.modules.dict.dto.SearchDictsConditionDto;
 import com.feihua.framework.base.modules.dict.po.BaseDictPo;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -61,6 +62,7 @@ public class BaseDeveloperController extends BaseController {
      * @param url
      * @return
      */
+    @OperationLog(operation = "开发者工具接口", content = "搜索url对应的controller方法及注解")
     @RepeatFormValidator
     @RequiresPermissions("base:developer:urlmapping")
     @RequestMapping(value = "/urlmapping",method = RequestMethod.GET)

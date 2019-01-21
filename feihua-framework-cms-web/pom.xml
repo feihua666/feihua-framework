@@ -34,6 +34,11 @@
     <dependencies>
         <dependency>
             <groupId>feihua</groupId>
+            <artifactId>feihua-framework-log-service-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
             <artifactId>feihua-framework-cms-service-api</artifactId>
             <version>${feihua-framework.version}</version>
         </dependency>

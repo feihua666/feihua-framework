@@ -5,6 +5,7 @@ import com.feihua.framework.base.modules.rel.api.ApiBaseUserRoleRelPoService;
 import com.feihua.framework.base.modules.rel.dto.BaseUserRoleRelDto;
 import com.feihua.framework.base.modules.rel.dto.RoleBindUsersParamDto;
 import com.feihua.framework.base.modules.rel.dto.UserBindRolesParamDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -43,6 +44,7 @@ public class BaseUserRoleRelController extends BaseController {
      * @param userId 用户id
      * @return
      */
+    @OperationLog(operation = "用户与角色关系接口",content = "用户绑定角色")
     @RepeatFormValidator
     @RequiresPermissions("base:user:roles:rel:bind")
     @RequestMapping(value = "/user/{userId}/roles/rel",method = RequestMethod.POST)
@@ -67,6 +69,7 @@ public class BaseUserRoleRelController extends BaseController {
      * @param userId 用户id
      * @return
      */
+    @OperationLog(operation = "用户与角色关系接口",content = "获取用户角色")
     @RepeatFormValidator
     @RequiresPermissions("base:user:roles:rel:get")
     @RequestMapping(value = "/user/{userId}/roles/rel",method = RequestMethod.GET)
@@ -93,6 +96,7 @@ public class BaseUserRoleRelController extends BaseController {
      * @param roleBindUsersFormDto 要绑定的用户id
      * @return
      */
+    @OperationLog(operation = "用户与角色关系接口",content = "角色绑定用户")
     @RepeatFormValidator
     @RequiresPermissions("base:role:users:rel:bind")
     @RequestMapping(value = "/role/{roleId}/users/rel",method = RequestMethod.POST)
@@ -117,6 +121,7 @@ public class BaseUserRoleRelController extends BaseController {
      * @param roleId 角色id
      * @return
      */
+    @OperationLog(operation = "用户与角色关系接口",content = "获取角色绑定用户")
     @RepeatFormValidator
     @RequiresPermissions("base:role:users:rel:get")
     @RequestMapping(value = "/role/{roleId}/users/rel",method = RequestMethod.GET)

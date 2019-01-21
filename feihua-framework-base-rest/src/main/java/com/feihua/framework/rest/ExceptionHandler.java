@@ -2,6 +2,8 @@ package com.feihua.framework.rest;
 
 
 import com.feihua.exception.BaseException;
+import com.feihua.framework.log.comm.LogType;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import org.apache.shiro.SecurityUtils;
@@ -28,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ExceptionHandler {
     private Logger logger = LoggerFactory.getLogger(ExceptionHandler.class);
 
+    @OperationLog(type = LogType.ERROR,operation = "异常")
     @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
     public ResponseEntity handleControllerException(Exception exception) {
         HttpServletRequest request = RequestUtils.getRequest();

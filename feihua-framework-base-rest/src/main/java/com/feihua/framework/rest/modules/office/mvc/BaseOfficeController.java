@@ -8,6 +8,7 @@ import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.framework.base.modules.office.dto.SearchOfficesConditionDto;
 import com.feihua.framework.base.modules.office.po.BaseOfficePo;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.modules.office.dto.AddOfficeFormDto;
@@ -57,6 +58,7 @@ public class BaseOfficeController extends BaseController {
      * @param addOfficeFormDto
      * @return
      */
+    @OperationLog(operation = "机构树接口",content = "单资源，添加机构")
     @RepeatFormValidator
     @RequiresPermissions("base:office:add")
     @RequestMapping(value = "/office",method = RequestMethod.POST)
@@ -102,6 +104,7 @@ public class BaseOfficeController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "机构树接口",content = "单资源，删除机构")
     @RepeatFormValidator
     @RequiresPermissions("base:office:delete")
     @RequestMapping(value = "/office/{id}",method = RequestMethod.DELETE)
@@ -143,6 +146,7 @@ public class BaseOfficeController extends BaseController {
      * @param updateOfficeFormDto
      * @return
      */
+    @OperationLog(operation = "机构树接口",content = "单资源，更新机构")
     @RepeatFormValidator
     @RequiresPermissions("base:office:update")
     @RequestMapping(value = "/office/{id}",method = RequestMethod.PUT)
@@ -195,6 +199,7 @@ public class BaseOfficeController extends BaseController {
      * @param id
      * @return
      */
+    @OperationLog(operation = "机构树接口",content = "单资源，获取id机构")
     @RepeatFormValidator
     @RequiresPermissions("base:office:getById")
     @RequestMapping(value = "/office/{id}",method = RequestMethod.GET)
@@ -217,6 +222,7 @@ public class BaseOfficeController extends BaseController {
      * @param dto
      * @return
      */
+    @OperationLog(operation = "机构树接口",content = "复数资源，搜索机构")
     @RepeatFormValidator
     @RequiresPermissions("base:office:search")
     @RequestMapping(value = "/offices",method = RequestMethod.GET)
