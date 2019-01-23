@@ -65,6 +65,9 @@ public   enum ResponseCode {
     // 409
     // 冲突,已存在
     E409_100001("E409_100001","resource conflict,already exist"),
+    E409_100002("E409_100002","account already exist"),
+    E409_100003("E409_100003","email already exist"),
+    E409_100004("E409_100004","mobile already exist"),
 
     // 500
     // 通用异常代码

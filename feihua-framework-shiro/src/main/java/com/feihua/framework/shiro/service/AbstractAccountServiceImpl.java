@@ -14,6 +14,7 @@ import org.apache.shiro.subject.Subject;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -46,5 +47,10 @@ public abstract class AbstractAccountServiceImpl implements AccountService {
     @Override
     public void onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) {
 
+    }
+
+    @Override
+    public Map<String, Object> getAddtionalAttr(ShiroUser shiroUser) {
+        return null;
     }
 }

@@ -12,16 +12,20 @@ import com.feihua.framework.base.modules.user.po.BaseUserAuthPo;
 import com.feihua.framework.base.modules.user.po.BaseUserPo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.log.comm.annotation.OperationLog;
+import com.feihua.framework.jedis.utils.JedisUtils;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
 import com.feihua.framework.rest.modules.user.dto.AddUserFormDto;
 import com.feihua.framework.rest.modules.user.dto.UpdateUserFormDto;
 import com.feihua.framework.rest.modules.user.dto.UpdateUserMobileFormDto;
+import com.feihua.framework.rest.modules.user.dto.UserRegistFormDto;
 import com.feihua.framework.rest.modules.user.vo.BaseUserVo;
 import com.feihua.framework.shiro.pojo.PasswordAndSalt;
 import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.utils.ShiroUtils;
+import com.feihua.utils.EmailUtils.EmailUtils;
+import com.feihua.utils.EmailUtils.Mail;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
@@ -29,7 +33,10 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +48,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -540,6 +550,217 @@ public class BaseUserController extends BaseController {
         } else {
             // 更新成功，已被成功创建
             logger.info("修改当前用户密码结束，成功");
+            return new ResponseEntity(resultData, HttpStatus.CREATED);
+        }
+    }
+
+
+    /**
+     * 用户注册
+     * @param dto
+     * @return
+     */
+    @RepeatFormValidator
+    @RequestMapping(value = "/user/regist",method = RequestMethod.POST)
+    public ResponseEntity userRegist(UserRegistFormDto dto){
+        logger.info("用户注册开始");
+        logger.info("用户注册信息参数:{}", ToStringBuilder.reflectionToString(dto, ToStringStyle.SHORT_PREFIX_STYLE));
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        boolean mobile = false,email = false,account = false;
+        if(StringUtils.isNotEmpty(dto.getMobile())){
+            BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(dto.getMobile(),DictEnum.LoginType.MOBILE.name());
+            if(userAuthDto != null){
+                resultData.setCode(ResponseCode.E409_100004.getCode());
+                resultData.setMsg(ResponseCode.E409_100004.getMsg());
+                logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+                logger.info("用户注册结束，失败");
+                return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+            }
+            mobile = true;
+        }
+        if(StringUtils.isNotEmpty(dto.getEmail())){
+            BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(dto.getEmail(),DictEnum.LoginType.EMAIL.name());
+            if(userAuthDto != null){
+                resultData.setCode(ResponseCode.E409_100003.getCode());
+                resultData.setMsg(ResponseCode.E409_100003.getMsg());
+                logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+                logger.info("用户注册结束，失败");
+                return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+            }
+            email = true;
+        }
+        if(StringUtils.isNotEmpty(dto.getAccount())){
+            BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(dto.getAccount(),DictEnum.LoginType.ACCOUNT.name());
+            if(userAuthDto != null){
+                resultData.setCode(ResponseCode.E409_100002.getCode());
+                resultData.setMsg(ResponseCode.E409_100002.getMsg());
+                logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+                logger.info("用户注册结束，失败");
+                return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+            }
+            account = true;
+        }
+        //都不可以，
+        if(!mobile && !email && !account){
+            resultData.setCode(ResponseCode.E400_100000.getCode());
+            resultData.setMsg(ResponseCode.E400_100000.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("用户注册结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+        }
+
+        BaseUserPo baseUserPo = new BaseUserPo();
+        String nickname = dto.getNickname();
+        if(StringUtils.isEmpty(nickname)){
+            nickname = dto.getAccount();
+        }
+        if(StringUtils.isEmpty(nickname)){
+            nickname = dto.getMobile();
+        }
+        if(StringUtils.isEmpty(nickname)){
+            nickname = dto.getEmail();
+        }
+        if(StringUtils.isEmpty(nickname)){
+            nickname = "昵称";
+        }
+        baseUserPo.setNickname(nickname);
+        baseUserPo.setLocked(BasePo.YesNo.N.name());
+        baseUserPo.setGender(DictEnum.Gender.unknown.name());
+        baseUserPo = apiBaseUserPoService.preInsert(baseUserPo,BasePo.DEFAULT_USER_ID);
+        baseUserPo = apiBaseUserPoService.insertSimple(baseUserPo);
+
+        PasswordAndSalt ps = PasswordAndSalt.entryptPassword(dto.getPassword());
+        String password = ps.getPassword() + "_" + ps.getSalt();
+        BaseUserAuthPo baseUserAuthPo = null;
+        if(mobile){
+            baseUserAuthPo = new BaseUserAuthPo();
+            baseUserAuthPo.setUserId(baseUserPo.getId());
+            baseUserAuthPo.setIdentityType(DictEnum.LoginType.MOBILE.name());
+            baseUserAuthPo.setIdentifier(dto.getMobile());
+            baseUserAuthPo.setCredential(password);
+            baseUserAuthPo.setVerified(BasePo.YesNo.Y.name());
+            baseUserAuthPo = apiBaseUserAuthPoService.preInsert(baseUserAuthPo,BasePo.DEFAULT_USER_ID);
+            apiBaseUserAuthPoService.insertSimple(baseUserAuthPo);
+        }
+        if(email){
+            baseUserAuthPo = new BaseUserAuthPo();
+            baseUserAuthPo.setUserId(baseUserPo.getId());
+            baseUserAuthPo.setIdentityType(DictEnum.LoginType.EMAIL.name());
+            baseUserAuthPo.setIdentifier(dto.getEmail());
+            baseUserAuthPo.setCredential(password);
+            baseUserAuthPo.setVerified(BasePo.YesNo.Y.name());
+            baseUserAuthPo = apiBaseUserAuthPoService.preInsert(baseUserAuthPo,BasePo.DEFAULT_USER_ID);
+            apiBaseUserAuthPoService.insertSimple(baseUserAuthPo);
+        }
+        if(account){
+            baseUserAuthPo = new BaseUserAuthPo();
+            baseUserAuthPo.setUserId(baseUserPo.getId());
+            baseUserAuthPo.setIdentityType(DictEnum.LoginType.ACCOUNT.name());
+            baseUserAuthPo.setIdentifier(dto.getAccount());
+            baseUserAuthPo.setCredential(password);
+            baseUserAuthPo.setVerified(BasePo.YesNo.Y.name());
+            baseUserAuthPo = apiBaseUserAuthPoService.preInsert(baseUserAuthPo,BasePo.DEFAULT_USER_ID);
+            apiBaseUserAuthPoService.insertSimple(baseUserAuthPo);
+        }
+
+        // 已被成功创建
+        logger.info("注册用户id:{}",baseUserPo.getId());
+        logger.info("用户注册结束，成功");
+        return new ResponseEntity(resultData, HttpStatus.CREATED);
+    }
+
+    /**
+     * 发送验证码
+     * @param type 方式，mobile=手机短信验证，email=邮箱验证
+     * @param identifier 手机号还是邮箱
+     * @return
+     */
+    @RepeatFormValidator
+    @RequestMapping(value = "/user/sendcode",method = RequestMethod.POST)
+    public ResponseEntity sendCode(String type,String identifier){
+        logger.info("发送找回密码验证码开始");
+        logger.info("参数:type={},identifier={}",type,identifier);
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        Session session  = EmailUtils.createSession("smtp.sina.com","feihua666@sina.com","xiaobudian123",true,false,"25");
+        Mail mail = new Mail();
+        mail.addToAddress(identifier);
+        mail.setSubject("忘记密码找回");
+        mail.setFrom("feihua666@sina.com");
+        String random = RandomStringUtils.randomNumeric(6);
+        int expireSecond = 600;
+        mail.setContent("您用于密码找回的验证码为" + random + "。有效时间为" + expireSecond/60 + "分钟");
+        JedisUtils.set(type + identifier,random,expireSecond);
+        try {
+            if (DictEnum.LoginType.EMAIL.name().equalsIgnoreCase(type)) {
+                EmailUtils.send(session,mail);
+            }
+        }catch (Exception e) {
+            // 可能输入邮箱不 正确
+            resultData.setCode(ResponseCode.E500_100000.getCode());
+            resultData.setMsg(ResponseCode.E500_100000.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("发送找回密码验证码结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+        // 更新成功，已被成功创建
+        logger.info("发送的验证码为:{}",random);
+        logger.info("发送找回密码验证码结束，成功");
+        return new ResponseEntity(resultData, HttpStatus.CREATED);
+    }
+
+
+    /**
+     * 忘记密码，更新密码
+     * @param password
+     * @return
+     */
+    @RepeatFormValidator
+    @RequestMapping(value = "/user/password/forget/find",method = RequestMethod.PUT)
+    public ResponseEntity updateForgetPassword(String type,String identifier,String password,String code){
+        logger.info("忘记密码修改密码开始");
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        BaseUserAuthDto userAuthDto = null;
+        if (StringUtils.equals(type, DictEnum.LoginType.EMAIL.name())) {
+            userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(identifier,DictEnum.LoginType.EMAIL.name());
+
+        }else  if (StringUtils.equals(type, DictEnum.LoginType.MOBILE.name())) {
+            userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(identifier,DictEnum.LoginType.MOBILE.name());
+
+        }
+
+        if (userAuthDto == null) {
+            // 更新失败，资源不存在
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("忘记密码修改密码结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+        // 验证验证码是否正确
+        String sendedCode = JedisUtils.get(type + identifier);
+        if(StringUtils.isEmpty(code) || !StringUtils.equals(sendedCode,code)){
+            resultData.setCode(ResponseCode.E400_100001.getCode());
+            resultData.setMsg(ResponseCode.E400_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("验证码不正确");
+            logger.info("忘记密码修改密码结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.BAD_REQUEST);
+        }
+        PasswordAndSalt ps = PasswordAndSalt.entryptPassword(password);
+        int r = apiBaseUserAuthPoService.updateCredential(ps.getPassword() + "_" + ps.getSalt(),getLoginUser().getId(),getLoginUser().getId(),
+                DictEnum.LoginType.ACCOUNT.name(),DictEnum.LoginType.MOBILE.name(),DictEnum.LoginType.EMAIL.name());
+
+        JedisUtils.del(type + identifier);
+        if (r <= 0) {
+            // 更新失败，资源不存在
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("忘记密码修改密码结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }else{
+            // 更新成功，已被成功创建
+            logger.info("忘记密码修改密码结束，成功");
             return new ResponseEntity(resultData, HttpStatus.CREATED);
         }
     }
