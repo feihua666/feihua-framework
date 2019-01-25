@@ -5,13 +5,20 @@ import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.cms.admin.rest.mvc.BaseController;
 import com.feihua.framework.cms.api.ApiCmsQuestionOptionsPoService;
 import com.feihua.framework.cms.api.ApiCmsQuestionPoService;
+import com.feihua.framework.cms.api.ApiCmsSurveyPoService;
 import com.feihua.framework.cms.dto.CmsQuestionDto;
 import com.feihua.framework.cms.dto.CmsQuestionOptionsDto;
+import com.feihua.framework.cms.dto.CmsSurveyDto;
+import com.feihua.framework.cms.dto.SearchCmsSurveysConditionDto;
 import com.feihua.framework.cms.po.CmsQuestionOptionsPo;
 import com.feihua.framework.cms.po.CmsQuestionPo;
+import com.feihua.framework.cms.po.CmsSurveyPo;
+import com.feihua.framework.cms.survey.rest.dto.AddCmsSurveyFormDto;
+import com.feihua.framework.cms.survey.rest.dto.UpdateCmsSurveyFormDto;
 import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
+import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
@@ -26,12 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.feihua.framework.cms.dto.CmsSurveyDto;
-import com.feihua.framework.cms.dto.SearchCmsSurveysConditionDto;
-import com.feihua.framework.cms.api.ApiCmsSurveyPoService;
-import com.feihua.framework.cms.survey.rest.dto.AddCmsSurveyFormDto;
-import com.feihua.framework.cms.survey.rest.dto.UpdateCmsSurveyFormDto;
-import com.feihua.framework.cms.po.CmsSurveyPo;
+import tk.mybatis.orderbyhelper.OrderByHelper;
 
 import java.util.Date;
 import java.util.List;
@@ -231,10 +233,12 @@ public class CmsSurveyController extends BaseController {
         //TODO 调查发布还没想好逻辑
         CmsSurveyDto cmsSurveyDto = apiCmsSurveyPoService.selectByPrimaryKey(id);
         // id
+        String url = null;
         basePo.setId(id);
         basePo.setStatus(status);
         //如果状态为进行中，则验证问题，和问题选项完整性
         if ("2".equals(status)) {
+            url = RequestUtils.getWebUrl();
             CmsQuestionPo question = new CmsQuestionPo();
             question.setSurveyId(id);
             question.setDelFlag(BasePo.YesNo.N.name());
@@ -258,6 +262,8 @@ public class CmsSurveyController extends BaseController {
         basePoCondition.setId(id);
         basePoCondition.setDelFlag(BasePo.YesNo.N.name());
         basePoCondition.setUpdateAt(updateTime);
+
+        basePo.setUrl(url);
         basePo = apiCmsSurveyPoService.preUpdate(basePo, getLoginUser().getId());
         int r = apiCmsSurveyPoService.updateSelective(basePo, basePoCondition);
         if (r <= 0) {
@@ -287,9 +293,52 @@ public class CmsSurveyController extends BaseController {
     @RequiresPermissions("cms:survey:getById")
     @RequestMapping(value = "/survey/{id}", method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id) {
-
         ResponseJsonRender resultData = new ResponseJsonRender();
         CmsSurveyDto baseDataScopeDto = apiCmsSurveyPoService.selectByPrimaryKey(id, false);
+        if (baseDataScopeDto != null) {
+            resultData.setData(baseDataScopeDto);
+            return new ResponseEntity(resultData, HttpStatus.OK);
+        } else {
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * 单资源，获取id调查
+     *
+     * @param id
+     *
+     * @return
+     */
+    @OperationLog(operation = "调查管理", content = "单资源，获取id调查、问题、选项")
+    @RepeatFormValidator
+    @RequiresPermissions("cms:survey:getById")
+    @RequestMapping(value = "/survey/{id}/questions", method = RequestMethod.GET)
+    public ResponseEntity getSurveyById(@PathVariable String id) {
+        ResponseJsonRender resultData = new ResponseJsonRender();
+        CmsSurveyDto baseDataScopeDto = apiCmsSurveyPoService.selectByPrimaryKey(id, false);
+        CmsQuestionPo question = new CmsQuestionPo();
+        question.setSurveyId(id);
+        question.setDelFlag(BasePo.YesNo.N.name());
+        OrderByHelper.orderBy("sequence desc,create_at");
+        List<CmsQuestionDto> cmsQuestionDtos = apiCmsQuestionPoService.selectList(question);
+        if (CollectionUtils.isNotEmpty(cmsQuestionDtos)) {
+            baseDataScopeDto.setQuestions(cmsQuestionDtos);
+            for (CmsQuestionDto cmsQuestionDto : cmsQuestionDtos) {
+                if (!"text".equalsIgnoreCase(cmsQuestionDto.getType())) {
+                    CmsQuestionOptionsPo options = new CmsQuestionOptionsPo();
+                    options.setQuestionId(cmsQuestionDto.getId());
+                    options.setDelFlag(BasePo.YesNo.N.name());
+                    OrderByHelper.orderBy("create_at");
+                    List<CmsQuestionOptionsDto> cmsQuestionOptionsDtos = apiCmsQuestionOptionsPoService.selectList(options);
+                    if (CollectionUtils.isNotEmpty(cmsQuestionOptionsDtos)) {
+                        cmsQuestionDto.setOptions(cmsQuestionOptionsDtos);
+                    }
+                }
+            }
+        }
         if (baseDataScopeDto != null) {
             resultData.setData(baseDataScopeDto);
             return new ResponseEntity(resultData, HttpStatus.OK);
