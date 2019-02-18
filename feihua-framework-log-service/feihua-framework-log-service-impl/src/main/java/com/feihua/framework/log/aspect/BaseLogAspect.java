@@ -72,7 +72,7 @@ public class BaseLogAspect {
             params = JSONUtils.obj2json(args);
             logPo.setParams(params);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("JSONUtils.obj2json error : ", e);
         }
         return logPo;
     }
@@ -143,13 +143,7 @@ public class BaseLogAspect {
         HttpServletRequest request = RequestUtils.getRequest();
         //设置IP地址
         logPo.setIp(IPUtils.getIp(request));
-
-        //用户名
-        final ShiroUser currentUser = ShiroUtils.getCurrentUser();
-
-        String username = currentUser.getNickname();
-        logPo.setNickname(username);
-
+        
         //请求的参数
         Object[] args = joinPoint.getArgs();
         try {
@@ -165,12 +159,21 @@ public class BaseLogAspect {
         } catch (Exception e) {
             logger.error("日志转换参数失败", e);
         }
+        //用户名
+        ShiroUser currentUser;
+        try {
+            currentUser = ShiroUtils.getCurrentUser();
 
+            String username = currentUser.getNickname();
+            logPo.setNickname(username);
+            apiBaseLogPoService.preInsert(logPo, currentUser.getId());
+        } catch (Exception e) {
+            logger.error("用户未登录", e);
+        }
         logPo.setTime(time);
         logger.info("====》Aspect Log : {}", logPo.toString());
         //保存系统日志
         if (baseLog != null && baseLog.isInsert()) {
-            apiBaseLogPoService.preInsert(logPo, currentUser.getId());
             apiBaseLogPoService.insert(logPo);
         }
     }

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>问卷调查</title>
+    <link rel="icon" href="/static/template-cms/test/favicon.ico">
+    <style>
+        .custom-control{
+            margin: 0 0 10px 10px;
+        }
+        .custom-control label {
+            margin-left: 5px;
+            margin-right: 20px;
+        }
+        .survey-list{
+            margin-top: 83px;
+        }
+        label .error{
+            margin-left: 20px;
+            color: red;
+        }
+    </style>
+    <link href="/static/template-cms/test/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/template-cms/test/plugins/ie10-bug/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="/static/template-cms/test/css/common.css" rel="stylesheet">
+    <link href="/static/template-cms/test/css/widget.css" rel="stylesheet">
+    <link href="/static/js/layer-v3.1.1/mobile/need/layer.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<div class="main-wrapper  container" style="margin-top:60px;">
+    <!-- 内容详情 -->
+    <div class="col-sm-9 content-content">
+        <#if survey.id??>
+        <h2>${survey.title}</h2>
+        <h4>
+            <small>更新时间：${survey.updateAt!?datetime } </small>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            <#if survey.count??>
+            <small>参与量：${survey.count!''} </small>
+        </#if>
+        </h4>
+        <hr/>
+        <div>
+            <form class="form-inline" id="surveyForm">
+                <input hidden name="surveyId"  value="${survey.id}">
+
+                <#if survey.questions??>
+                <#list survey.questions as question>
+                <input hidden name="questionId"  value="${question.id}">
+                <div>
+                    <label class="my-1 mr-2 question_label">${question_index +1 }.${question.name}</label><br>
+                    <#if question.type=='text'>
+                    <div class="custom-control">
+                        <textarea rows=3 class="custom-control-input" name="${question.id}" required></textarea>
+                    </div>
+                    <#elseif question.type=='radio'>
+                    <div class="custom-control custom-radio my-1 mr-sm-2">
+                        <#list question.options as option>
+                        <input type="radio" name="${question.id}" value="${option.id}" class="custom-control-input" id="radio_${option.id}" required>
+                        <label class="custom-control-label" for="radio_${option.id}">${option.name}</label><#if question.br=='Y'><br></#if>
+                </#list>
+        </div>
+        <#elseif  question.type=='checkbox'>
+        <div class="custom-control custom-checkbox my-1 mr-sm-2">
+            <#list question.options as option>
+            <input type="checkbox" name="${question.id}" value="${option.id}" class="custom-control-input" id="checkbox_${option.id}" required>
+            <label class="custom-control-label" for="checkbox_${option.id}">${option.name}</label><#if question.br=='Y'><br></#if>
+    </#list>
+</div>
+</#if>
+</div>
+</#list>
+</#if>
+<button type="submit" class="btn btn-primary my-1">提交</button>
+</form>
+</#if>
+</div>
+</div>
+<!-- 推荐 -->
+<div class="col-sm-3 survey-list">
+    <div class="news-list-widget">
+        <h5 class="title">
+            <span class="title-inner">热闹调查</span>
+        </h5>
+        <div class="content">
+            <#if surveys??>
+            <#list surveys as item>
+            <div class="media">
+                <div class="media-body">
+                    <a href="/survey/index.htm?id=${item.id}">${item.title}</a>
+                </div>
+            </div>
+        </#list>
+    </#if>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Site footer -->
+<div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <span>Copyright © 2019</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Placed at the end of the document so the pages load faster -->
+<!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+<script src="/static/template-cms/test/plugins/jquery/jquery.min.js"></script>
+<script src="/static/template-cms/test/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="/static/js/layer-v3.1.1/mobile/layer.js"></script>
+<script src="/static/js/common.js"></script>
+<script src="/static/js/jquery.validate.min.js"></script>
+<script src="/static/js/localization/messages_zh.min.js"></script>
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="/static/template-cms/test/plugins/ie10-bug/ie10-viewport-bug-workaround.js"></script>
+<!-- 页面图片宽度自适应脚本 -->
+<script>
+    jQuery('#surveyForm').validate({
+        ignore: "",
+        submitHandler: function (form) {
+            var param = $(form).serializeObject();
+            var datas = [];
+            var puestionIds = param.questionId;
+            for(var i in puestionIds){
+                var data = {};
+                data.surveyId = param.surveyId;
+                data.questionId = puestionIds[i];
+                var answers = param[puestionIds[i]];
+                if(jQuery.isArray(answers)){
+                    data.answers = answers.join(",");
+                }else{
+                    data.answers =answers;
+                }
+                datas.push(data);
+            }
+            httpUtil.post({url: '/survey/answers/add/'+param.surveyId, data: JSON.stringify(datas)}, function (r) {
+                layer.open({
+                    content: '提交成功'
+                    ,btn: '关闭'
+                    ,yes: function(index){
+                        location.reload();
+                        layer.close(index);
+                    }
+                });
+            });
+        },
+        errorPlacement: function(error, element) {
+            error.appendTo($(element.parent()).siblings('.question_label'));
+        }
+    });
+</script>
+<script>
+    var defaultImageClass = '.img-self-adaption'
+    function ImgselfAdaption(targetSelector,imageSelector) {
+        var _imgSelector = 'img' + defaultImageClass;
+        if(imageSelector){
+            _imgSelector = imageSelector;
+        }
+        var $target = $(targetSelector);
+        var $imgs = $(_imgSelector);
+        $imgs.each(function (i) {
+            var $img = $(this);
+            if(!$img.data('styleWidth')){
+                $img.data('styleWidth',$img.css('width'))
+            }
+            else if(!$img.data('attrWidth')){
+                $img.data('attrWidth',$img.attr('width'))
+            }
+            imgNaturalDimensions($img[0],function (obj) {
+
+                if(obj.width > $target.width()){
+                    $img.width($target.width())
+                }else{
+
+                    if($img.data('styleWidth')){
+                        $img.css('width',$img.data('styleWidth'))
+                    }else if($img.data('attrWidth')){
+                        $img.attr('width',$img.attr('width'))
+                    }else{
+                        $img.css('width','auto')
+                    }
+                }
+            })
+
+        });
+    }
+    function doImgselfAdaption(targetSelector,imageSelector) {
+        ImgselfAdaption(targetSelector,imageSelector);
+        $(window).resize(function () {
+            ImgselfAdaption(targetSelector,imageSelector);
+        })
+    }
+
+    function imgNaturalDimensions(imgElement, callback) {
+        var nWidth, nHeight;
+        if (!imgElement.naturalWidth) { // 现代浏览器
+            nWidth = imgElement.naturalWidth;
+            nHeight = imgElement.naturalHeight;
+            callback({width: nWidth, height:nHeight});
+            nWidth = null;
+            nHeight = null;
+        } else { // IE6/7/8
+            var nImg = new Image();
+            nImg.src = imgElement.src;
+            if(nImg.complete) { // 图片已经存在于浏览器缓存
+                nWidth = nImg.width;
+                nHeight = nImg.height;
+                callback({width: nWidth, height:nHeight});
+                nWidth = null;
+                nHeight = null;
+            }else{
+                nImg.onload = function() {
+                    nWidth = nImg.width;
+                    nHeight = nImg.height;
+                    callback({width: nWidth, height:nHeight});
+                    nWidth = null;
+                    nHeight = null;
+                }
+            }
+
+        }
+    }
+</script>
+</body>
+</html>
