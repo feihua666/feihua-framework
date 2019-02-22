@@ -46,9 +46,9 @@ public class ContentListDirective extends AbstractDirective {
     @Autowired
     private ApiCmsContentAudioPoService apiCmsContentAudioPoService;
     @Autowired
-    private ApiCmsContentVedioPoService apiCmsContentVedioPoService;
+    private ApiCmsContentVideoPoService apiCmsContentVideoPoService;
     @Autowired
-    private ApiCmsContentVedioOtherPlayerPoService apiCmsContentVedioOtherPlayerPoService;
+    private ApiCmsContentVideoOtherPlayerPoService apiCmsContentVideoOtherPlayerPoService;
     @Autowired
     private ApiCmsContentGalleryPoService apiCmsContentGalleryPoService;
     @Autowired
@@ -171,9 +171,9 @@ public class ContentListDirective extends AbstractDirective {
         String contentId = dto.getId();
         if (DictEnum.CmsContentType.audio.name().equals(dto.getContentType())) {
             dto.setAudio(apiCmsContentAudioPoService.wrapDto(apiCmsContentAudioPoService.selectBySiteIdAndContentId(siteId,contentId)));
-        } else if (DictEnum.CmsContentType.vedio.name().equals(dto.getContentType())) {
-            dto.setVedio(apiCmsContentVedioPoService.wrapDto(apiCmsContentVedioPoService.selectBySiteIdAndContentId(siteId,contentId)));
-            dto.setVedioOtherPlayers(apiCmsContentVedioOtherPlayerPoService.wrapDtos( apiCmsContentVedioOtherPlayerPoService.selectBySiteIdAndContentIdAndVedioId(siteId,contentId,dto.getVedio().getId())));
+        } else if (DictEnum.CmsContentType.video.name().equals(dto.getContentType())) {
+            dto.setVideo(apiCmsContentVideoPoService.wrapDto(apiCmsContentVideoPoService.selectBySiteIdAndContentId(siteId,contentId)));
+            dto.setVideoOtherPlayers(apiCmsContentVideoOtherPlayerPoService.wrapDtos( apiCmsContentVideoOtherPlayerPoService.selectBySiteIdAndContentIdAndVideoId(siteId,contentId,dto.getVideo().getId())));
 
         }else if (DictEnum.CmsContentType.gallery.name().equals(dto.getContentType())) {
             dto.setGallerys(apiCmsContentGalleryPoService.wrapDtos(apiCmsContentGalleryPoService.selectBySiteIdAndContentId(siteId,contentId)));

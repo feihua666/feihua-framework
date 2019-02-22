@@ -235,7 +235,7 @@ public class DictEnum {
         library, // 文库
         gallery, //图库
         download, //下载
-        vedio, //视频
+        video, //视频
         audio, //音频
     }
 

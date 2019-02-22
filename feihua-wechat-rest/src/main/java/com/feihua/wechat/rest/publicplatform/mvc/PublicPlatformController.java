@@ -114,7 +114,7 @@ public class PublicPlatformController extends SuperController {
      *
      * @return
      */
-    @RequestMapping(value = "getJsInterfaceConfig")
+    @RequestMapping(value = "getJsInterfaceConfig",method = RequestMethod.GET)
     public ResponseEntity getJsInterfaceConfig(String realUrl,String which) {
         ResponseJsonRender resultData = new ResponseJsonRender("成功");
         resultData.setData(PublicUtils.getJsInterfaceConfig(PublicUtils.getJsapiTicket(which), realUrl, which));
@@ -127,7 +127,7 @@ public class PublicPlatformController extends SuperController {
      * @param which
      * @return
      */
-    @RequestMapping(value = "redirectToAuthAuthorizePage/{which}")
+    @RequestMapping(value = "redirectToAuthAuthorizePage/{which}",method = RequestMethod.GET)
         public String redirectToAuthAuthorizePage(String redirectUrl,@PathVariable String which){
 
         String url = PublicConstants.AUTH_REDIRECT_URL.replace(CommonConstants.PARAM_APPID,PublicUtils.getAppid(which))
@@ -143,7 +143,7 @@ public class PublicPlatformController extends SuperController {
      * @param which
      * @return
      */
-    @RequestMapping(value = "getAuthUserInfo/{which}")
+    @RequestMapping(value = "getAuthUserInfo/{which}",method = RequestMethod.GET)
     public String getAuthUserInfo(String code,String state,@PathVariable String which,String redirectUrl) {
         // 根据code获取accessToken
         AuthorizeAccessToken authorizeAccessToken = PublicUtils.getAuthorizeAccessToken(code,which);

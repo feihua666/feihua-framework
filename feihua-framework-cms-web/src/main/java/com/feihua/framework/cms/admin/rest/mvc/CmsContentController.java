@@ -66,9 +66,9 @@ public class CmsContentController extends BaseController {
     @Autowired
     private ApiCmsContentAudioPoService apiCmsContentAudioPoService;
     @Autowired
-    private ApiCmsContentVedioPoService apiCmsContentVedioPoService;
+    private ApiCmsContentVideoPoService apiCmsContentVideoPoService;
     @Autowired
-    private ApiCmsContentVedioOtherPlayerPoService apiCmsContentVedioOtherPlayerPoService;
+    private ApiCmsContentVideoOtherPlayerPoService apiCmsContentVideoOtherPlayerPoService;
     @Autowired
     private ApiCmsContentDownloadImagePoService apiCmsContentDownloadImagePoService;
 
@@ -319,55 +319,55 @@ public class CmsContentController extends BaseController {
                 }
             }
             // 视频
-            if(DictEnum.CmsContentType.vedio.name().equals(r.getContentType())){
-                AddCmsContentVedioFormDto vedioFormDto = dto.getVedio();
-                if(vedioFormDto != null){
-                    CmsContentVedioPo cmsContentVedioPo = null;
-                        cmsContentVedioPo = new CmsContentVedioPo();
-                        cmsContentVedioPo.setContentId(r.getId());
-                        cmsContentVedioPo.setSiteId(r.getSiteId());
-                        cmsContentVedioPo.setDescription(vedioFormDto.getDescription());
-                        cmsContentVedioPo.setUrl(vedioFormDto.getUrl());
-                        cmsContentVedioPo.setDwonloadNum(0);
-                        cmsContentVedioPo.setExt(vedioFormDto.getExt());
-                        cmsContentVedioPo.setFilename(vedioFormDto.getFilename());
-                        cmsContentVedioPo.setSize(vedioFormDto.getSize());
-                        cmsContentVedioPo.setImageUrl(vedioFormDto.getImageUrl());
-                        cmsContentVedioPo.setImageDes(vedioFormDto.getImageDes());
-                        cmsContentVedioPo.setSequence(vedioFormDto.getSequence());
-                        cmsContentVedioPo.setDuration(vedioFormDto.getDuration());
-                        cmsContentVedioPo.setPlayer(vedioFormDto.getPlayer());
-                        cmsContentVedioPo.setDirector(vedioFormDto.getDirector());
-                        cmsContentVedioPo.setPerformer(vedioFormDto.getPerformer());
-                        cmsContentVedioPo.setLanguage(vedioFormDto.getLanguage());
-                        cmsContentVedioPo.setRegion(vedioFormDto.getRegion());
-                        cmsContentVedioPo.setSeason(vedioFormDto.getSeason());
-                        cmsContentVedioPo.setSeasonCount(vedioFormDto.getSeasonCount());
-                        cmsContentVedioPo.setSpisode(vedioFormDto.getSpisode());
-                        cmsContentVedioPo.setSpisodeCount(vedioFormDto.getSpisodeCount());
-                        cmsContentVedioPo.setYears(vedioFormDto.getYears());
-                        cmsContentVedioPo = apiCmsContentVedioPoService.preInsert(cmsContentVedioPo,getLoginUser().getId());
-                        cmsContentVedioPo = apiCmsContentVedioPoService.insertSimple(cmsContentVedioPo);
+            if(DictEnum.CmsContentType.video.name().equals(r.getContentType())){
+                AddCmsContentVideoFormDto videoFormDto = dto.getVideo();
+                if(videoFormDto != null){
+                    CmsContentVideoPo cmsContentVideoPo = null;
+                        cmsContentVideoPo = new CmsContentVideoPo();
+                        cmsContentVideoPo.setContentId(r.getId());
+                        cmsContentVideoPo.setSiteId(r.getSiteId());
+                        cmsContentVideoPo.setDescription(videoFormDto.getDescription());
+                        cmsContentVideoPo.setUrl(videoFormDto.getUrl());
+                        cmsContentVideoPo.setDwonloadNum(0);
+                        cmsContentVideoPo.setExt(videoFormDto.getExt());
+                        cmsContentVideoPo.setFilename(videoFormDto.getFilename());
+                        cmsContentVideoPo.setSize(videoFormDto.getSize());
+                        cmsContentVideoPo.setImageUrl(videoFormDto.getImageUrl());
+                        cmsContentVideoPo.setImageDes(videoFormDto.getImageDes());
+                        cmsContentVideoPo.setSequence(videoFormDto.getSequence());
+                        cmsContentVideoPo.setDuration(videoFormDto.getDuration());
+                        cmsContentVideoPo.setPlayer(videoFormDto.getPlayer());
+                        cmsContentVideoPo.setDirector(videoFormDto.getDirector());
+                        cmsContentVideoPo.setPerformer(videoFormDto.getPerformer());
+                        cmsContentVideoPo.setLanguage(videoFormDto.getLanguage());
+                        cmsContentVideoPo.setRegion(videoFormDto.getRegion());
+                        cmsContentVideoPo.setSeason(videoFormDto.getSeason());
+                        cmsContentVideoPo.setSeasonCount(videoFormDto.getSeasonCount());
+                        cmsContentVideoPo.setSpisode(videoFormDto.getSpisode());
+                        cmsContentVideoPo.setSpisodeCount(videoFormDto.getSpisodeCount());
+                        cmsContentVideoPo.setYears(videoFormDto.getYears());
+                        cmsContentVideoPo = apiCmsContentVideoPoService.preInsert(cmsContentVideoPo,getLoginUser().getId());
+                        cmsContentVideoPo = apiCmsContentVideoPoService.insertSimple(cmsContentVideoPo);
 
                         // 三方播放
-                        List<AddCmsContentVedioOtherPlayerFormDto> vedioOtherPlayerFormDtos = dto.getVedioOtherPlayer();
-                        if (vedioOtherPlayerFormDtos != null && !vedioOtherPlayerFormDtos.isEmpty()) {
-                            List<CmsContentVedioOtherPlayerPo> toBeInsertVedioOtherPlayerPos = new ArrayList<>(vedioOtherPlayerFormDtos.size());
-                            CmsContentVedioOtherPlayerPo toBeInsertVedioOtherPlayerPo = null;
-                            for (AddCmsContentVedioOtherPlayerFormDto vedioOtherPlayerFormDto : vedioOtherPlayerFormDtos) {
-                                if (StringUtils.isEmpty(vedioOtherPlayerFormDto.getUrl())) {
+                        List<AddCmsContentVideoOtherPlayerFormDto> videoOtherPlayerFormDtos = dto.getVideoOtherPlayer();
+                        if (videoOtherPlayerFormDtos != null && !videoOtherPlayerFormDtos.isEmpty()) {
+                            List<CmsContentVideoOtherPlayerPo> toBeInsertVideoOtherPlayerPos = new ArrayList<>(videoOtherPlayerFormDtos.size());
+                            CmsContentVideoOtherPlayerPo toBeInsertVideoOtherPlayerPo = null;
+                            for (AddCmsContentVideoOtherPlayerFormDto videoOtherPlayerFormDto : videoOtherPlayerFormDtos) {
+                                if (StringUtils.isEmpty(videoOtherPlayerFormDto.getUrl())) {
                                     continue;
                                 }
-                                toBeInsertVedioOtherPlayerPo = new CmsContentVedioOtherPlayerPo();
-                                toBeInsertVedioOtherPlayerPo.setVedioId(cmsContentVedioPo.getId());
-                                toBeInsertVedioOtherPlayerPo.setContentId(r.getId());
-                                toBeInsertVedioOtherPlayerPo.setSiteId(r.getSiteId());
-                                toBeInsertVedioOtherPlayerPo.setUrl(vedioOtherPlayerFormDto.getUrl());
-                                toBeInsertVedioOtherPlayerPo.setPlayer(vedioOtherPlayerFormDto.getPlayer());
-                                toBeInsertVedioOtherPlayerPo = apiCmsContentVedioOtherPlayerPoService.preInsert(toBeInsertVedioOtherPlayerPo,getLoginUserId());
-                                toBeInsertVedioOtherPlayerPos.add(toBeInsertVedioOtherPlayerPo);
+                                toBeInsertVideoOtherPlayerPo = new CmsContentVideoOtherPlayerPo();
+                                toBeInsertVideoOtherPlayerPo.setVideoId(cmsContentVideoPo.getId());
+                                toBeInsertVideoOtherPlayerPo.setContentId(r.getId());
+                                toBeInsertVideoOtherPlayerPo.setSiteId(r.getSiteId());
+                                toBeInsertVideoOtherPlayerPo.setUrl(videoOtherPlayerFormDto.getUrl());
+                                toBeInsertVideoOtherPlayerPo.setPlayer(videoOtherPlayerFormDto.getPlayer());
+                                toBeInsertVideoOtherPlayerPo = apiCmsContentVideoOtherPlayerPoService.preInsert(toBeInsertVideoOtherPlayerPo,getLoginUserId());
+                                toBeInsertVideoOtherPlayerPos.add(toBeInsertVideoOtherPlayerPo);
                             }
-                            apiCmsContentVedioOtherPlayerPoService.insertBatch(toBeInsertVedioOtherPlayerPos);
+                            apiCmsContentVideoOtherPlayerPoService.insertBatch(toBeInsertVideoOtherPlayerPos);
                         }
 
                 }
@@ -698,62 +698,62 @@ public class CmsContentController extends BaseController {
                 }
             }
             // 视频
-            if(DictEnum.CmsContentType.vedio.name().equals(basePo.getContentType())){
-                UpdateCmsContentVedioFormDto vedioFormDto = dto.getVedio();
-                if(vedioFormDto != null){
-                    CmsContentVedioPo cmsContentVedioPo = null;
-                    cmsContentVedioPo = new CmsContentVedioPo();
-                    cmsContentVedioPo.setId(vedioFormDto.getId());
-                    cmsContentVedioPo.setContentId(basePo.getId());
-                    cmsContentVedioPo.setSiteId(basePo.getSiteId());
-                    cmsContentVedioPo.setDescription(vedioFormDto.getDescription());
-                    cmsContentVedioPo.setUrl(vedioFormDto.getUrl());
-                    //cmsContentVedioPo.setDwonloadNum(0);
-                    cmsContentVedioPo.setExt(vedioFormDto.getExt());
-                    cmsContentVedioPo.setFilename(vedioFormDto.getFilename());
-                    cmsContentVedioPo.setSize(vedioFormDto.getSize());
-                    cmsContentVedioPo.setImageUrl(vedioFormDto.getImageUrl());
-                    cmsContentVedioPo.setImageDes(vedioFormDto.getImageDes());
-                    cmsContentVedioPo.setSequence(vedioFormDto.getSequence());
-                    cmsContentVedioPo.setDuration(vedioFormDto.getDuration());
-                    cmsContentVedioPo.setPlayer(vedioFormDto.getPlayer());
-                    cmsContentVedioPo.setDirector(vedioFormDto.getDirector());
-                    cmsContentVedioPo.setPerformer(vedioFormDto.getPerformer());
-                    cmsContentVedioPo.setLanguage(vedioFormDto.getLanguage());
-                    cmsContentVedioPo.setRegion(vedioFormDto.getRegion());
-                    cmsContentVedioPo.setSeason(vedioFormDto.getSeason());
-                    cmsContentVedioPo.setSeasonCount(vedioFormDto.getSeasonCount());
-                    cmsContentVedioPo.setSpisode(vedioFormDto.getSpisode());
-                    cmsContentVedioPo.setSpisodeCount(vedioFormDto.getSpisodeCount());
-                    cmsContentVedioPo.setYears(vedioFormDto.getYears());
-                    cmsContentVedioPo = apiCmsContentVedioPoService.preUpdate(cmsContentVedioPo,getLoginUser().getId());
-                    apiCmsContentVedioPoService.updateByPrimaryKeySelective(cmsContentVedioPo);
+            if(DictEnum.CmsContentType.video.name().equals(basePo.getContentType())){
+                UpdateCmsContentVideoFormDto videoFormDto = dto.getVideo();
+                if(videoFormDto != null){
+                    CmsContentVideoPo cmsContentVideoPo = null;
+                    cmsContentVideoPo = new CmsContentVideoPo();
+                    cmsContentVideoPo.setId(videoFormDto.getId());
+                    cmsContentVideoPo.setContentId(basePo.getId());
+                    cmsContentVideoPo.setSiteId(basePo.getSiteId());
+                    cmsContentVideoPo.setDescription(videoFormDto.getDescription());
+                    cmsContentVideoPo.setUrl(videoFormDto.getUrl());
+                    //cmsContentVideoPo.setDwonloadNum(0);
+                    cmsContentVideoPo.setExt(videoFormDto.getExt());
+                    cmsContentVideoPo.setFilename(videoFormDto.getFilename());
+                    cmsContentVideoPo.setSize(videoFormDto.getSize());
+                    cmsContentVideoPo.setImageUrl(videoFormDto.getImageUrl());
+                    cmsContentVideoPo.setImageDes(videoFormDto.getImageDes());
+                    cmsContentVideoPo.setSequence(videoFormDto.getSequence());
+                    cmsContentVideoPo.setDuration(videoFormDto.getDuration());
+                    cmsContentVideoPo.setPlayer(videoFormDto.getPlayer());
+                    cmsContentVideoPo.setDirector(videoFormDto.getDirector());
+                    cmsContentVideoPo.setPerformer(videoFormDto.getPerformer());
+                    cmsContentVideoPo.setLanguage(videoFormDto.getLanguage());
+                    cmsContentVideoPo.setRegion(videoFormDto.getRegion());
+                    cmsContentVideoPo.setSeason(videoFormDto.getSeason());
+                    cmsContentVideoPo.setSeasonCount(videoFormDto.getSeasonCount());
+                    cmsContentVideoPo.setSpisode(videoFormDto.getSpisode());
+                    cmsContentVideoPo.setSpisodeCount(videoFormDto.getSpisodeCount());
+                    cmsContentVideoPo.setYears(videoFormDto.getYears());
+                    cmsContentVideoPo = apiCmsContentVideoPoService.preUpdate(cmsContentVideoPo,getLoginUser().getId());
+                    apiCmsContentVideoPoService.updateByPrimaryKeySelective(cmsContentVideoPo);
 
                     // 三方播放
-                    List<UpdateCmsContentVedioOtherPlayerFormDto> vedioOtherPlayerFormDtos = dto.getVedioOtherPlayer();
-                    if (vedioOtherPlayerFormDtos != null && !vedioOtherPlayerFormDtos.isEmpty()) {
-                        List<CmsContentVedioOtherPlayerPo> toBeUpdateVedioOtherPlayerPos = new ArrayList<>(vedioOtherPlayerFormDtos.size());
-                        CmsContentVedioOtherPlayerPo toBeInsertVedioOtherPlayerPo = null;
-                        for (UpdateCmsContentVedioOtherPlayerFormDto vedioOtherPlayerFormDto : vedioOtherPlayerFormDtos) {
-                            if (StringUtils.isEmpty(vedioOtherPlayerFormDto.getUrl())) {
+                    List<UpdateCmsContentVideoOtherPlayerFormDto> videoOtherPlayerFormDtos = dto.getVideoOtherPlayer();
+                    if (videoOtherPlayerFormDtos != null && !videoOtherPlayerFormDtos.isEmpty()) {
+                        List<CmsContentVideoOtherPlayerPo> toBeUpdateVideoOtherPlayerPos = new ArrayList<>(videoOtherPlayerFormDtos.size());
+                        CmsContentVideoOtherPlayerPo toBeInsertVideoOtherPlayerPo = null;
+                        for (UpdateCmsContentVideoOtherPlayerFormDto videoOtherPlayerFormDto : videoOtherPlayerFormDtos) {
+                            if (StringUtils.isEmpty(videoOtherPlayerFormDto.getUrl())) {
                                 continue;
                             }
-                            toBeInsertVedioOtherPlayerPo = new CmsContentVedioOtherPlayerPo();
-                            toBeInsertVedioOtherPlayerPo.setVedioId(cmsContentVedioPo.getId());
-                            toBeInsertVedioOtherPlayerPo.setContentId(basePo.getId());
-                            toBeInsertVedioOtherPlayerPo.setSiteId(basePo.getSiteId());
-                            toBeInsertVedioOtherPlayerPo.setUrl(vedioOtherPlayerFormDto.getUrl());
-                            toBeInsertVedioOtherPlayerPo.setPlayer(vedioOtherPlayerFormDto.getPlayer());
-                            toBeInsertVedioOtherPlayerPo = apiCmsContentVedioOtherPlayerPoService.preSave(toBeInsertVedioOtherPlayerPo,getLoginUserId());
+                            toBeInsertVideoOtherPlayerPo = new CmsContentVideoOtherPlayerPo();
+                            toBeInsertVideoOtherPlayerPo.setVideoId(cmsContentVideoPo.getId());
+                            toBeInsertVideoOtherPlayerPo.setContentId(basePo.getId());
+                            toBeInsertVideoOtherPlayerPo.setSiteId(basePo.getSiteId());
+                            toBeInsertVideoOtherPlayerPo.setUrl(videoOtherPlayerFormDto.getUrl());
+                            toBeInsertVideoOtherPlayerPo.setPlayer(videoOtherPlayerFormDto.getPlayer());
+                            toBeInsertVideoOtherPlayerPo = apiCmsContentVideoOtherPlayerPoService.preSave(toBeInsertVideoOtherPlayerPo,getLoginUserId());
 
-                            toBeUpdateVedioOtherPlayerPos.add(toBeInsertVedioOtherPlayerPo);
+                            toBeUpdateVideoOtherPlayerPos.add(toBeInsertVideoOtherPlayerPo);
                         }
-                        CmsContentVedioOtherPlayerPo vedioOtherPlayerPoDbCondition = new CmsContentVedioOtherPlayerPo();
-                        vedioOtherPlayerPoDbCondition.setVedioId(cmsContentVedioPo.getId());
-                        vedioOtherPlayerPoDbCondition.setContentId(basePo.getId());
-                        vedioOtherPlayerPoDbCondition.setSiteId(basePo.getSiteId());
-                        vedioOtherPlayerPoDbCondition.setDelFlag(BasePo.YesNo.N.name());
-                        apiCmsContentVedioOtherPlayerPoService.batchSave(toBeUpdateVedioOtherPlayerPos,vedioOtherPlayerPoDbCondition,getLoginUserId());
+                        CmsContentVideoOtherPlayerPo videoOtherPlayerPoDbCondition = new CmsContentVideoOtherPlayerPo();
+                        videoOtherPlayerPoDbCondition.setVideoId(cmsContentVideoPo.getId());
+                        videoOtherPlayerPoDbCondition.setContentId(basePo.getId());
+                        videoOtherPlayerPoDbCondition.setSiteId(basePo.getSiteId());
+                        videoOtherPlayerPoDbCondition.setDelFlag(BasePo.YesNo.N.name());
+                        apiCmsContentVideoOtherPlayerPoService.batchSave(toBeUpdateVideoOtherPlayerPos,videoOtherPlayerPoDbCondition,getLoginUserId());
                     }
                 }
             }
@@ -817,13 +817,13 @@ public class CmsContentController extends BaseController {
                 resultData.addData("audio",apiCmsContentAudioPoService.wrapDto(audioPo));
             }
             // 视频
-            if(DictEnum.CmsContentType.vedio.name().equals(cmsContentDto.getContentType())){
-                CmsContentVedioPo vedioPo = apiCmsContentVedioPoService.selectBySiteIdAndContentId(cmsContentDto.getSiteId(),cmsContentDto.getId());
-                resultData.addData("vedio",apiCmsContentVedioPoService.wrapDto(vedioPo));
+            if(DictEnum.CmsContentType.video.name().equals(cmsContentDto.getContentType())){
+                CmsContentVideoPo videoPo = apiCmsContentVideoPoService.selectBySiteIdAndContentId(cmsContentDto.getSiteId(),cmsContentDto.getId());
+                resultData.addData("video",apiCmsContentVideoPoService.wrapDto(videoPo));
 
-                List<CmsContentVedioOtherPlayerPo> vedioOtherPlayerPos = apiCmsContentVedioOtherPlayerPoService.selectBySiteIdAndContentIdAndVedioId(cmsContentDto.getSiteId(),cmsContentDto.getId(),vedioPo.getId());
-                if(vedioOtherPlayerPos != null && !vedioOtherPlayerPos.isEmpty())
-                resultData.addData("vedioOtherPlayer",apiCmsContentVedioOtherPlayerPoService.wrapDtos(vedioOtherPlayerPos));
+                List<CmsContentVideoOtherPlayerPo> videoOtherPlayerPos = apiCmsContentVideoOtherPlayerPoService.selectBySiteIdAndContentIdAndVideoId(cmsContentDto.getSiteId(),cmsContentDto.getId(),videoPo.getId());
+                if(videoOtherPlayerPos != null && !videoOtherPlayerPos.isEmpty())
+                resultData.addData("videoOtherPlayer",apiCmsContentVideoOtherPlayerPoService.wrapDtos(videoOtherPlayerPos));
             }
 
             return new ResponseEntity(resultData, HttpStatus.OK);

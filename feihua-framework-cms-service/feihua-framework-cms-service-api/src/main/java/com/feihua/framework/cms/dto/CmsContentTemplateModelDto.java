@@ -106,8 +106,8 @@ public class CmsContentTemplateModelDto extends BaseDto {
     private CmsChannelTemplateModelDto channel;
     private List<CmsContentAttachmentDto> attachments;
     private CmsContentAudioDto audio;
-    private CmsContentVedioDto vedio;
-    private List<CmsContentVedioOtherPlayerDto> vedioOtherPlayers;
+    private CmsContentVideoDto video;
+    private List<CmsContentVideoOtherPlayerDto> videoOtherPlayers;
     private List<CmsContentGalleryDto> gallerys;
     private CmsContentLibraryDto library;
     private List<CmsContentLibraryImageDto> libraryImages;
@@ -120,12 +120,12 @@ public class CmsContentTemplateModelDto extends BaseDto {
 
     }
 
-    public List<CmsContentVedioOtherPlayerDto> getVedioOtherPlayers() {
-        return vedioOtherPlayers;
+    public List<CmsContentVideoOtherPlayerDto> getVideoOtherPlayers() {
+        return videoOtherPlayers;
     }
 
-    public void setVedioOtherPlayers(List<CmsContentVedioOtherPlayerDto> vedioOtherPlayers) {
-        this.vedioOtherPlayers = vedioOtherPlayers;
+    public void setVideoOtherPlayers(List<CmsContentVideoOtherPlayerDto> videoOtherPlayers) {
+        this.videoOtherPlayers = videoOtherPlayers;
     }
 
     public String getSuffix() {
@@ -374,12 +374,12 @@ public class CmsContentTemplateModelDto extends BaseDto {
         this.audio = audio;
     }
 
-    public CmsContentVedioDto getVedio() {
-        return vedio;
+    public CmsContentVideoDto getVideo() {
+        return video;
     }
 
-    public void setVedio(CmsContentVedioDto vedio) {
-        this.vedio = vedio;
+    public void setVideo(CmsContentVideoDto video) {
+        this.video = video;
     }
 
     public List<CmsContentGalleryDto> getGallerys() {

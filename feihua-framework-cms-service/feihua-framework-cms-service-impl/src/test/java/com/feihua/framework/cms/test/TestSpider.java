@@ -52,7 +52,7 @@ public class TestSpider {
    static String cssSelectorContentImg = "";
    static String cssSelectorProfile = "";
 
-   //vedio 相关
+   //video 相关
     // 导演
    static String cssSelectorDirector = "";
    // 主演
@@ -330,12 +330,12 @@ public class TestSpider {
         // 年代
         cssSelectorYears = "div.info > p:nth-child(2) > span:nth-child(3) > a:nth-child(2)";
 
-        testSpide( webDriver,DictEnum.CmsContentType.vedio,0, applicationContext);
+        testSpide( webDriver,DictEnum.CmsContentType.video,0, applicationContext);
 
         entryUrl = "http://v.hao123.baidu.com/v/search?channel=movie&category=%E5%96%9C%E5%89%A7&pn=2";
-        testSpide( webDriver,DictEnum.CmsContentType.vedio,0, applicationContext);
+        testSpide( webDriver,DictEnum.CmsContentType.video,0, applicationContext);
         entryUrl = "http://v.hao123.baidu.com/v/search?channel=movie&category=%E5%96%9C%E5%89%A7&pn=3";
-        testSpide( webDriver,DictEnum.CmsContentType.vedio,0, applicationContext);
+        testSpide( webDriver,DictEnum.CmsContentType.video,0, applicationContext);
     }
 
     // 娱乐新闻
@@ -479,41 +479,41 @@ public class TestSpider {
 
                     // 根据类型添加其它信息
                     //视频
-                    if (DictEnum.CmsContentType.vedio.name().equals(cmsContentType.name())) {
+                    if (DictEnum.CmsContentType.video.name().equals(cmsContentType.name())) {
                         String director = JsoupUtils.getText(cssSelectorDirector,doc);
                         String performer = JsoupUtils.getTextForList(cssSelectorPerformer," ",doc);
                         String region = JsoupUtils.getText(cssSelectorRegion,doc);
                         String years = JsoupUtils.getText(cssSelectorYears,doc);
-                        CmsContentVedioPo cmsContentVedioPo = new CmsContentVedioPo();
-                        cmsContentVedioPo.setContentId(cmsContentPo.getId());
-                        cmsContentVedioPo.setSiteId(cmsContentPo.getSiteId());
-                        cmsContentVedioPo.setDirector(director);
-                        cmsContentVedioPo.setPerformer(performer);
-                        cmsContentVedioPo.setRegion(region);
-                        cmsContentVedioPo.setYears((years));
+                        CmsContentVideoPo cmsContentVideoPo = new CmsContentVideoPo();
+                        cmsContentVideoPo.setContentId(cmsContentPo.getId());
+                        cmsContentVideoPo.setSiteId(cmsContentPo.getSiteId());
+                        cmsContentVideoPo.setDirector(director);
+                        cmsContentVideoPo.setPerformer(performer);
+                        cmsContentVideoPo.setRegion(region);
+                        cmsContentVideoPo.setYears((years));
 
 
-                        ApiCmsContentVedioPoService apiCmsContentVedioPoService = applicationContext.getBean(ApiCmsContentVedioPoService.class);
-                        apiCmsContentVedioPoService.preInsert(cmsContentVedioPo,BasePo.DEFAULT_USER_ID);
-                        cmsContentVedioPo = apiCmsContentVedioPoService.insertSimple(cmsContentVedioPo);
+                        ApiCmsContentVideoPoService apiCmsContentVideoPoService = applicationContext.getBean(ApiCmsContentVideoPoService.class);
+                        apiCmsContentVideoPoService.preInsert(cmsContentVideoPo,BasePo.DEFAULT_USER_ID);
+                        cmsContentVideoPo = apiCmsContentVideoPoService.insertSimple(cmsContentVideoPo);
                         String css = "#linkBtn a";
                         List<Element> elements = JsoupUtils.selectList(css,doc);
                         for (Element element1 : elements) {
                             //添加三方播放
-                            CmsContentVedioOtherPlayerPo cmsContentVedioOtherPlayerPo = new CmsContentVedioOtherPlayerPo();
-                            cmsContentVedioOtherPlayerPo.setContentId(cmsContentPo.getId());
-                            cmsContentVedioOtherPlayerPo.setSiteId(cmsContentPo.getSiteId());
-                            cmsContentVedioOtherPlayerPo.setVedioId(cmsContentVedioPo.getId());
+                            CmsContentVideoOtherPlayerPo cmsContentVideoOtherPlayerPo = new CmsContentVideoOtherPlayerPo();
+                            cmsContentVideoOtherPlayerPo.setContentId(cmsContentPo.getId());
+                            cmsContentVideoOtherPlayerPo.setSiteId(cmsContentPo.getSiteId());
+                            cmsContentVideoOtherPlayerPo.setVideoId(cmsContentVideoPo.getId());
                             String _title = element1.attr("title");
                             if (StringUtils.isEmpty(_title)) {
                                 _title = element1.attr("alog-text");
                             }
-                            cmsContentVedioOtherPlayerPo.setPlayer((_title));
-                            cmsContentVedioOtherPlayerPo.setUrl(element1.attr("href"));
+                            cmsContentVideoOtherPlayerPo.setPlayer((_title));
+                            cmsContentVideoOtherPlayerPo.setUrl(element1.attr("href"));
 
-                            ApiCmsContentVedioOtherPlayerPoService apiCmsContentVedioOtherPlayerPoService = applicationContext.getBean(ApiCmsContentVedioOtherPlayerPoService.class);
-                            apiCmsContentVedioOtherPlayerPoService.preInsert(cmsContentVedioOtherPlayerPo,BasePo.DEFAULT_USER_ID);
-                            apiCmsContentVedioOtherPlayerPoService.insert(cmsContentVedioOtherPlayerPo);
+                            ApiCmsContentVideoOtherPlayerPoService apiCmsContentVideoOtherPlayerPoService = applicationContext.getBean(ApiCmsContentVideoOtherPlayerPoService.class);
+                            apiCmsContentVideoOtherPlayerPoService.preInsert(cmsContentVideoOtherPlayerPo,BasePo.DEFAULT_USER_ID);
+                            apiCmsContentVideoOtherPlayerPoService.insert(cmsContentVideoOtherPlayerPo);
                         }
                     }
                     if (DictEnum.CmsContentType.audio.name().equals(cmsContentType.name())) {

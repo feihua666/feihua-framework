@@ -47,9 +47,9 @@ public class AddCmsContentFormDto {
     private List<AddCmsContentDownloadImageFormDto> downloadImages;
 
     private AddCmsContentAudioFormDto audio;
-    private AddCmsContentVedioFormDto vedio;
+    private AddCmsContentVideoFormDto video;
 
-    private List<AddCmsContentVedioOtherPlayerFormDto> vedioOtherPlayer;
+    private List<AddCmsContentVideoOtherPlayerFormDto> videoOtherPlayer;
 
     List<String> categoryIds;
 
@@ -213,20 +213,20 @@ public class AddCmsContentFormDto {
         this.audio = audio;
     }
 
-    public AddCmsContentVedioFormDto getVedio() {
-        return vedio;
+    public AddCmsContentVideoFormDto getVideo() {
+        return video;
     }
 
-    public void setVedio(AddCmsContentVedioFormDto vedio) {
-        this.vedio = vedio;
+    public void setVideo(AddCmsContentVideoFormDto video) {
+        this.video = video;
     }
 
-    public List<AddCmsContentVedioOtherPlayerFormDto> getVedioOtherPlayer() {
-        return vedioOtherPlayer;
+    public List<AddCmsContentVideoOtherPlayerFormDto> getVideoOtherPlayer() {
+        return videoOtherPlayer;
     }
 
-    public void setVedioOtherPlayer(List<AddCmsContentVedioOtherPlayerFormDto> vedioOtherPlayer) {
-        this.vedioOtherPlayer = vedioOtherPlayer;
+    public void setVideoOtherPlayer(List<AddCmsContentVideoOtherPlayerFormDto> videoOtherPlayer) {
+        this.videoOtherPlayer = videoOtherPlayer;
     }
 
     public List<AddCmsContentDownloadImageFormDto> getDownloadImages() {

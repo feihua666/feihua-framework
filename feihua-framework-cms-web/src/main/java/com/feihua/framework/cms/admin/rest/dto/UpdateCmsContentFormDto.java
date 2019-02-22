@@ -46,9 +46,9 @@ public class UpdateCmsContentFormDto extends UpdateFormDto {
 
     private UpdateCmsContentAudioFormDto audio;
 
-    private UpdateCmsContentVedioFormDto vedio;
+    private UpdateCmsContentVideoFormDto video;
 
-    private List<UpdateCmsContentVedioOtherPlayerFormDto> vedioOtherPlayer;
+    private List<UpdateCmsContentVideoOtherPlayerFormDto> videoOtherPlayer;
 
     List<String> categoryIds;
 
@@ -212,20 +212,20 @@ public class UpdateCmsContentFormDto extends UpdateFormDto {
         this.audio = audio;
     }
 
-    public UpdateCmsContentVedioFormDto getVedio() {
-        return vedio;
+    public UpdateCmsContentVideoFormDto getVideo() {
+        return video;
     }
 
-    public void setVedio(UpdateCmsContentVedioFormDto vedio) {
-        this.vedio = vedio;
+    public void setVideo(UpdateCmsContentVideoFormDto video) {
+        this.video = video;
     }
 
-    public List<UpdateCmsContentVedioOtherPlayerFormDto> getVedioOtherPlayer() {
-        return vedioOtherPlayer;
+    public List<UpdateCmsContentVideoOtherPlayerFormDto> getVideoOtherPlayer() {
+        return videoOtherPlayer;
     }
 
-    public void setVedioOtherPlayer(List<UpdateCmsContentVedioOtherPlayerFormDto> vedioOtherPlayer) {
-        this.vedioOtherPlayer = vedioOtherPlayer;
+    public void setVideoOtherPlayer(List<UpdateCmsContentVideoOtherPlayerFormDto> videoOtherPlayer) {
+        this.videoOtherPlayer = videoOtherPlayer;
     }
 
     public List<UpdateCmsContentDownloadImageFormDto> getDownloadImages() {

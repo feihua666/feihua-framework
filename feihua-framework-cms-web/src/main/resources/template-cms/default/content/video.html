@@ -45,32 +45,32 @@
         <hr/>
 
         <img src="${content.imageUrl!}">
-        [#if content.vedio??]
+        [#if content.video??]
         <!--  -->
-            [#if content.vedio.url?? && content.vedio.player == 'HTML5' ]
-            <video src="${content.vedio.url}" width="320" height="240" controls="controls">
+            [#if content.video.url?? && content.video.player == 'HTML5' ]
+            <video src="${content.video.url}" width="320" height="240" controls="controls">
                 Your browser does not support the video tag.
             </video>
             [/#if]
 
-            [#if content.vedioOtherPlayers??]
+            [#if content.videoOtherPlayers??]
         <div class="row">
             第三方播放
             <br/>
-            [#list content.vedioOtherPlayers as op]
+            [#list content.videoOtherPlayers as op]
             ${op.player}:<a href="${op.url}">${op.player}</a>
             <br/>
             [/#list]
         </div>
             [/#if]
         <div class="row">
-            导演：${content.vedio.director!}
+            导演：${content.video.director!}
             <br/>
-            主演：${content.vedio.performer!}
+            主演：${content.video.performer!}
             <br/>
-            国家/地区：${content.vedio.region!}
+            国家/地区：${content.video.region!}
             <br/>
-            年代：${content.vedio.years!}
+            年代：${content.video.years!}
         </div>
         [#else]
             无视频内容
