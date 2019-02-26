@@ -5,7 +5,7 @@
     <parent>
         <artifactId>feihua-framework-spider-service</artifactId>
         <groupId>feihua</groupId>
-        <version>1.1.0.2018-10-09</version>
+        <version>1.0.0.2019-02-26</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>

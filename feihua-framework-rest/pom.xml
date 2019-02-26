@@ -6,7 +6,7 @@
     <parent>
         <artifactId>feihua-framework</artifactId>
         <groupId>feihua</groupId>
-        <version>1.1.0.2018-10-09</version>
+        <version>1.0.0.2019-02-26</version>
     </parent>
     <description>这是一个web项目基础库，如果要写web项目请依赖该库</description>
     <artifactId>feihua-framework-rest</artifactId>

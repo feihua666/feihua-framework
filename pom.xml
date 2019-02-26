@@ -6,7 +6,7 @@
 
     <groupId>feihua</groupId>
     <artifactId>feihua-framework</artifactId>
-    <version>1.1.0.2018-10-09</version>
+    <version>1.0.0.2019-02-26</version>
     <modules>
         <module>feihua-utils</module>
         <module>feihua-jdbc-api</module>
