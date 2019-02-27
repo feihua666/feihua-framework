@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    [#include "../include/global_meta.html"/]
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>${site.name}</title>
+
+    [#include "../include/global_favicon.html"/]
+
+    <!-- Custom styles for this template -->
+    <style>
+
+    </style>
+
+    [#include "../include/global_css.html"/]
+    [#include "../include/global_js_in_head.html"/]
+
+</head>
+<body>
+[#include "../include/global_navigation.html"/]
+<div class="main-wrapper  container" style="margin-top:60px;">
+    [#include "../include/global_breadcrumb.html"/]
+    <div class="row">
+        <!-- 图库 -->
+        <div class="col-sm-12">
+            [@cms_content_list siteId=site.id channelId=channel.id   iteratorType="var"]
+
+            [#assign newsList = contentList]
+            [#assign title = "内容列表"]
+            <!-- rowNum为12的约数 -->
+            [#assign rowNum = 4]
+            [#include "../include/widget/video_list.html"/]
+            [/@]
+        </div>
+    </div>
+</div>
+
+[#include "../include/global_footer.html"/]
+
+[#include "../include/global_js_in_foot.html"/]
+
+<!-- Custom javascript for this template -->
+[#assign excuType="scrolled"]
+[#include "../include/global_navigation_js.html"/]
+<script>
+
+</script>
+</body>
+</html>

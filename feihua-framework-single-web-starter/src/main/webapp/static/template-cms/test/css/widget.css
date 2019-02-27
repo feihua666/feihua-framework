@@ -1,0 +1,37 @@
+/* widget styles
+-------------------------------------------------- */
+
+/*************** news_list.html start ******************************/
+
+.news-list-widget .title {
+  border-bottom:2px solid #303030;
+  height: 20px;
+  margin-top:0;
+  padding-bottom:3px;
+  margin-bottom:21px;
+}
+.news-list-widget .title .title-inner{
+  display: inline-block;
+  height:20px;
+  border-bottom: 2px solid darkred;
+  color: #1a1a1a;
+  border-right: 3px solid white;
+}
+ .news-list-widget .content .media-body a{
+  color: #004276;
+   white-space: nowrap;/*不换行*/
+   text-overflow:ellipsis;/*超出部分文字以...显示*/
+   overflow: hidden;
+   width: 100%;
+   display: inline-block;
+ }
+.news-list-widget .content .media-body{
+  width: 100%;
+}
+.news-list-widget .content .media-body a:hover{
+  color: #f54343;
+}
+.news-list-widget .content .media-left img{
+    width:64px;
+}
+/*************** news_list.html end ******************************/

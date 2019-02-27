@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>feihua</groupId>
+        <artifactId>feihua-framework</artifactId>
+        <version>1.0.0.2019-02-26</version>
+    </parent>
+
+    <groupId>feihua</groupId>
+    <artifactId>feihua-framework-generator</artifactId>
+    <packaging>jar</packaging>
+    <version>1.0.0.2019-02-26</version>
+
+    <properties>
+
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis.generator</groupId>
+            <artifactId>mybatis-generator-core</artifactId>
+            <version>1.3.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-jdbc-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>generator.wwd</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!--改这里，类的作者注释-->
+                <comment.author>yangwei</comment.author>
+                <!--改这里，表名-->
+                <table.name>wwd_user_card</table.name>
+                <!--改这里，实体名-->
+                <model.name>WwdUserCardPo</model.name>
+
+                <!--数据库相关-->
+                <jdbc.connector.jar>C:/Users/Lenovo/.m2/repository/mysql/mysql-connector-java/5.1.36/mysql-connector-java-5.1.36.jar</jdbc.connector.jar>
+                <jdbc.url>jdbc:mysql://123.56.45.8/wwd_db?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.user>agency</jdbc.user>
+                <jdbc.password>agency</jdbc.password>
+
+                <!--service项目的地址,生成前请确认有这个地址路径是存在的-->
+                <!--service项目的地址,生成前请确认有这个地址路径是存在的-->
+                <model.targetProject>E:\\git source\\wwd-web\\src\\main\\java</model.targetProject>
+                <xmlmapper.targetProject>E:\\git source\\wwd-web\\src\\main\\java</xmlmapper.targetProject>
+                <client.targetProject>E:\\git source\\wwd-web\\src\\main\\java</client.targetProject>
+                <!--改这里，实体包-->
+                <model.targetPackage>com.wwd.service.modules.wwd.po</model.targetPackage>
+
+                <xmlmapper.targetPackage>com.wwd.service.mapper</xmlmapper.targetPackage>
+
+                <client.targetPackage>com.wwd.service.mapper</client.targetPackage>
+                <!-- dao父级接口  -->
+                <client.rootInterface>feihua.jdbc.api.dao.CrudDao</client.rootInterface>
+
+                <service.targetPackage>com.wwd.service.modules.wwd.api</service.targetPackage>
+                <interfaceBaseService>feihua.jdbc.api.service.ApiBaseService</interfaceBaseService>
+
+                <serviceimpl.targetPackage>com.wwd.service.impl</serviceimpl.targetPackage>
+                <abstractBaseService>feihua.jdbc.api.service.impl.ApiBaseServiceImpl</abstractBaseService>
+
+                <controller.dto.targetPackage>com.wwd.web.modules.wwd.dto</controller.dto.targetPackage>
+                <controller.targetPackage>com.wwd.web.modules.wwd.mvc</controller.targetPackage>
+                <controller.targetProject>E:\\git source\\wwd-web\\src\\main\\java</controller.targetProject>
+                <controller.classMappingPath>/wwd</controller.classMappingPath>
+                <controller.methodMappingPath>/user/card</controller.methodMappingPath>
+                <controller.methodRequiresPermissionsPre>wwd:user:card:</controller.methodRequiresPermissionsPre>
+                <controller.moduleName>wwd</controller.moduleName>
+                <controller.controllerComment>汪汪队用户卡片管理</controller.controllerComment>
+                <controller.moduleComment>汪汪队用户卡片</controller.moduleComment>
+                <controller.updateFormSuperClass>com.feihua.framework.rest.modules.common.dto.UpdateFormDto</controller.updateFormSuperClass>
+
+                <api.service.prifix></api.service.prifix>
+                <pojo.basepo>feihua.jdbc.api.pojo.BasePo</pojo.basepo>
+                <pojo.basedto>feihua.jdbc.api.pojo.BaseDto</pojo.basedto>
+
+                <!-- 生成文件开头 -->
+                <treetable>false</treetable>
+                <generator.model>true</generator.model>
+                <generator.dto>true</generator.dto>
+                <generator.xmlMapper>true</generator.xmlMapper>
+                <generator.dao>true</generator.dao>
+                <generator.serviceImpl>true</generator.serviceImpl>
+                <generator.service>true</generator.service>
+                <generator.service.searchDsfMethod>true</generator.service.searchDsfMethod>
+                <!--不生成controller类-->
+                <generator.controller>true</generator.controller>
+
+
+            </properties>
+        </profile>
+        <profile>
+            <id>generator.yangwei_wechat</id>
+            <properties>
+                <!--改这里，类的作者注释-->
+                <comment.author>yangwei</comment.author>
+                <!--改这里，表名-->
+                <table.name>weixin_menu</table.name>
+                <!--改这里，实体名-->
+                <model.name>WeixinMenuPo</model.name>
+
+                <!--数据库相关-->
+                <jdbc.connector.jar>C:/Users/Lenovo/.m2/repository/mysql/mysql-connector-java/5.1.36/mysql-connector-java-5.1.36.jar</jdbc.connector.jar>
+                <jdbc.url>jdbc:mysql://localhost/feihua-framework-base?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password>root</jdbc.password>
+
+                <!--service项目的地址,生成前请确认有这个地址路径是存在的-->
+                <model.targetProject>E:\\git source\\feihua-wechat-service\\feihua-wechat-service-api\\src\\main\\java</model.targetProject>
+                <xmlmapper.targetProject>E:\\git source\\feihua-wechat-service\\feihua-wechat-service-impl\\src\\main\\java</xmlmapper.targetProject>
+                <client.targetProject>E:\\git source\\feihua-wechat-service\\feihua-wechat-service-impl\\src\\main\\java</client.targetProject>
+                <!--改这里，实体包-->
+                <model.targetPackage>com.feihua.wechat.publicplatform.po</model.targetPackage>
+
+                <xmlmapper.targetPackage>com.feihua.wechat.mapper</xmlmapper.targetPackage>
+
+                <client.targetPackage>com.feihua.wechat.mapper</client.targetPackage>
+                <!-- dao父级接口  -->
+                <!-- 一般无需修改 -->
+                <client.rootInterface>feihua.jdbc.api.dao.CrudDao</client.rootInterface>
+                <!--改这里，api-->
+                <service.targetPackage>com.feihua.wechat.publicplatform.api</service.targetPackage>
+                <!-- 一般无需修改 -->
+                <interfaceBaseService>feihua.jdbc.api.service.ApiBaseService</interfaceBaseService>
+                <!-- 改这里 ，impl -->
+                <serviceimpl.targetPackage>com.feihua.wechat.publicplatform</serviceimpl.targetPackage>
+                <!-- 一般无需修改 -->
+                <abstractBaseService>feihua.jdbc.api.service.impl.ApiBaseServiceImpl</abstractBaseService>
+
+                <controller.dto.targetPackage>com.feihua.wechat.rest.publicplatform.dto</controller.dto.targetPackage>
+                <controller.targetPackage>com.feihua.wechat.rest.publicplatform.mvc</controller.targetPackage>
+                <controller.targetProject>E:\\git source\\feihua-wechat-rest\\src\\main\\java</controller.targetProject>
+                <controller.classMappingPath>/weixinmenu</controller.classMappingPath>
+                <controller.methodMappingPath>/menu</controller.methodMappingPath>
+                <controller.methodRequiresPermissionsPre>weixinmenu:</controller.methodRequiresPermissionsPre>
+                <controller.moduleName></controller.moduleName>
+                <controller.controllerComment>微信菜单管理</controller.controllerComment>
+                <controller.moduleComment>微信菜单</controller.moduleComment>
+                <controller.updateFormSuperClass>com.feihua.framework.rest.dto.UpdateFormDto</controller.updateFormSuperClass>
+
+                <api.service.prifix></api.service.prifix>
+                <pojo.basepo>feihua.jdbc.api.pojo.BasePo</pojo.basepo>
+                <pojo.basedto>feihua.jdbc.api.pojo.BaseDto</pojo.basedto>
+
+                <!-- 生成文件开头 -->
+                <treetable>true</treetable>
+                <generator.model>true</generator.model>
+                <generator.dto>true</generator.dto>
+                <generator.xmlMapper>true</generator.xmlMapper>
+                <generator.dao>false</generator.dao>
+                <generator.serviceImpl>false</generator.serviceImpl>
+                <generator.service>false</generator.service>
+                <generator.service.searchDsfMethod>true</generator.service.searchDsfMethod>
+                <!--生成controller类-->
+                <generator.controller>false</generator.controller>
+
+
+            </properties>
+        </profile>
+        <profile>
+            <id>generator.yangwei_base</id>
+            <properties>
+                <!--改这里，类的作者注释-->
+                <comment.author>yangwei</comment.author>
+                <!--改这里，表名-->
+                <table.name>base_message_target_client_user_rel</table.name>
+                <!--改这里，实体名-->
+                <model.name>BaseMessageTargetClientUserRelPo</model.name>
+
+                <!--数据库相关-->
+                <jdbc.connector.jar>C:/Users/Lenovo/.m2/repository/mysql/mysql-connector-java/5.1.36/mysql-connector-java-5.1.36.jar</jdbc.connector.jar>
+                <jdbc.url>jdbc:mysql://localhost/feihua-framework-base?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password>root</jdbc.password>
+
+                <!--service项目的地址,生成前请确认有这个地址路径是存在的-->
+                <model.targetProject>E:\\git source\\feihua-framework\\feihua-framework-message-service\\feihua-framework-message-service-api\\src\\main\\java</model.targetProject>
+                <xmlmapper.targetProject>E:\\git source\\feihua-framework\\feihua-framework-message-service\\feihua-framework-message-service-api\\src\\main\\java</xmlmapper.targetProject>
+                <client.targetProject>E:\\git source\\feihua-framework\\feihua-framework-message-service\\feihua-framework-message-service-api\\src\\main\\java</client.targetProject>
+                <!--改这里，实体包-->
+                <model.targetPackage>com.feihua.framework.message.po</model.targetPackage>
+
+                <xmlmapper.targetPackage>com.feihua.framework.message.mapper</xmlmapper.targetPackage>
+
+                <client.targetPackage>com.feihua.framework.message.mapper</client.targetPackage>
+                <!-- dao父级接口  -->
+                <!-- 一般无需修改 -->
+                <client.rootInterface>feihua.jdbc.api.dao.CrudDao</client.rootInterface>
+                <!--改这里，api-->
+                <service.targetPackage>com.feihua.framework.message.api</service.targetPackage>
+                <!-- 一般无需修改 -->
+                <interfaceBaseService>feihua.jdbc.api.service.ApiBaseService</interfaceBaseService>
+                <!-- 改这里 ，impl -->
+                <serviceimpl.targetPackage>com.feihua.framework.message.impl</serviceimpl.targetPackage>
+                <!-- 一般无需修改 -->
+                <abstractBaseService>feihua.jdbc.api.service.impl.ApiBaseServiceImpl</abstractBaseService>
+
+                <controller.dto.targetPackage>com.feihua.framework.rest.modules.message.dto</controller.dto.targetPackage>
+                <controller.targetPackage>com.feihua.framework.rest.modules.message.mvc</controller.targetPackage>
+                <controller.targetProject>E:\\git source\\feihua-framework\\feihua-framework-base-rest\\src\\main\\java</controller.targetProject>
+                <controller.classMappingPath>/base</controller.classMappingPath>
+                <controller.methodMappingPath>/message/userstate</controller.methodMappingPath>
+                <controller.methodRequiresPermissionsPre>messageUserstate:</controller.methodRequiresPermissionsPre>
+                <!-- 模块包名 package com.feihua.framework.rest.modules.${moduleName}.mvc -->
+                <controller.moduleName>message</controller.moduleName>
+                <controller.controllerComment>消息读取状态管理</controller.controllerComment>
+                <controller.moduleComment>消息读取状态</controller.moduleComment>
+                <controller.updateFormSuperClass>com.feihua.framework.rest.dto.UpdateFormDto</controller.updateFormSuperClass>
+
+                <api.service.prifix></api.service.prifix>
+                <pojo.basepo>feihua.jdbc.api.pojo.BasePo</pojo.basepo>
+                <pojo.basedto>feihua.jdbc.api.pojo.BaseDto</pojo.basedto>
+
+                <!-- 生成文件开头 -->
+                <treetable>false</treetable>
+                <generator.model>true</generator.model>
+                <generator.dto>true</generator.dto>
+                <generator.xmlMapper>true</generator.xmlMapper>
+                <generator.dao>true</generator.dao>
+                <generator.serviceImpl>true</generator.serviceImpl>
+                <generator.service>true</generator.service>
+                <generator.service.searchDsfMethod>false</generator.service.searchDsfMethod>
+                <!--生成controller类-->
+                <generator.controller>false</generator.controller>
+
+
+            </properties>
+        </profile>
+        <profile>
+            <id>generator.yangwei_cms</id>
+            <properties>
+                <!--改这里，类的作者注释-->
+                <comment.author>yangwei</comment.author>
+                <!--改这里，表名-->
+                <table.name>cms_content_download</table.name>
+                <!--改这里，实体名-->
+                <model.name>CmsContentDownloadPo</model.name>
+
+                <!--数据库相关-->
+                <jdbc.connector.jar>C:/Users/Lenovo/.m2/repository/mysql/mysql-connector-java/8.0.12/mysql-connector-java-8.0.12.jar</jdbc.connector.jar>
+                <jdbc.url>jdbc:mysql://localhost/feihua-framework-base?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true&amp;serverTimezone=GMT%2B8</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password>root</jdbc.password>
+
+                <!--service项目的地址,生成前请确认有这个地址路径是存在的-->
+                <model.targetProject>E:\\git source\\feihua-framework\\feihua-framework-cms-service\\feihua-framework-cms-service-api\\src\\main\\java</model.targetProject>
+                <xmlmapper.targetProject>E:\\git source\\feihua-framework\\feihua-framework-cms-service\\feihua-framework-cms-service-impl\\src\\main\\java</xmlmapper.targetProject>
+                <client.targetProject>E:\\git source\\feihua-framework\\feihua-framework-cms-service\\feihua-framework-cms-service-impl\\src\\main\\java</client.targetProject>
+                <!--改这里，实体包-->
+                <model.targetPackage>com.feihua.framework.cms.po</model.targetPackage>
+
+                <xmlmapper.targetPackage>com.feihua.framework.cms.mapper</xmlmapper.targetPackage>
+
+                <client.targetPackage>com.feihua.framework.cms.mapper</client.targetPackage>
+                <!-- dao父级接口  -->
+                <!-- 一般无需修改 -->
+                <client.rootInterface>feihua.jdbc.api.dao.CrudDao</client.rootInterface>
+                <!--改这里，api-->
+                <service.targetPackage>com.feihua.framework.cms.api</service.targetPackage>
+                <!-- 一般无需修改 -->
+                <interfaceBaseService>feihua.jdbc.api.service.ApiBaseService</interfaceBaseService>
+                <!-- 改这里 ，impl -->
+                <serviceimpl.targetPackage>com.feihua.framework.cms.impl</serviceimpl.targetPackage>
+                <!-- 一般无需修改 -->
+                <abstractBaseService>feihua.jdbc.api.service.impl.ApiBaseServiceImpl</abstractBaseService>
+
+                <controller.dto.targetPackage>com.feihua.framework.cms.admin.rest.dto</controller.dto.targetPackage>
+                <controller.targetPackage>com.feihua.framework.cms.admin.rest.mvc</controller.targetPackage>
+                <controller.targetProject>E:\\git source\\feihua-framework\\feihua-framework-cms-web\\src\\main\\java</controller.targetProject>
+                <controller.classMappingPath>/cms</controller.classMappingPath>
+                <controller.methodMappingPath>/content/comment</controller.methodMappingPath>
+                <controller.methodRequiresPermissionsPre>contentComment:</controller.methodRequiresPermissionsPre>
+                <!-- 模块包名 package com.feihua.framework.rest.modules.${moduleName}.mvc -->
+                <controller.moduleName></controller.moduleName>
+                <controller.controllerComment>内容评论管理</controller.controllerComment>
+                <controller.moduleComment>内容评论</controller.moduleComment>
+                <controller.updateFormSuperClass>com.feihua.framework.rest.dto.UpdateFormDto</controller.updateFormSuperClass>
+
+                <api.service.prifix></api.service.prifix>
+                <pojo.basepo>feihua.jdbc.api.pojo.BasePo</pojo.basepo>
+                <pojo.basedto>feihua.jdbc.api.pojo.BaseDbDto</pojo.basedto>
+
+                <!-- 生成文件开头 -->
+                <treetable>false</treetable>
+                <generator.model>true</generator.model>
+                <generator.dto>true</generator.dto>
+                <generator.xmlMapper>true</generator.xmlMapper>
+                <generator.dao>false</generator.dao>
+                <generator.serviceImpl>false</generator.serviceImpl>
+                <generator.service>false</generator.service>
+                <generator.service.searchDsfMethod>false</generator.service.searchDsfMethod>
+                <!--生成controller类-->
+                <generator.controller>false</generator.controller>
+
+
+            </properties>
+        </profile>
+        <profile>
+            <id>generator.yangwei_spider</id>
+            <properties>
+                <!--改这里，类的作者注释-->
+                <comment.author>yangwei</comment.author>
+                <!--改这里，表名-->
+                <table.name>spider_result_urls</table.name>
+                <!--改这里，实体名-->
+                <model.name>SpiderResultUrlsPo</model.name>
+
+                <!--数据库相关-->
+                <jdbc.connector.jar>C:/Users/Lenovo/.m2/repository/mysql/mysql-connector-java/8.0.12/mysql-connector-java-8.0.12.jar</jdbc.connector.jar>
+                <jdbc.url>jdbc:mysql://localhost/feihua-framework-base?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true&amp;serverTimezone=GMT%2B8</jdbc.url>
+                <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+                <jdbc.user>root</jdbc.user>
+                <jdbc.password>root</jdbc.password>
+
+                <!--service项目的地址,生成前请确认有这个地址路径是存在的-->
+                <model.targetProject>E:\\git source\\feihua-framework\\feihua-framework-spider-service\\feihua-framework-spider-service-api\\src\\main\\java</model.targetProject>
+                <xmlmapper.targetProject>E:\\git source\\feihua-framework\\feihua-framework-spider-service\\feihua-framework-spider-service-impl\\src\\main\\java</xmlmapper.targetProject>
+                <client.targetProject>E:\\git source\\feihua-framework\\feihua-framework-spider-service\\feihua-framework-spider-service-impl\\src\\main\\java</client.targetProject>
+                <!--改这里，实体包-->
+                <model.targetPackage>com.feihua.framework.spider.po</model.targetPackage>
+
+                <xmlmapper.targetPackage>com.feihua.framework.spider.mapper</xmlmapper.targetPackage>
+
+                <client.targetPackage>com.feihua.framework.spider.mapper</client.targetPackage>
+                <!-- dao父级接口  -->
+                <!-- 一般无需修改 -->
+                <client.rootInterface>feihua.jdbc.api.dao.CrudDao</client.rootInterface>
+                <!--改这里，api-->
+                <service.targetPackage>com.feihua.framework.spider.api</service.targetPackage>
+                <!-- 一般无需修改 -->
+                <interfaceBaseService>feihua.jdbc.api.service.ApiBaseService</interfaceBaseService>
+                <!-- 改这里 ，impl -->
+                <serviceimpl.targetPackage>com.feihua.framework.spider.impl</serviceimpl.targetPackage>
+                <!-- 一般无需修改 -->
+                <abstractBaseService>feihua.jdbc.api.service.impl.ApiBaseServiceImpl</abstractBaseService>
+
+                <controller.dto.targetPackage>com.feihua.framework.spider.rest.dto</controller.dto.targetPackage>
+                <controller.targetPackage>com.feihua.framework.spider.rest.mvc</controller.targetPackage>
+                <controller.targetProject>E:\\git source\\feihua-framework\\feihua-framework-spider-rest\\src\\main\\java</controller.targetProject>
+                <controller.classMappingPath>/spider</controller.classMappingPath>
+                <controller.methodMappingPath>/content/comment</controller.methodMappingPath>
+                <controller.methodRequiresPermissionsPre>contentComment:</controller.methodRequiresPermissionsPre>
+                <!-- 模块包名 package com.feihua.framework.rest.modules.${moduleName}.mvc -->
+                <controller.moduleName></controller.moduleName>
+                <controller.controllerComment>内容评论管理</controller.controllerComment>
+                <controller.moduleComment>内容评论</controller.moduleComment>
+                <controller.updateFormSuperClass>com.feihua.framework.rest.dto.UpdateFormDto</controller.updateFormSuperClass>
+
+                <api.service.prifix></api.service.prifix>
+                <pojo.basepo>feihua.jdbc.api.pojo.BasePo</pojo.basepo>
+                <pojo.basedto>feihua.jdbc.api.pojo.BaseDbDto</pojo.basedto>
+
+                <!-- 生成文件开头 -->
+                <treetable>false</treetable>
+                <generator.model>true</generator.model>
+                <generator.dto>true</generator.dto>
+                <generator.xmlMapper>true</generator.xmlMapper>
+                <generator.dao>true</generator.dao>
+                <generator.serviceImpl>true</generator.serviceImpl>
+                <generator.service>true</generator.service>
+                <generator.service.searchDsfMethod>false</generator.service.searchDsfMethod>
+                <!--生成controller类-->
+                <generator.controller>false</generator.controller>
+
+
+            </properties>
+        </profile>
+    </profiles>
+</project>

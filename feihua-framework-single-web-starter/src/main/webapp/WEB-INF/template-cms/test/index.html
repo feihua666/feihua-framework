@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    [#include "include/global_meta.html"/]
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>${site.name}</title>
+
+    [#include "include/global_favicon.html"/]
+
+    <!-- Custom styles for this template -->
+
+    <link href="${site.staticResourcePath}/index/index.css" rel="stylesheet">
+    <style>
+
+    </style>
+
+    [#include "include/global_css.html"/]
+    <link href="${site.staticResourcePath}/css/widget.css" rel="stylesheet">
+    [#include "include/global_js_in_head.html"/]
+
+</head>
+<body>
+[#include "include/global_navigation.html"/]
+<!-- Carousel
+================================================== -->
+<div id="myCarousel" class="carousel slide" data-ride="carousel">
+    <!-- Indicators -->
+    <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+    </ol>
+    <div class="carousel-inner" role="listbox">
+        <div class="item active">
+            <!--<img class="first-slide" src="${site.staticResourcePath}/index/index_banner_1.jpg" alt="First slide">-->
+            <div class="first-slide img" style="background-image: url('${site.staticResourcePath}/index/index_banner_1.jpg')"></div>
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>Example headline.</h1>
+                    <p>Note: If you're viewing this page via a <code>file://</code> URL, the "next" and "previous" Glyphicon buttons on the left and right might not load/display properly due to web browser security rules.</p>
+                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Sign up today</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="first-slide img" style="background-image: url('${site.staticResourcePath}/index/index_banner_2.jpg')"></div>
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>Another example headline.</h1>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Learn more</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="item">
+            <div class="first-slide img" style="background-image: url('${site.staticResourcePath}/index/index_banner_3.jpg')"></div>
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>One more for good measure.</h1>
+                    <p>Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.</p>
+                    <p><a class="btn btn-lg btn-primary" href="#" role="button">Browse gallery</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div><!-- /.carousel -->
+[#include "include/global_breadcrumb.html"/]
+<div class="main-wrapper  container">
+<div class="row">
+    <div class="col-sm-4">
+        [@cms_content_list siteId=site.id channelId="8802f650f78811e8be274439c4325934" pageNo="1" pageSize="15" iteratorType="var"]
+
+        [#assign newsList = contentList]
+        [#assign title = "文库"]
+        [#include "include/widget/news_list.html"/]
+        [/@]
+    </div>
+    <!-- 新闻 -->
+    <div class="col-sm-6">
+        [@cms_content_list siteId=site.id channelId="2ea8f89af78711e8be274439c4325934" pageNo="1" pageSize="12" iteratorType="var"]
+
+            [#assign newsList = contentList]
+            [#assign title = "新闻"]
+            [#include "include/widget/news_list.html"/]
+        [/@]
+    </div>
+    <div class="col-sm-2">
+        [@cms_content_list siteId=site.id channelId="26880ce3feaa11e8be274439c4325934" pageNo="1" pageSize="15" iteratorType="var"]
+
+        [#assign newsList = contentList]
+        [#assign title = "音乐"]
+        [#include "include/widget/news_list.html"/]
+        [/@]
+    </div>
+</div>
+    <div class="row">
+    <!-- 影视 -->
+    <div class="col-sm-12">
+        [@cms_content_list siteId=site.id channelId="2d8089b5feaa11e8be274439c4325934"  pageNo="1" pageSize="15"  iteratorType="var"]
+
+        [#assign newsList = contentList]
+        [#assign title = "影视"]
+        <!-- rowNum为12的约数 -->
+        [#assign rowNum = 6]
+        [#include "include/widget/video_list.html"/]
+        [/@]
+    </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-4">
+        [@cms_content_list siteId=site.id channelId="80ec3242f78811e8be274439c4325934"  pageNo="1" pageSize="10"  iteratorType="var"]
+
+            [#assign newsList = contentList]
+            [#assign title = "下载"]
+            [#include "include/widget/news_list.html"/]
+        [/@]
+        </div>
+        <div class="col-sm-4">
+            [@cms_content_list siteId=site.id channelId="80ec3242f78811e8be274439c4325934"  pageNo="1" pageSize="10"  iteratorType="var"]
+
+            [#assign newsList = contentList]
+            [#assign title = "下载排行"]
+            [#include "include/widget/news_list.html"/]
+            [/@]
+        </div>
+        <div class="col-sm-4">
+            [@cms_content_list siteId=site.id channelId="80ec3242f78811e8be274439c4325934"  pageNo="1" pageSize="10"  iteratorType="var"]
+
+            [#assign newsList = contentList]
+            [#assign title = "推荐下载"]
+            [#include "include/widget/news_list.html"/]
+            [/@]
+        </div>
+    </div>
+    <div class="row">
+        <!-- 图库 -->
+        <div class="col-sm-12">
+            [@cms_content_list siteId=site.id channelId="84a8b441f78811e8be274439c4325934"  pageNo="1" pageSize="15"  iteratorType="var"]
+
+            [#assign newsList = contentList]
+            [#assign title = "图库"]
+            <!-- rowNum为12的约数 -->
+            [#assign rowNum = 6]
+            [#include "include/widget/video_list.html"/]
+            [/@]
+        </div>
+    </div>
+</div>
+
+[#include "include/global_footer.html"/]
+
+[#include "include/global_js_in_foot.html"/]
+
+<!-- Custom javascript for this template -->
+[#include "include/global_navigation_js.html"/]
+
+<script>
+
+</script>
+</body>
+</html>

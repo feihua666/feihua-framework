@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <properties resource="init.properties"/>
+    <classPathEntry
+            location="${jdbc.connector.jar}"/>
+    <context id="Oracle" targetRuntime="MyBatis3" defaultModelType="flat">
+
+        <plugin type="com.feihua.framework.base.generator.CachePlugin" >
+            <property name="cache_eviction" value="LRU" />
+            <property name="cache_flushInterval" value="60000" />
+            <property name="cache_readOnly" value="true" />
+            <property name="cache_size" value="1560" />
+        </plugin>
+
+        <plugin type="com.feihua.framework.base.generator.MyBatisGeneratorPlugin"/>
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+
+        <commentGenerator type="com.feihua.framework.base.generator.MyCommentGenerator">
+            <!-- 阻止所有注释为false -->
+            <property name="suppressAllComments" value="false"/>
+            <property name="suppressDate" value="false"/>
+            <property name="addRemarkComments" value="true"/>
+            <!-- 生成的时候改这里的注释人名 -->
+            <property name="user" value="${comment.author}"/>
+        </commentGenerator>
+        <jdbcConnection driverClass="${jdbc.driver}"
+                        connectionURL="${jdbc.url}"
+                        userId="${jdbc.user}"
+                        password="${jdbc.password}">
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="${model.targetPackage}"
+                            targetProject="${model.targetProject}">
+            <property name="rootClass" value="${pojo.basepo}"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="${xmlmapper.targetPackage}"
+                         targetProject="${xmlmapper.targetProject}">
+        </sqlMapGenerator>
+
+
+        <javaClientGenerator targetPackage="${client.targetPackage}"
+                             targetProject="${client.targetProject}"
+                             type="XMLMAPPER">
+            <property name="rootInterface" value="${client.rootInterface}"/>
+        </javaClientGenerator>
+
+
+
+        <table tableName="${table.name}" domainObjectName="${model.name}" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="ID" sqlStatement="MySql" type="pre" identity="false"/>
+            <ignoreColumn column="MODIFIED_AT"/>
+        </table>
+    </context>
+</generatorConfiguration>

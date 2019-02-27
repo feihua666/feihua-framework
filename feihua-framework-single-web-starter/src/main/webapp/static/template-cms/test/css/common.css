@@ -1,0 +1,179 @@
+/* GLOBAL STYLES
+-------------------------------------------------- */
+
+/****** nav start **********/
+/* CUSTOMIZE THE NAVBAR
+-------------------------------------------------- */
+
+/* Special class on .container surrounding .navbar, used for positioning it into place. */
+.navbar-wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+}
+
+/* Flip around the padding for proper display in narrow viewports */
+.navbar-wrapper > .container {
+  padding-right: 0;
+  padding-left: 0;
+}
+.navbar-wrapper .navbar {
+  padding-right: 15px;
+  padding-left: 15px;
+
+  margin-bottom:0px;
+}
+.navbar-wrapper .navbar-inverse .navbar {
+  background: rgba(20, 18, 18, 0.7);
+}
+.navbar-wrapper .navbar .container {
+  width: auto;
+}
+.navbar-wrapper .dropdown-menu > li > a{
+  line-height: 2.429;
+}
+
+/* 过渡*/
+.navbar-wrapper.navbar-default,.navbar-wrapper .navbar.navbar-static-top.navbar-default,.navbar-wrapper .navbar.navbar-static-top.navbar-inverse{
+  transition:background-color 1s;
+}
+.navbar-wrapper,.navbar-wrapper.navbar-default{
+  transition:margin-top 1s;
+}
+.navbar-wrapper{
+  transition:background-color 1s;
+  transition:margin-top 1s;
+}
+/****** nav end **********/
+
+/****** main start **********/
+.main-wrapper{
+  margin-bottom: 60px;
+}
+/****** main end **********/
+
+
+/****** footer start **********/
+
+.main-footer .widget {
+  margin-bottom:35px
+}
+.main-footer .widget .friend-links a {
+  display:block;
+  border-bottom:1px dashed #303030;
+  padding-bottom:14px;
+  margin-bottom:14px;
+  color:#959595;
+  -webkit-transition:all .2s ease;
+  -o-transition:all .2s ease;
+  transition:all .2s ease
+}
+.main-footer .widget .friend-links a:hover {
+  color:#fff;
+  text-decoration:none
+}
+.main-footer .widget .friend-links a:last-child {
+  margin-bottom:0
+}
+.main-footer .widget .tag-cloud a {
+  border:1px solid #ebebeb;
+  padding:2px 7px;
+  color:#959595;
+  line-height:1.5em;
+  display:inline-block;
+  margin:0 7px 7px 0;
+  -webkit-transition:all .2s ease;
+  -o-transition:all .2s ease;
+  transition:all .2s ease
+}
+.main-footer .widget .tag-cloud a:hover {
+  color:#ffffff;
+  background:#337ab7;
+  border:1px solid #337ab7;
+  text-decoration:none
+}
+.main-footer {
+  background:#202020;
+  padding:35px 0 0;
+  color:#959595;
+}
+.main-footer .widget {
+  padding:0 30px
+}
+.main-footer .widget .title {
+  color:#ffffff;
+  border-bottom:2px solid #303030;
+  height: 30px;
+  margin-top:0;
+  padding-bottom:7px;
+  margin-bottom:21px;
+}
+.main-footer .widget .title .title-inner{
+  display: inline-block;
+  height:30px;
+  border-bottom: 2px solid #337ab7;
+}
+.main-footer .widget .tag-cloud a {
+  border:1px solid #303030
+}
+.main-footer .widget .tag-cloud a:hover {
+  border:1px solid #337ab7
+}
+/****** footer end **********/
+
+/****** copyright start **********/
+.copyright {
+
+  background: #111;
+  font-size: 13px;
+  text-align: center;
+  color: #555;
+  padding-top: 14px;
+  padding-bottom: 20px;
+  border-top: 1px solid #303030;
+
+}
+.copyright span {
+  margin:0 .5em
+}
+.copyright a {
+  color:#555
+}
+
+/****** copyright end **********/
+
+
+/****** 路径导航 breadcrumb end **********/
+.breadcrumb-wrapper-global .breadcrumb{
+  background-color: transparent;
+}
+/****** 路径导航 breadcrumb start **********/
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+@media (min-width: 768px) {
+  /* Navbar positioning foo */
+  .navbar-wrapper {
+    margin-top: 20px;
+  }
+  .navbar-wrapper.margin-top0 {
+    margin-top: 0px;
+  }
+  .navbar-wrapper .container {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+
+  .navbar-wrapper .navbar {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  /* The navbar becomes detached from the top, so we round the corners */
+  .navbar-wrapper .navbar {
+    border-radius: 4px;
+  }
+}

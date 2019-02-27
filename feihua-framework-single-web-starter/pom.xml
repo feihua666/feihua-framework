@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>feihua</groupId>
+        <artifactId>feihua-framework</artifactId>
+        <version>1.0.0.2019-02-26</version>
+    </parent>
+
+    <artifactId>feihua-framework-single-web-starter</artifactId>
+    <packaging>war</packaging>
+    <version>1.0.0.2019-02-26</version>
+
+
+    <description>这是一个web开始使用demo，一般请fork该项目以开始使用</description>
+
+    <properties>
+
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.12</version>
+        </dependency>
+        <!-- 基础必须添加-->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-rest</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-service-impl</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-utils</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-shiro</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <!-- servlet 包 -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- spider支持 -->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-spider-rest</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-spider-service-impl</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+
+        <!-- 消息支持 -->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-message-rest</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-message-service-impl</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <!-- 微信支持，不需要可以不添加 -->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-wechat-rest</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-wechat-service-impl</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <!-- cms支持，不需要可以不添加 -->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-cms-web</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-cms-service-impl</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+
+        <!-- activity 支持，不需要可以不添加-->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-activity-rest</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-activity-service-impl</artifactId>
+            <version>${feihua-framework.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-core</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>spring-orm</artifactId>
+                    <groupId>org.springframework</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+    <profiles>
+        <profile>
+            <id>starter.LOCALHOST</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- uploadfile.properties -->
+                <file.position>D:/base-rest/images</file.position>
+                <!-- logback.xml -->
+                <logback.path>e:/agency-framework-log</logback.path>
+                <logback.level>TRACE</logback.level>
+
+                <!--数据源a的配置 a为默认数据源-->
+                <default.jdbc.type>mysql</default.jdbc.type>
+                <default.jdbc.driver>com.mysql.jdbc.Driver</default.jdbc.driver>
+                <default.jdbc.url>jdbc:mysql://localhost/feihua-framework-base?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true&amp;serverTimezone=GMT%2B8</default.jdbc.url>
+                <default.jdbc.username>root</default.jdbc.username>
+                <default.jdbc.password>root</default.jdbc.password>
+                <!--redis 配置-->
+                <redis.host>127.0.0.1</redis.host>
+                <redis.port>6379</redis.port>
+                <redis.keyPrefix>feihuaframework</redis.keyPrefix>
+            </properties>
+        </profile>
+        <profile>
+            <id>starter.39.104.146.45</id>
+            <properties>
+                <!-- uploadfile.properties -->
+                <file.position>/usr/local/data/framework-starter/data/file</file.position>
+                <!-- logback.xml -->
+                <logback.path>/usr/local/data/framework-starter/tomcat-logs</logback.path>
+                <logback.level>INFO</logback.level>
+
+                <!--数据源a的配置 a为默认数据源-->
+                <default.jdbc.type>mysql</default.jdbc.type>
+                <default.jdbc.driver>com.mysql.jdbc.Driver</default.jdbc.driver>
+                <default.jdbc.url>jdbc:mysql://localhost/feihua-framework-base?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true&amp;serverTimezone=GMT%2B8&amp;useSSL=false</default.jdbc.url>
+                <default.jdbc.username>root</default.jdbc.username>
+                <default.jdbc.password>jlks82lsUH@@</default.jdbc.password>
+                <!--redis 配置-->
+                <redis.host>127.0.0.1</redis.host>
+                <redis.port>6379</redis.port>
+                <redis.keyPrefix>feihuaframework-starter</redis.keyPrefix>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+
+            <!-- compiler插件, 设定JDK版本 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <showWarnings>true</showWarnings>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <!-- 资源文件插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <!-- war打包插件, 设定war包名称不带版本号 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <warName>${project.artifactId}</warName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>feihua</groupId>
+                                    <artifactId>feihua-framework-cms-web</artifactId>
+                                    <version>${feihua-framework.version}</version>
+                                    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF</outputDirectory>
+                                    <includes>template-cms/**</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <!-- 先指定 src/main/resources下所有文件及文件夹为资源文件 -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <!-- 设置对某些文件进行过滤， 这里对*.properties进行过虑，即这些文件中的${key}会被替换掉为真正的值 -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>logback.xml</include>
+                </includes>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+</project>

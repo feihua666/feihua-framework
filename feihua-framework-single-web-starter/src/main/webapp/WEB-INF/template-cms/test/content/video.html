@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    [#include "../include/global_meta.html"/]
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>${site.name} - ${content.title!}</title>
+
+    [#include "../include/global_favicon.html"/]
+
+
+    [#include "../include/global_css.html"/]
+    <link href="${site.staticResourcePath}/css/widget.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <style>
+
+    </style>
+    [#include "../include/global_js_in_head.html"/]
+
+</head>
+<body>
+[#include "../include/global_navigation.html"/]
+
+<div class="main-wrapper  container" style="margin-top:60px;">
+    [#include "../include/global_breadcrumb.html"/]
+    <!-- 内容详情 -->
+    <div class="col-sm-9 content-content">
+        <h2>${content.title!}</h2>
+        <h4>
+            <small>更新时间： ${content.updateAt!?datetime }</small>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            <small>作者： ${content.author! }</small>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            <small>浏览量： ${content.pv! }</small>
+        </h4>
+        <hr/>
+
+        <img src="${content.imageUrl!}">
+        [#if content.video??]
+        <!--  -->
+            [#if content.video.url?? && content.video.player == 'HTML5' ]
+            <video src="http://localhost:8080/file${content.video.url}" width="320" height="240" controls="controls">
+                Your browser does not support the video tag.
+            </video>
+            [/#if]
+
+            [#if content.videoOtherPlayers??]
+        <div class="row">
+            第三方播放
+            <br/>
+            [#list content.videoOtherPlayers as op]
+            ${op.player}:<a href="${op.url}">${op.player}</a>
+            <br/>
+            [/#list]
+        </div>
+            [/#if]
+        <div class="row">
+            导演：${content.video.director!}
+            <br/>
+            主演：${content.video.performer!}
+            <br/>
+            国家/地区：${content.video.region!}
+            <br/>
+            年代：${content.video.years!}
+        </div>
+        [#else]
+            无视频内容
+        [/#if]
+
+
+        <div class="row">
+            ${content.profile!}
+        </div>
+        <div class="row">
+            ${content.content!}
+        </div>
+    </div>
+    <!-- 推荐 -->
+    <div class="col-sm-3">
+        [@cms_content_list siteId=site.id channelId="2ea8f89af78711e8be274439c4325934" pageNo="1" iteratorType="var"]
+            [#assign newsList = contentList]
+            [#assign title = "推荐"]
+            [#include "../include/widget/news_list.html"/]
+        [/@]
+    </div>
+</div>
+
+[#include "../include/global_footer.html"/]
+
+[#include "../include/global_js_in_foot.html"/]
+
+<!-- Custom javascript for this template -->
+[#assign excuType="scrolled"]
+[#include "../include/global_navigation_js.html"/]
+<script>
+    doImgselfAdaption('.content-content','.content-content img')
+</script>
+</body>
+</html>

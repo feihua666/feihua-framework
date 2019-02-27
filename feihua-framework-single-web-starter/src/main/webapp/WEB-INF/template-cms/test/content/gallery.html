@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    [#include "../include/global_meta.html"/]
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>${site.name} - ${content.title!}</title>
+
+    [#include "../include/global_favicon.html"/]
+
+
+    [#include "../include/global_css.html"/]
+    <link href="${site.staticResourcePath}/css/widget.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <style>
+
+    </style>
+    [#include "../include/global_js_in_head.html"/]
+
+</head>
+<body>
+[#include "../include/global_navigation.html"/]
+
+<div class="main-wrapper  container" style="margin-top:60px;">
+    [#include "../include/global_breadcrumb.html"/]
+    <!-- 内容详情 -->
+    <div class="col-sm-9 content-content">
+        <h2>${content.title!}</h2>
+        <h4>
+            <small>更新时间： ${content.updateAt!?datetime }</small>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            <small>作者： ${content.author! }</small>
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            &nbsp;
+            <small>浏览量： ${content.pv! }</small>
+        </h4>
+        <hr/>
+
+        <img src="${content.imageUrl!}">
+        [#if content.gallerys??]
+        [#list content.gallerys as gallery]
+        ${gallery.imageDes!}
+        <br/>
+        <img src="${gallery.imageUrl!}">
+        <br/>
+
+        [/#list]
+        [/#if]
+    </div>
+</div>
+
+[#include "../include/global_footer.html"/]
+
+[#include "../include/global_js_in_foot.html"/]
+
+<!-- Custom javascript for this template -->
+[#assign excuType="scrolled"]
+[#include "../include/global_navigation_js.html"/]
+<script>
+    doImgselfAdaption('.content-content','.content-content img')
+</script>
+</body>
+</html>
