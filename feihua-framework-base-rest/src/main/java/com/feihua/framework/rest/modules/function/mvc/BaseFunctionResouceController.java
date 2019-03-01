@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +131,44 @@ public class BaseFunctionResouceController extends BaseController {
             }
         }
     }
+    /**
+     * 单资源(多资源)，强制删除功能资源
+     * 当删除一个节点时，将所有子节点一并删除
+     * @param id
+     * @return
+     */
+    @OperationLog(operation = "功能资源",content = "单资源，强制删除功能资源")
+    @RepeatFormValidator
+    @RequiresPermissions("base:functionResource:delete:force")
+    @RequestMapping(value = "/functionResource/{id}/force",method = RequestMethod.DELETE)
+    public ResponseEntity deleteFunctionResourceForce(@PathVariable String id){
+        logger.info("强制删除功能资源开始");
+        logger.info("用户id:{}",getLoginUser().getId());
+        logger.info("功能资源id:{}",id);
+        ResponseJsonRender resultData=new ResponseJsonRender();
 
+        List<BaseFunctionResourcePo> children = apiBaseFunctionResourcePoService.getChildrenAll(id);
+        List<String> ids = new ArrayList<>();
+        ids.add(id);
+        if (children != null && !children.isEmpty()) {
+            ids.addAll(apiBaseFunctionResourcePoService.toPrimaryKeysSimple(children));
+        }
+        int r = apiBaseFunctionResourcePoService.deleteFlagByPrimaryKeysWithUpdateUser(ids,getLoginUser().getId());
+
+        if (r <= 0) {
+            // 删除失败，可能没有找到资源
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("强制删除功能资源结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }else{
+            // 删除成功
+            logger.info("强制删除的功能资源id:{}",id);
+            logger.info("强制删除功能资源结束，成功");
+            return new ResponseEntity(resultData,HttpStatus.NO_CONTENT);
+        }
+    }
     /**
      * 单资源，更新功能资源
      * @param id

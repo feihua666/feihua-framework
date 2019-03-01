@@ -136,32 +136,6 @@
             <artifactId>apollo-client</artifactId>
         </dependency>
     </dependencies>
-    <profiles>
-        <profile>
-            <id>wwd.LOCALHOST</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <!-- uploadfile.properties -->
-                <file.position>D:/base-rest/images</file.position>
-                <!-- logback.xml -->
-                <logback.path>e:/agency-framework-log</logback.path>
-                <logback.level>TRACE</logback.level>
-
-                <!--数据源a的配置 a为默认数据源-->
-                <default.jdbc.type>mysql</default.jdbc.type>
-                <default.jdbc.driver>com.mysql.jdbc.Driver</default.jdbc.driver>
-                <default.jdbc.url>jdbc:mysql://59.110.236.181/wwd_db?useUnicode=true&amp;characterEncoding=UTF-8&amp;allowMultiQueries=true&amp;serverTimezone=GMT%2B8</default.jdbc.url>
-                <default.jdbc.username>root</default.jdbc.username>
-                <default.jdbc.password>2</default.jdbc.password>
-                <!--redis 配置-->
-                <redis.host>127.0.0.1</redis.host>
-                <redis.port>6379</redis.port>
-                <redis.keyPrefix>wwd</redis.keyPrefix>
-            </properties>
-        </profile>
-    </profiles>
 
     <build>
         <plugins>
