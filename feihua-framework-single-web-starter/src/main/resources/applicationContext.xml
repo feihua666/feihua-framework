@@ -4,15 +4,17 @@
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
        xmlns:util="http://www.springframework.org/schema/util" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:apollo="http://www.ctrip.com/schema/apollo"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans.xsd
 		http://www.springframework.org/schema/aop
 		http://www.springframework.org/schema/aop/spring-aop.xsd
 		http://www.springframework.org/schema/context
-		http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd"
+		http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.ctrip.com/schema/apollo http://www.ctrip.com/schema/apollo.xsd"
 >
+    <apollo:config namespaces="jdbc-default,alioss,redis,shiro,uploadfile"/>
     <!-- 定义扫描的包路径 -->
-    <context:component-scan  use-default-filters="false" base-package="com.feihua.starter.service.impl,com.feihua.starter.frameworksupport">
+    <context:component-scan  use-default-filters="false" base-package="com.wwd.service.impl,com.wwd.frameworksupport">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
 
@@ -21,17 +23,10 @@
     <import resource="classpath:applicationContext-service.xml"/>
     <!-- 微信相关，不用可以不添加 -->
     <import resource="classpath:applicationContext-wechat-service.xml"/>
-    <!--添加工作流支持-->
-    <import resource="classpath:applicationContext-activity-service.xml"/>
-    <!--消息支持-->
-    <import resource="classpath:applicationContext-message-service.xml"/>
-    <!--cms支持-->
-    <import resource="classpath:applicationContext-cms-service.xml"/>
-    <!-- spider 支持 -->
-    <import resource="classpath:applicationContext-spider-service.xml"/>
+
 
     <!-- 以下是配置文件引用 -->
-    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+<!--    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod" value="com.feihua.utils.properties.PropertiesUtils.addPropertyPath" />
         <property name="arguments">
             <list>
@@ -39,24 +34,55 @@
                 <value>shiro.properties</value>
             </list>
         </property>
+    </bean>-->
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="com.feihua.utils.properties.PropertiesUtils.setNamespaces" />
+        <property name="arguments" value="shiro,uploadfile"/>
     </bean>
-    <!-- 下面是点位符替换引用 -->
-    <bean id="propertyPlaceHolderConfigurer"
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="com.feihua.utils.properties.PropertiesUtils.setUseType" />
+        <property name="arguments" value="apollo"/>
+    </bean>
+<!--    <bean id="propertyPlaceHolderConfigurer"
           class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="ignoreUnresolvablePlaceholders" value="true" />
         <property name="locations">
             <list>
                 <value>classpath:redis.properties</value>
                 <value>classpath:jdbc-default.properties</value>
-                <!--<value>classpath:mybatis-orm-config.properties</value>-->
                 <value>classpath:shiro.properties</value>
+                <value>classpath:alioss.properties</value>
             </list>
         </property>
-    </bean>
+    </bean>-->
+
     <bean class="com.feihua.framework.shiro.service.DefaultCaptchaServiceImpl"></bean>
     <bean class="com.feihua.framework.shiro.service.DefaultQrCodeServiceImpl"></bean>
-
+    <!-- 阿里去oss -->
+    <bean id="aliOssClientHelper" class="com.feihua.framework.utils.AliOssClientHelper"  lazy-init="false" init-method="init"
+          destroy-method="destroy">
+        <property name="accessKeyId" value="${oss.accessKeyId}"/>
+        <property name="accessKeySecret" value="${oss.accessKeySecret}"/>
+        <property name="bucketName" value="${oss.bucketName}"/>
+        <property name="timeout" value="${oss.timeout}"/>
+        <property name="endpoint" value="${oss.endpoint}"/>
+        <property name="endpointInternal" value="${oss.endpointInternal}"/>
+    </bean>
     <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
-        <property name="basePackage" value="com.feihua.starter.service.mapper"/>
+        <property name="basePackage" value="com.wwd.service.mapper"/>
+        <property name="cacheConfig">
+            <map>
+                <entry key="com.wwd.service.mapper.BaseUserInfoPoMapper">
+                    <list>
+                        <value>com.wwd.service.mapper.BaseUserAccountPoMapper.searchUsersMultiTable</value>
+                    </list>
+                </entry>
+                <entry key="com.wwd.service.mapper.BaseUserMobilePoMapper">
+                    <list>
+                        <value>com.wwd.service.mapper.BaseUserAccountPoMapper.searchUsersMultiTable</value>
+                    </list>
+                </entry>
+            </map>
+        </property>
     </bean>
 </beans>

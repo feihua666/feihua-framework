@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <configuration  scan="true" scanPeriod="60 seconds" debug="false">
-    <property name="filePath" value="${logback.path}" />
+    <property name="filePath" value="${catalina.base}/logs/app" />
     <!-- keep 30 days' worth of history capped at 3GB total size -->
     <property name="maxHistory" value="30" />
     <property name="totalSizeCap" value="3GB" />
