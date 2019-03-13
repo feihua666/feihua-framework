@@ -1,4 +1,4 @@
-package com.feihua.framework.oss.cloud;
+package com.feihua.framework.base.modules.oss.cloud;
 
 import com.feihua.utils.calendar.CalendarUtils;
 import org.apache.commons.lang3.StringUtils;

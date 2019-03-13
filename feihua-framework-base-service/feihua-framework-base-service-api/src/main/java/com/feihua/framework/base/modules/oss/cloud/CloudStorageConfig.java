@@ -1,4 +1,4 @@
-package com.feihua.framework.oss.cloud;
+package com.feihua.framework.base.modules.oss.cloud;
 
 import java.io.Serializable;
 

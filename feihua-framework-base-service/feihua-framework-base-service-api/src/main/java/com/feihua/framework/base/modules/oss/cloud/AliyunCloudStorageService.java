@@ -1,10 +1,9 @@
-package com.feihua.framework.oss.cloud;
+package com.feihua.framework.base.modules.oss.cloud;
 
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.GetObjectRequest;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.feihua.exception.BaseException;
-import com.feihua.framework.utils.AliOssClientHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,5 +1,6 @@
 package com.feihua.framework.rest.modules.common.mvc;
 
+import com.feihua.framework.base.modules.oss.cloud.OSSFactory;
 import com.feihua.framework.base.modules.file.po.BaseFilePo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.utils.AliOssClientHelper;

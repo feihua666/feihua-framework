@@ -6,7 +6,15 @@ package com.feihua.framework.constants;
  * @Description:
  */
 public class ConfigConstant {
+    /**
+     * OSS 系统配置
+     */
     public final static String OSS_CLOUD_STORAGE_CONFIG_KEY = "OSS_CLOUD_STORAGE_CONFIG_KEY";
+
+    /**
+     * 微信支付系统配置
+     */
+    public final static String WXPAY_STORAGE_CONFIG_KEY = "WXPAY_STORAGE_CONFIG_KEY";
 
     /**
      * 云服务商
@@ -44,7 +52,7 @@ public class ConfigConstant {
 
         public static OSSCloud getEnum(String key) {
             for (OSSCloud cloudService : OSSCloud.values()) {
-                if (cloudService.getValue().equalsIgnoreCase(key) ||  cloudService.getName().equalsIgnoreCase(key)) {
+                if (cloudService.getValue().equalsIgnoreCase(key) || cloudService.getName().equalsIgnoreCase(key)) {
                     return cloudService;
                 }
             }

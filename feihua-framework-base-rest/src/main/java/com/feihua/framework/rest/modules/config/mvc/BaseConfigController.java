@@ -5,7 +5,7 @@ import com.feihua.framework.base.modules.config.dto.BaseConfigDto;
 import com.feihua.framework.base.modules.config.dto.SearchBaseConfigsConditionDto;
 import com.feihua.framework.base.modules.config.po.BaseConfig;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
-import com.feihua.framework.oss.cloud.CloudStorageConfig;
+import com.feihua.framework.base.modules.oss.cloud.CloudStorageConfig;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
@@ -26,8 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 系统配置

@@ -1,8 +1,7 @@
-package com.feihua.framework.rest.modules.common.mvc;
+package com.feihua.framework.base.modules.oss.cloud;
 
 import com.feihua.framework.base.modules.config.api.ApiBaseConfigService;
 import com.feihua.framework.constants.ConfigConstant;
-import com.feihua.framework.oss.cloud.*;
 import com.feihua.utils.spring.SpringContextHolder;
 
 /**
@@ -11,10 +10,11 @@ import com.feihua.utils.spring.SpringContextHolder;
  * @Description: 系统云配置工厂
  */
 public final class OSSFactory {
-    private static ApiBaseConfigService apiBaseConfigService;
+    private static CloudStorageConfig config;
 
     static {
-        OSSFactory.apiBaseConfigService = SpringContextHolder.getBean(ApiBaseConfigService.class);
+        ApiBaseConfigService apiBaseConfigService = SpringContextHolder.getBean(ApiBaseConfigService.class);
+        OSSFactory.config = apiBaseConfigService.getConfigObject(ConfigConstant.OSS_CLOUD_STORAGE_CONFIG_KEY, CloudStorageConfig.class);
     }
 
     /**
@@ -24,8 +24,6 @@ public final class OSSFactory {
      */
     public static CloudStorageService build() {
         //获取云存储配置信息
-        CloudStorageConfig config = apiBaseConfigService.getConfigObject(ConfigConstant.OSS_CLOUD_STORAGE_CONFIG_KEY, CloudStorageConfig.class);
-
         if (config.getType().equals(ConfigConstant.OSSCloud.QINIUCLOUD.getValue())) {
             return new QiniuCloudStorageService(config);
         } else if (config.getType().equals(ConfigConstant.OSSCloud.ALIYUN.getValue())) {
@@ -33,7 +31,6 @@ public final class OSSFactory {
         } else if (config.getType().equals(ConfigConstant.OSSCloud.QCLOUD.getValue())) {
             return new QcloudCloudStorageService(config);
         }
-
         return null;
     }
 
@@ -43,8 +40,6 @@ public final class OSSFactory {
      * @return
      */
     public static String getType() {
-        //获取云存储配置信息
-        CloudStorageConfig config = apiBaseConfigService.getConfigObject(ConfigConstant.OSS_CLOUD_STORAGE_CONFIG_KEY, CloudStorageConfig.class);
         return ConfigConstant.OSSCloud.getEnum(config.getType()).getName();
     }
 
@@ -54,8 +49,6 @@ public final class OSSFactory {
      * @return
      */
     public static boolean open() {
-        //获取云存储配置信息
-        CloudStorageConfig config = apiBaseConfigService.getConfigObject(ConfigConstant.OSS_CLOUD_STORAGE_CONFIG_KEY, CloudStorageConfig.class);
         if (config != null) {
             return config.getOpen().equalsIgnoreCase("y") ? true : false;
         }
@@ -68,8 +61,6 @@ public final class OSSFactory {
      * @return
      */
     public static boolean compress() {
-        //获取云存储配置信息
-        CloudStorageConfig config = apiBaseConfigService.getConfigObject(ConfigConstant.OSS_CLOUD_STORAGE_CONFIG_KEY, CloudStorageConfig.class);
         if (config != null) {
             return config.getCompress().equalsIgnoreCase("y") ? true : false;
         }
