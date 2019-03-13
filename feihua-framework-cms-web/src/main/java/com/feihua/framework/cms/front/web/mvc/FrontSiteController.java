@@ -3,12 +3,18 @@ package com.feihua.framework.cms.front.web.mvc;
 import com.feihua.framework.cms.api.ApiCmsChannelPoService;
 import com.feihua.framework.cms.api.ApiCmsSiteIndexPageViewPoService;
 import com.feihua.framework.cms.api.ApiCmsSitePoService;
+import com.feihua.framework.cms.dto.CmsSiteDto;
 import com.feihua.framework.cms.po.CmsSiteIndexPageViewPo;
 import com.feihua.framework.cms.po.CmsSitePo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.BasePo;
+import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
+import feihua.jdbc.api.pojo.PageResultDto;
+import feihua.jdbc.api.utils.OrderbyUtils;
+import feihua.jdbc.api.utils.PageUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,5 +110,27 @@ public class FrontSiteController extends FrontBaseController {
         logger.info("更新的站点id:{}",id);
         logger.info("更新站点访问量结束，成功");
         return new ResponseEntity(resultData, HttpStatus.CREATED);
+    }
+
+    /**
+     * 站点查询
+     * @param siteId
+     * @param isMain
+     * @return
+     */
+    @RequestMapping(value = "/site/{siteId}",method = RequestMethod.GET)
+    public ResponseEntity sitePageList(@PathVariable String siteId, String isMain){
+        ResponseJsonRender resultData=new ResponseJsonRender();
+
+        CmsSitePo cmsSitePoConditionPo = new CmsSitePo();
+        cmsSitePoConditionPo.setDelFlag(BasePo.YesNo.N.name());
+        cmsSitePoConditionPo.setId(siteId);
+        cmsSitePoConditionPo.setIsMain(isMain);
+
+        PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
+
+        PageResultDto<CmsSiteDto> list = apiCmsSitePoService.selectList(cmsSitePoConditionPo,pageAndOrderbyParamDto);
+
+        return returnPageResultDto(list,resultData);
     }
 }
