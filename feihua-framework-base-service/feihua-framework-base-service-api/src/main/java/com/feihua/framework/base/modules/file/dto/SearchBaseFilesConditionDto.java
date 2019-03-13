@@ -15,6 +15,16 @@ public class SearchBaseFilesConditionDto extends BaseConditionDto {
 
     private String type;
 
+    private String keyword;
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
     public String getName() {
         return name;
     }

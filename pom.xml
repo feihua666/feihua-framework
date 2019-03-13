@@ -54,7 +54,9 @@
         <fastdsf.version>1.27-RELEASE</fastdsf.version>
         <thumbnailator.version>0.4.8</thumbnailator.version>
         <!-- 阿里云oss文件存储 -->
-        <aliyun-sdk-oss.version>2.8.1</aliyun-sdk-oss.version>
+        <qiniu.version>[7.2.0, 7.2.99]</qiniu.version>
+        <aliyun.oss.version>2.8.1</aliyun.oss.version>
+        <qcloud.cos.version>4.4</qcloud.cos.version>
         <!-- activity -->
         <activiti.version>5.22.0</activiti.version>
         <activiti.web.version>5.22.0</activiti.web.version>
@@ -172,11 +174,30 @@
             </dependency>
 
             <!-- 阿里云存储oss -->
+            <!--oss -->
+            <dependency>
+                <groupId>com.qiniu</groupId>
+                <artifactId>qiniu-java-sdk</artifactId>
+                <version>${qiniu.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.aliyun.oss</groupId>
                 <artifactId>aliyun-sdk-oss</artifactId>
-                <version>${aliyun-sdk-oss.version}</version>
+                <version>${aliyun.oss.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.qcloud</groupId>
+                <artifactId>cos_api</artifactId>
+                <version>${qcloud.cos.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!--test包-->
             <!-- Activiti -->
             <dependency>
                 <groupId>org.activiti</groupId>

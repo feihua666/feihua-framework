@@ -18,6 +18,12 @@
 
         <dependency>
             <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-common</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>feihua</groupId>
             <artifactId>feihua-framework-base-service-api</artifactId>
             <version>${feihua-framework.version}</version>
         </dependency>

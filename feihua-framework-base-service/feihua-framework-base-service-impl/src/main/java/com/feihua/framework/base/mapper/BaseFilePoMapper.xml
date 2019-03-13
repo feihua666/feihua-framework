@@ -1283,5 +1283,15 @@
     <include refid="Base_Column_List" />
     from base_file
      where del_flag = 'N'
+    <if test="name != null and name !=  ''">
+      and name = #{name}
+    </if>
+    <if test="type != null and type !=  ''">
+      and TYPE = #{type}
+    </if>
+    <if test="keyword != null and keyword != ''">
+      and (FILENAME like CONCAT('%',#{keyword},'%')
+      or  name like CONCAT('%',#{keyword},'%'))
+    </if>
   </select>
 </mapper>
