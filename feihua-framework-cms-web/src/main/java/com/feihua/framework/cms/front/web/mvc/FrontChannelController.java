@@ -2,12 +2,18 @@ package com.feihua.framework.cms.front.web.mvc;
 
 import com.feihua.framework.cms.api.ApiCmsChannelPageViewPoService;
 import com.feihua.framework.cms.api.ApiCmsChannelPoService;
+import com.feihua.framework.cms.dto.CmsChannelDto;
+import com.feihua.framework.cms.front.web.mvc.dto.CmsFrontChannelFormDto;
 import com.feihua.framework.cms.po.CmsChannelPageViewPo;
 import com.feihua.framework.cms.po.CmsChannelPo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.BasePo;
+import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
+import feihua.jdbc.api.pojo.PageResultDto;
+import feihua.jdbc.api.utils.OrderbyUtils;
+import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,5 +109,42 @@ public class FrontChannelController extends FrontBaseController {
         logger.info("更新的栏目id:{}",id);
         logger.info("更新栏目访问量结束，成功");
         return new ResponseEntity(resultData, HttpStatus.CREATED);
+    }
+
+
+
+    /**
+     * 站点查询
+     * @param channelId
+     * @param formDto
+     * @return
+     */
+    @RequestMapping(value = "/channel/{channelId}",method = RequestMethod.GET)
+    public ResponseEntity channelPageList(@PathVariable String channelId, CmsFrontChannelFormDto formDto){
+        ResponseJsonRender resultData=new ResponseJsonRender();
+
+        formDto.setChannelId(channelId);
+
+        CmsChannelPo cmsChannelConditionPo = new CmsChannelPo();
+        cmsChannelConditionPo.setDelFlag(BasePo.YesNo.N.name());
+        cmsChannelConditionPo.setSiteId(formDto.getSiteId());
+        cmsChannelConditionPo.setParentId(formDto.getParentId());
+        cmsChannelConditionPo.setParentId1(formDto.getParentId1() );
+        cmsChannelConditionPo.setParentId2(formDto.getParentId2() );
+        cmsChannelConditionPo.setParentId3(formDto.getParentId3() );
+        cmsChannelConditionPo.setParentId4(formDto.getParentId4() );
+        cmsChannelConditionPo.setParentId5(formDto.getParentId5() );
+        cmsChannelConditionPo.setParentId6(formDto.getParentId6() );
+        cmsChannelConditionPo.setParentId7(formDto.getParentId7() );
+        cmsChannelConditionPo.setParentId8(formDto.getParentId8() );
+        cmsChannelConditionPo.setParentId9(formDto.getParentId9() );
+        cmsChannelConditionPo.setParentId10(formDto.getParentId10());
+        cmsChannelConditionPo.setChannelType(formDto.getChannelType());
+        cmsChannelConditionPo.setId(formDto.getChannelId());
+
+        PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
+
+        PageResultDto<CmsChannelDto> pageResultDto = apiCmsChannelPoService.selectList(cmsChannelConditionPo,pageAndOrderbyParamDto);
+        return returnPageResultDto(pageResultDto,resultData);
     }
 }

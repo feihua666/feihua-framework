@@ -128,14 +128,36 @@ public class PublicPlatformController extends SuperController {
      * @return
      */
     @RequestMapping(value = "redirectToAuthAuthorizePage/{which}",method = RequestMethod.GET)
-        public String redirectToAuthAuthorizePage(String redirectUrl,@PathVariable String which){
+        public String redirectToAuthAuthorizePage(@PathVariable String which,String redirectUrl,String scope,String state){
 
         String url = PublicConstants.AUTH_REDIRECT_URL.replace(CommonConstants.PARAM_APPID,PublicUtils.getAppid(which))
                 .replace(PublicConstants.PARAM_REDIRECT_URI,redirectUrl)
-                .replace(PublicConstants.PARAM_AUTHORIZE_SCOPE,PublicConstants.AuthorizeScope.snsapi_userinfo.name());
+                .replace(PublicConstants.PARAM_AUTHORIZE_SCOPE,scope)
+                .replace(PublicConstants.PARAM_AUTHORIZE_STATE,state)
+                ;
         return "redirect:"+url;
     }
 
+    /**
+     * 获取用户授权页面url,拿到url后用户自行跳转
+     * @param which
+     * @param redirectUrl
+     * @param scope
+     * @param state
+     * @return
+     */
+    @RequestMapping(value = "authAuthorizePageUrl/{which}",method = RequestMethod.GET)
+    public ResponseEntity authAuthorizePageUrl(@PathVariable String which,String redirectUrl,String scope,String state) {
+        ResponseJsonRender resultData = new ResponseJsonRender("成功");
+        String url = PublicConstants.AUTH_REDIRECT_URL.replace(CommonConstants.PARAM_APPID,PublicUtils.getAppid(which))
+                .replace(PublicConstants.PARAM_REDIRECT_URI,redirectUrl)
+                .replace(PublicConstants.PARAM_AUTHORIZE_SCOPE,scope)
+                .replace(PublicConstants.PARAM_AUTHORIZE_STATE,state)
+                ;
+        resultData.setData(url);
+
+        return new ResponseEntity(resultData, HttpStatus.OK);
+    }
     /**
      * 用户授权后，获取用户信息,这个请求是微信重定向来的
      * @param code 得到的code

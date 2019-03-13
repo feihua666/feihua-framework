@@ -12,6 +12,7 @@ public class PublicConstants {
     public final static String PARAM_CODE = "CODE";
     public final static String PARAM_OPENID = "OPENID";
     public final static String PARAM_AUTHORIZE_SCOPE = "AUTHORIZE_SCOPE";
+    public final static String PARAM_AUTHORIZE_STATE = "STATE";
     public final static String PARAM_AUTHORIZE_REFRESH_TOKEN = "REFRESH_TOKEN";
 
     /**
