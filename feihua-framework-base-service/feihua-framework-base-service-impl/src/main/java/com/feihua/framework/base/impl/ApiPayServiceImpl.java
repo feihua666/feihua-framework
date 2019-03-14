@@ -69,18 +69,23 @@ public class ApiPayServiceImpl implements ApiPayService {
             System.out.println(respData);
             if (respData.get("return_code").equals("SUCCESS")) {
                 //返回给APP端的参数，APP端再调起支付接口
+                /*'getBrandWCPayRequest', {
+                     "appId":"wx2421b1c4370ec43b",     //公众号名称，由商户传入
+                     "timeStamp":"1395712654",         //时间戳，自1970年以来的秒数
+                     "nonceStr":"e61463f8efa94090b1f366cccfbbb444", //随机串
+                     "package":"prepay_id=u802345jgfjsdfgsdg888",
+                     "signType":"MD5",         //微信签名方式：
+                     "paySign":"70EA570631E4BB79628FBCA90534C63FF7FADD89" //微信签名
+                  }*/
                 repData = new HashMap<>();
-                repData.put("appid", myWxPayConfig.getAppID());
-                repData.put("mch_id", myWxPayConfig.getMchID());
-                repData.put("prepayid", respData.get("prepay_id"));
-                repData.put("package", "WXPay");
-                repData.put("noncestr", respData.get("nonce_str"));
-                repData.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+                repData.put("appId", myWxPayConfig.getAppID());
+                repData.put("timeStamp", String.valueOf(System.currentTimeMillis() / 1000));
+                repData.put("nonceStr", respData.get("nonce_str"));
+                repData.put("package", "prepay_id="+ respData.get("prepay_id"));
                 repData.put("signType", "MD5");
                 // 将以上设置的请求支付参数和商户秘钥共6个参数排序组合后生成密文，即sign签名
                 String sign = WXPayUtil.generateSignature(repData, myWxPayConfig.getKey()); //签名
-                repData.put("sign", sign);
-                repData.put("timestamp", repData.get("timestamp"));
+                repData.put("paySign", sign);
                 logger.debug("预支付返回信息：{}", JSONUtils.obj2json(repData));
             }
             return repData;
