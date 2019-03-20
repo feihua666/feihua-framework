@@ -18,22 +18,14 @@ import java.util.UUID;
  */
 public class FileHelper {
 
-    /**
-     * 文件存放的根路径
-     * @return
-     */
-    public static String getConfigRootPath(){
-        String ioAddress = PropertiesUtils.getProperty("file.position");
-        return ioAddress;
-    }
 
     /**
      * 把相对路径拼接根路径以获取真实路径
      * @param relativePath
      * @return
      */
-    public static String getRealPath(String relativePath){
-        return getConfigRootPath() + wrapPath(relativePath);
+    public static String getRealPath(String rootPath,String relativePath){
+        return rootPath + wrapPath(relativePath);
     }
 
     /**
@@ -80,7 +72,7 @@ public class FileHelper {
      * @param originalFilename
      * @return
      */
-    public static String saveToDisk(InputStream in,String originalFilename,String relativePath) throws IOException {
+    public static String saveToDisk(InputStream in,String originalFilename,String rootPath,String relativePath) throws IOException {
         // 新文件名
         String newFileName = UUID.randomUUID().toString();
         // 新文件名全名
@@ -89,7 +81,7 @@ public class FileHelper {
         if(StringUtils.isNotEmpty(originalFileExtention)){
             newOriginalFilename += "." + originalFileExtention;
         }
-        String realPath = getRealPath(relativePath);
+        String realPath = getRealPath(rootPath,relativePath);
         if(!FileUtils.exists(realPath)){
             FileUtils.createFolder(realPath);
         }
@@ -105,8 +97,8 @@ public class FileHelper {
      * 删除文件
      * @param fileRelativePath
      */
-    public static void deleteDiskFile(String fileRelativePath){
-        String realPath = FileHelper.getRealPath(fileRelativePath);
+    public static void deleteDiskFile(String rootPath,String fileRelativePath){
+        String realPath = FileHelper.getRealPath(rootPath,fileRelativePath);
         if(FileUtils.exists(realPath)){
             FileUtils.deleteFile(realPath);
         }

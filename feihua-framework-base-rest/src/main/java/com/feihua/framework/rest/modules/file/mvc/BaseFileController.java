@@ -1,5 +1,7 @@
 package com.feihua.framework.rest.modules.file.mvc;
 
+import com.feihua.framework.base.modules.oss.cloud.api.ApiCloudStorageService;
+import com.feihua.framework.base.modules.oss.cloud.impl.LocalStorageServiceImpl;
 import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -12,6 +14,7 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +45,8 @@ public class BaseFileController extends BaseController {
     @Autowired
     private ApiBaseFilePoService apiBaseFilePoService;
 
+    @Autowired
+    private ApiCloudStorageService apiCloudStorageService;
     /**
      * 单资源，添加
      *
@@ -109,7 +114,15 @@ public class BaseFileController extends BaseController {
             return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);
         } else {
             // 删除文件
-            FileHelper.deleteDiskFile(dto.getFilePath());
+            /*if(StringUtils.isNotEmpty(dto.getFilePath())){
+                if(dto.getFilePath().startsWith("http")){
+                    apiCloudStorageService.delete(dto.getFilePath());
+                }else{
+                    ApiCloudStorageService localStorage = new LocalStorageServiceImpl(apiCloudStorageService.getConfig().getLocal());
+                    localStorage.delete(dto.getFilePath());
+                }
+            }*/
+
 
             // 删除成功
             logger.info("删除的文件id:{}", id);

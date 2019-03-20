@@ -1,6 +1,6 @@
-package com.feihua.framework.base.modules.pay.wxpay;
+package com.feihua.framework.base.modules.pay.wxpay.sdk;
 
-import com.feihua.framework.base.modules.pay.wxpay.WXPayConstants.SignType;
+import com.feihua.framework.base.modules.pay.wxpay.sdk.WXPayConstants.SignType;
 
 import java.util.HashMap;
 import java.util.Map;

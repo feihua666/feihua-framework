@@ -3,11 +3,11 @@ package com.feihua.framework.activity.rest.mvc;
 import com.feihua.framework.activity.api.ApiActivitiModelService;
 import com.feihua.framework.activity.dto.ExportModelDto;
 import com.feihua.framework.base.modules.file.po.BaseFilePo;
+import com.feihua.framework.base.modules.oss.cloud.api.ApiCloudStorageService;
+import com.feihua.framework.base.modules.oss.cloud.impl.LocalStorageServiceImpl;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.mvc.SuperController;
-
-import com.feihua.framework.utils.FileHelper;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.Page;
 import feihua.jdbc.api.utils.PageUtils;
@@ -40,7 +40,8 @@ public class ActivityModelController  extends SuperController {
     private ApiActivitiModelService activityModelService;
     @Autowired
     private RepositoryService repositoryService;
-
+    @Autowired
+    private ApiCloudStorageService apiCloudStorageService;
 
     /**
      * 创建模型
@@ -184,10 +185,10 @@ public class ActivityModelController  extends SuperController {
         ExportModelDto exportModelDto = activityModelService.export(id);
         String resultPath = "";
         if (exportModelDto != null) {
-            resultPath = FileHelper.saveToDisk(exportModelDto.getInputStream(),
-                    exportModelDto.getFileName(),
-                    "activiti-model-export"
-                    );
+
+            ApiCloudStorageService localStorage = new LocalStorageServiceImpl(apiCloudStorageService.getConfig().getLocal());
+
+            resultPath = localStorage.upload(exportModelDto.getInputStream(),"activiti-model-export/" + exportModelDto.getFileName());
             //为了兼容主架构的上传下载逻辑，插入上传下载数据
             try{
                 BaseFilePo baseFilePo = new BaseFilePo();

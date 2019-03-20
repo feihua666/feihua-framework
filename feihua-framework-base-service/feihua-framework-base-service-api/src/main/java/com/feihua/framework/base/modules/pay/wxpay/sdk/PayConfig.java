@@ -1,4 +1,4 @@
-package com.feihua.framework.base.modules.pay.wxpay;
+package com.feihua.framework.base.modules.pay.wxpay.sdk;
 
 public class PayConfig {
     private String appID;

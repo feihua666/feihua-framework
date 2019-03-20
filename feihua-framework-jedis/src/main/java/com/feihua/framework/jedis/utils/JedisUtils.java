@@ -22,7 +22,7 @@ public class JedisUtils {
 
 	private static String keyPrefix = "";
 
-	private static String wrapKeyPrefix(String originalKey){
+	public static String wrapKeyPrefix(String originalKey){
 
 		return keyPrefix + originalKey;
 	}
@@ -947,11 +947,7 @@ public class JedisUtils {
 	}
 
 	public static void setKeyPrefix(String keyPrefix) {
-		if(JedisUtils.keyPrefix == null){
-			JedisUtils.keyPrefix = keyPrefix;
-		}else {
-			//throw new RuntimeException("keyPrefix has been initialized");
-		}
+		JedisUtils.keyPrefix = keyPrefix;
 
 	}
 }

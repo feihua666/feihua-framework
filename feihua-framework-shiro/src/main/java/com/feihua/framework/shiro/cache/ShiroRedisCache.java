@@ -24,7 +24,7 @@ public class ShiroRedisCache<K, V> implements Cache<K, V> {
     private String cacheKeyName = null;
 
     public ShiroRedisCache(String cacheKeyName) {
-        this.cacheKeyName = cacheKeyName;
+        this.cacheKeyName = JedisUtils.wrapKeyPrefix(cacheKeyName);
     }
 
 

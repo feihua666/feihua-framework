@@ -1,18 +1,19 @@
 package com.feihua.framework.rest.modules.common.mvc;
 
-import com.feihua.framework.base.modules.oss.cloud.OSSFactory;
 import com.feihua.framework.base.modules.file.po.BaseFilePo;
+import com.feihua.framework.base.modules.oss.cloud.api.ApiCloudStorageService;
+import com.feihua.framework.base.modules.oss.cloud.dto.CloudStorageConfig;
+import com.feihua.framework.base.modules.oss.cloud.impl.LocalStorageServiceImpl;
 import com.feihua.framework.rest.ResponseJsonRender;
-import com.feihua.framework.utils.AliOssClientHelper;
 import com.feihua.framework.utils.FileHelper;
 import com.feihua.utils.graphic.ImageUtils;
-import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseUtils;
 import com.feihua.utils.http.httpclient.HttpClientUtils;
 import com.feihua.utils.io.FileUtils;
 import com.feihua.utils.io.StreamUtils;
 import com.feihua.utils.pdf.PdfUtils;
 import com.feihua.utils.properties.PropertiesUtils;
+import feihua.jdbc.api.pojo.BasePo;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -50,8 +51,8 @@ public class FileController extends BaseController {
     private static Logger logger = LoggerFactory.getLogger(FileController.class);
 
 
-    @Autowired(required = false)
-    private AliOssClientHelper aliOssClientHelper;
+    @Autowired
+    private ApiCloudStorageService apiCloudStorageService;
 
     /**
      * @param file
@@ -70,8 +71,6 @@ public class FileController extends BaseController {
         ResponseJsonRender resultData = new ResponseJsonRender();
         if (!file.isEmpty()) {
             try {
-                // 如果开启阿里oss上传
-                OSSFactory ossFactory = new OSSFactory();
                 // 文件扩展名
                 String originalFileExtention = FileHelper.getExtention(file.getOriginalFilename());
                 if (StringUtils.isEmpty(originalFileExtention)) {
@@ -89,9 +88,9 @@ public class FileController extends BaseController {
                 }
                 String resultPath;
                 InputStream inputStream = file.getInputStream();
-
+                CloudStorageConfig config = apiCloudStorageService.getConfig();
                 // 如果启用压缩
-                if (ossFactory.compress()) {
+                if (BasePo.YesNo.Y.equals(config.getCompress())) {
                     //
                     if (StringUtils.containsAny(originalFileExtention,
                             ImageUtils.IMAGE_TYPE_JPEG,
@@ -106,9 +105,7 @@ public class FileController extends BaseController {
                 }
 
                 List<String> imageUrls = new ArrayList<>();
-
-                if (ossFactory.open()) {
-                    // 如果需要转为图片，则转图片，目前只劫持pdf转图片
+                    // 如果需要转为图片，则转图片，目前只支持pdf转图片
                     if (convertImage) {
                         ByteArrayOutputStream byteArrayOutputStream = StreamUtils.inputStreamToByteArrayOutputStream(inputStream);
                         PDDocument pdDocument = null;
@@ -121,43 +118,14 @@ public class FileController extends BaseController {
 
                         for (int i = 0; i < images.size(); i++) {
                             BufferedImage image = images.get(i);
-                            String imageUrl = ossFactory.build().uploadSuffix(ImageUtils.bufferedImageToInputStream(image, "png"), ".png");
-                            //aliOssClientHelper.getAbsolutePath(aliOssClientHelper.uploadFile(path,file.getOriginalFilename() + ".png",ImageUtils.bufferedImageToInputStream(image,"png"),null));
+                            String imageUrl = apiCloudStorageService.uploadSuffix(ImageUtils.bufferedImageToInputStream(image, "png"),path, ".png");
                             imageUrls.add(imageUrl);
 
                         }
                         inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                     }
                     String suffix = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf("."));
-                    resultPath = ossFactory.build().uploadSuffix(inputStream, suffix);
-                    //aliOssClientHelper.getAbsolutePath(aliOssClientHelper.uploadFile(path,file.getOriginalFilename(),inputStream,null));
-                } else {
-                    // 如果需要转为图片，则转图片，目前只劫持pdf转图片
-                    if (convertImage) {
-                        ByteArrayOutputStream byteArrayOutputStream = StreamUtils.inputStreamToByteArrayOutputStream(inputStream);
-                        PDDocument pdDocument = null;
-                        try {
-                            pdDocument = PDDocument.load(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()));
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
-                        }
-                        List<BufferedImage> images = PdfUtils.pdf2Image(pdDocument, "png", 300);
-
-                        for (int i = 0; i < images.size(); i++) {
-                            BufferedImage image = images.get(i);
-                            String imageUrl = FileHelper.saveToDisk(ImageUtils.bufferedImageToInputStream(image, "png"), file.getOriginalFilename() + ".png", path);
-                            imageUrl = RequestUtils.convertToSlash(imageUrl);
-                            imageUrls.add(imageUrl);
-
-                        }
-                        inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-                    }
-                    resultPath = FileHelper.saveToDisk(inputStream, file.getOriginalFilename(), path);
-                    if (StringUtils.isNotEmpty(resultPath)) {
-                        resultPath = RequestUtils.convertToSlash(resultPath);
-                    }
-                }
-
+                    resultPath = apiCloudStorageService.uploadSuffix(inputStream, path,suffix);
 
                 //保存到数据库
                 BaseFilePo baseFilePo = new BaseFilePo();
@@ -207,46 +175,49 @@ public class FileController extends BaseController {
     @RequestMapping(value = {"/file/**"}, method = RequestMethod.GET)
     public void fileget(HttpServletRequest request, HttpServletResponse response) {
         ResponseJsonRender resultData = new ResponseJsonRender();
-        String path = request.getServletPath().replace("/file", "");
+        String path = request.getServletPath().substring(5);
 
-        String realPath = FileHelper.getRealPath(path);
         String contentType = null;
-
+        ApiCloudStorageService localStrorageService = new LocalStorageServiceImpl(apiCloudStorageService.getConfig().getLocal());
+        byte [] data = localStrorageService.download(path);
         try {
             //判断是否为图片访问
-            if (StringUtils.endsWithAny(realPath.toLowerCase(), ImageUtils.IMAGE_TYPE_JPEG,
+            if (StringUtils.endsWithAny(path.toLowerCase(), ImageUtils.IMAGE_TYPE_JPEG,
                     ImageUtils.IMAGE_TYPE_BMP,
                     ImageUtils.IMAGE_TYPE_PNG,
                     ImageUtils.IMAGE_TYPE_JPG)) {
-                // 如果切割文件不存在，切割
-                if (!FileUtils.exists(realPath)) {
-                    // 提取切割参数
-                    // 扩展名
-                    String originalFileExtention = FileHelper.getExtention(realPath);
-                    // _22x44.jpg
-                    String requestParam = realPath.substring(realPath.lastIndexOf("_"));
-                    // 22x44
-                    String simpleParam = requestParam.substring(1, requestParam.lastIndexOf("."));
-                    String size[] = simpleParam.split("x");
-                    // 宽度
-                    int width = Integer.parseInt(size[0]);
-                    // 高度
-                    int height = Integer.parseInt(size[1]);
+                    // 如果切割文件不存在，切割
+                    if (data == null || data.length == 0) {
+                        // 提取切割参数
+                        // 扩展名
+                        String originalFileExtention = FileHelper.getExtention(path);
+                        // _22x44.jpg
+                        String requestParam = path.substring(path.lastIndexOf("_"));
+                        // 22x44
+                        String simpleParam = requestParam.substring(1, requestParam.lastIndexOf("."));
+                        String size[] = simpleParam.split("x");
+                        // 宽度
+                        int width = Integer.parseInt(size[0]);
+                        // 高度
+                        int height = Integer.parseInt(size[1]);
 
-                    String originRealPath = realPath.substring(0, realPath.lastIndexOf(requestParam));
-                    //切割图片
-                    BufferedImage image = ImageUtils.createImage(originRealPath);
-                    //是图片
-                    if (image != null) {
-                        image = ImageUtils.zoomImage(image, width);
-                        if (image.getHeight() > height)
-                            image = ImageUtils.cutImage(image, 0, (image.getHeight() - height) / 2, width, height);
-                        ImageUtils.outPutImage(image, ImageUtils.IMAGE_TYPE_JPEG, realPath);
-                    } else {
-                        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        String originRealPath = path.substring(0, path.lastIndexOf(requestParam));
+                        //切割图片
+                        byte originData[] = localStrorageService.download(originRealPath);
+                        BufferedImage image = ImageUtils.createImage(new ByteArrayInputStream(originData));
+
+                        //是图片
+                        if (image != null) {
+                            image = ImageUtils.zoomImage(image, width);
+                            if (image.getHeight() > height)
+                                image = ImageUtils.cutImage(image, 0, (image.getHeight() - height) / 2, width, height);
+//                            ImageUtils.outPutImage(image, ImageUtils.IMAGE_TYPE_JPEG, path);
+                            String resultPath = localStrorageService.upload(ImageUtils.bufferedImageToInputStream(image,ImageUtils.IMAGE_TYPE_JPEG),path);
+                            data = localStrorageService.download(path);
+                        } else {
+                            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        }
                     }
-                } else {
-                }
 
             }
         } catch (Exception e) {
@@ -255,7 +226,7 @@ public class FileController extends BaseController {
 
         try {
 
-            ResponseUtils.renderFile(response, realPath, contentType);
+            ResponseUtils.renderinputStream(response, new ByteArrayInputStream(data), contentType);
         } catch (IOException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }

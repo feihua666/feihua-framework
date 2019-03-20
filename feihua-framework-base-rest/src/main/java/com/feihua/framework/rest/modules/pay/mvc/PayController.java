@@ -1,6 +1,7 @@
 package com.feihua.framework.rest.modules.pay.mvc;
 
 import com.feihua.framework.base.modules.pay.api.ApiPayService;
+import com.feihua.framework.base.modules.pay.wxpay.WxUnifiedOrderParam;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
@@ -26,30 +27,17 @@ public class PayController extends SuperController {
     private static Logger logger = LoggerFactory.getLogger(PayController.class);
 
     @Autowired
-    private ApiPayService apiPayService;
+    private ApiPayService<WxUnifiedOrderParam> apiPayService;
+
 
     /**
-     * 统一下单接口
-     * @param which    来源 wxpay/alpay ...
-     * @param payParam
+     * 提供统一支付成功回调，暂未实现
      * @return
      */
-    @RepeatFormValidator
-//    @RequiresPermissions("wxpay:unifiedOrder")
-    @RequestMapping(value = "/{which}/unifiedOrder", method = RequestMethod.POST)
-    public ResponseEntity unifiedOrder(@PathVariable("which") String which, @RequestBody Map<String, String> payParam) throws Exception {
-        logger.info("添加微信账号开始");
-        logger.info("当前登录用户id:{}", getLoginUser().getId());
+    @RequestMapping(value = "/unifiedOrder/success")
+    public ResponseEntity unifiedOrder(){
         ResponseJsonRender resultData = new ResponseJsonRender();
-        payParam.put("ip", RequestUtils.getRemoteAddr(RequestUtils.getRequest()));
-        Map<String, String> repData = apiPayService.unifiedOrder(payParam, which);
-
-        if (repData != null) {
-            resultData.setData(repData);
-            return new ResponseEntity(resultData, HttpStatus.OK);
-        } else {
-            resultData.setCode(ResponseCode.E404_100001.getCode());
-            return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);
-        }
+        System.out.println("************************unifiedOrder/success");
+        return new ResponseEntity(resultData, HttpStatus.OK);
     }
 }

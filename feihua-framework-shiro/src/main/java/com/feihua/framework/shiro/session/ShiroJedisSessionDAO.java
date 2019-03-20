@@ -41,15 +41,15 @@ public class ShiroJedisSessionDAO extends AbstractSessionDAO {
 			if (su != null) {
 				userId = su.getId();
 			}
-			jedis.hset(sessionKeyPrefix, session.getId().toString(),String.valueOf(session.getTimeout()) + "|" + userId);
+			jedis.hset(JedisUtils.wrapKeyPrefix(sessionKeyPrefix), session.getId().toString(),String.valueOf(session.getTimeout()) + "|" + userId);
 
-			jedis.set(JedisUtils.getBytesKey(sessionKeyPrefix + session.getId()), JedisUtils.toBytes(session));
+			jedis.set(JedisUtils.getBytesKey(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + session.getId()), JedisUtils.toBytes(session));
 			// 设置超期时间
 			int timeoutSeconds = (int) (session.getTimeout() / 1000);
-			jedis.expire((sessionKeyPrefix + session.getId()), timeoutSeconds);
+			jedis.expire((JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + session.getId()), timeoutSeconds);
 			// 记录同一个用户的会话id
 			if (su != null) {
-				jedis.hset(sessionUserKeyPrefix + su.getId(),session.getId().toString(), session.getId().toString());
+				jedis.hset(JedisUtils.wrapKeyPrefix(sessionKeyPrefix + sessionUserKeyPrefix) + su.getId(),session.getId().toString(), session.getId().toString());
 			}
 
 			logger.debug("update session {}", session.getId());
@@ -68,12 +68,12 @@ public class ShiroJedisSessionDAO extends AbstractSessionDAO {
 		Jedis jedis = null;
 		try {
 			jedis = JedisUtils.getResource();
-			jedis.hdel(sessionKeyPrefix, session.getId().toString());
-			jedis.del(JedisUtils.getBytesKey(sessionKeyPrefix + session.getId()));
+			jedis.hdel(JedisUtils.wrapKeyPrefix(sessionKeyPrefix), session.getId().toString());
+			jedis.del(JedisUtils.getBytesKey(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + session.getId()));
 			//删除同一个用户登录的当前会话记录
 			ShiroUser su = ShiroUtils.getShiroUser(session);
 			if (su != null) {
-				jedis.hdel(sessionUserKeyPrefix + su.getId(),session.getId().toString());
+				jedis.hdel(JedisUtils.wrapKeyPrefix(sessionKeyPrefix + sessionUserKeyPrefix) + su.getId(),session.getId().toString());
 			}
 
 			if(logger.isDebugEnabled()){
@@ -93,20 +93,20 @@ public class ShiroJedisSessionDAO extends AbstractSessionDAO {
 		Jedis jedis = null;
 		try {
 			jedis = JedisUtils.getResource();
-			Map<String, String> map = jedis.hgetAll(sessionKeyPrefix);
+			Map<String, String> map = jedis.hgetAll(JedisUtils.wrapKeyPrefix(sessionKeyPrefix));
 			for (Map.Entry<String, String> e : map.entrySet()){
 				if (StringUtils.isNotBlank(e.getKey()) && StringUtils.isNotBlank(e.getValue())){
 					String values[] = e.getValue().split("|");
-					if (jedis.exists(sessionKeyPrefix + e.getKey())){
-						Session session = (Session) JedisUtils.toObject(jedis.get(JedisUtils.getBytesKey(sessionKeyPrefix + e.getKey())));
+					if (jedis.exists(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + e.getKey())){
+						Session session = (Session) JedisUtils.toObject(jedis.get(JedisUtils.getBytesKey(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + e.getKey())));
 						if(session == null){
 							//session 不存在
-							jedis.hdel(sessionKeyPrefix, e.getKey());
+							jedis.hdel(JedisUtils.wrapKeyPrefix(sessionKeyPrefix), e.getKey());
 
 							//删除同一个用户登录的当前会话记录
 							// values[1]为userId    e.getKey() 为sessionId
 							if (values.length == 2 && StringUtils.isNotEmpty(values[1])) {
-								jedis.hdel(sessionUserKeyPrefix + values[1],e.getKey());
+								jedis.hdel(JedisUtils.wrapKeyPrefix(sessionKeyPrefix + sessionUserKeyPrefix) + values[1],e.getKey());
 							}
 
 							continue;
@@ -115,24 +115,24 @@ public class ShiroJedisSessionDAO extends AbstractSessionDAO {
 					}
 					// 存储的SESSION不符合规则
 					else{
-						jedis.hdel(sessionKeyPrefix, e.getKey());
+						jedis.hdel(JedisUtils.wrapKeyPrefix(sessionKeyPrefix), e.getKey());
 						//删除同一个用户登录的当前会话记录
 						// values[1]为userId    e.getKey() 为sessionId
 						if (values.length == 2 && StringUtils.isNotEmpty(values[1])) {
-							jedis.hdel(sessionUserKeyPrefix + values[1],e.getKey());
+							jedis.hdel(JedisUtils.wrapKeyPrefix(sessionKeyPrefix + sessionUserKeyPrefix) + values[1],e.getKey());
 						}
 					}
 				}
 				// 存储的SESSION无Value
 				else if (StringUtils.isNotBlank(e.getKey())){
-					jedis.hdel(sessionKeyPrefix, e.getKey());
+					jedis.hdel(JedisUtils.wrapKeyPrefix(sessionKeyPrefix), e.getKey());
 					// 删除同一个用户登录的当前会话记录
-					if (jedis.exists(sessionKeyPrefix + e.getKey())){
+					if (jedis.exists(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + e.getKey())){
 						// 这个session相当于一个僵尸session，只能通过id从redis中拿到
-						Session session = (Session) JedisUtils.toObject(jedis.get(JedisUtils.getBytesKey(sessionKeyPrefix + e.getKey())));
+						Session session = (Session) JedisUtils.toObject(jedis.get(JedisUtils.getBytesKey(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + e.getKey())));
 						ShiroUser su = ShiroUtils.getShiroUser(session);
 						if (su != null) {
-							jedis.hdel(sessionUserKeyPrefix + su.getId(),session.getId().toString());
+							jedis.hdel(JedisUtils.wrapKeyPrefix(sessionKeyPrefix + sessionUserKeyPrefix) + su.getId(),session.getId().toString());
 						}
 					}
 				}
@@ -167,7 +167,7 @@ public class ShiroJedisSessionDAO extends AbstractSessionDAO {
 		try {
 			jedis = JedisUtils.getResource();
 			session = (Session) JedisUtils.toObject(jedis.get(
-					JedisUtils.getBytesKey(sessionKeyPrefix + sessionId)));
+					JedisUtils.getBytesKey(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + sessionId)));
 			if(session == null){
 				logger.debug("doReadSession from jedis by sessionId {} session is null", sessionId);
 
@@ -192,11 +192,11 @@ public class ShiroJedisSessionDAO extends AbstractSessionDAO {
 		Jedis jedis = null;
 		try {
 			jedis = JedisUtils.getResource();
-			Map<String, String> map = jedis.hgetAll(sessionUserKeyPrefix + userId);
+			Map<String, String> map = jedis.hgetAll(JedisUtils.wrapKeyPrefix(sessionKeyPrefix + sessionUserKeyPrefix) + userId);
 			for (Map.Entry<String, String> e : map.entrySet()){
 				if (StringUtils.isNotBlank(e.getKey())){
-					if (jedis.exists(sessionKeyPrefix + e.getKey())){
-						Session session = (Session) JedisUtils.toObject(jedis.get(JedisUtils.getBytesKey(sessionKeyPrefix + e.getKey())));
+					if (jedis.exists(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + e.getKey())){
+						Session session = (Session) JedisUtils.toObject(jedis.get(JedisUtils.getBytesKey(JedisUtils.wrapKeyPrefix(sessionKeyPrefix) + e.getKey())));
 						if(session == null){
 							continue;
 						}

@@ -1,4 +1,4 @@
-package com.feihua.framework.base.modules.pay.wxpay;
+package com.feihua.framework.base.modules.pay.wxpay.sdk;
 
 import org.w3c.dom.Document;
 

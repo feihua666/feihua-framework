@@ -1,4 +1,4 @@
-package com.feihua.framework.base.modules.pay.wxpay;
+package com.feihua.framework.base.modules.pay.wxpay.sdk;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,7 +24,7 @@ import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
 
-import static com.feihua.framework.base.modules.pay.wxpay.WXPayConstants.USER_AGENT;
+import static com.feihua.framework.base.modules.pay.wxpay.sdk.WXPayConstants.USER_AGENT;
 
 public class WXPayRequest {
     private WXPayConfig config;

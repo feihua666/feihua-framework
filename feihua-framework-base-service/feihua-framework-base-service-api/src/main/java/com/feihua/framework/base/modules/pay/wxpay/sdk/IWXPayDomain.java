@@ -1,4 +1,4 @@
-package com.feihua.framework.base.modules.pay.wxpay;
+package com.feihua.framework.base.modules.pay.wxpay.sdk;
 
 /**
  * 域名管理，实现主备域名自动切换

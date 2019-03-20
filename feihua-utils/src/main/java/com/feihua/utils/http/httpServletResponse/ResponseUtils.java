@@ -1,6 +1,7 @@
 package com.feihua.utils.http.httpServletResponse;
 
 import com.feihua.utils.io.FileUtils;
+import com.feihua.utils.io.StreamUtils;
 import com.feihua.utils.json.JSONUtils;
 import com.feihua.utils.string.StringUtils;
 
@@ -45,11 +46,19 @@ public class ResponseUtils {
                 throw new FileNotFoundException();
             }
             FileInputStream inputStream = new FileInputStream(file);
-            byte[] data = new byte[(int)file.length()];
-            int length = inputStream.read(data);
-            inputStream.close();
-            stream.write(data);
-            stream.flush();
-            stream.close();
+            renderinputStream(response,inputStream,contentType);
+    }
+    public static void renderinputStream(HttpServletResponse response, InputStream in, String contentType) throws IOException {
+        if(!StringUtils.isEmpty(contentType)){
+            response.setContentType(contentType);
+        }
+        response.setCharacterEncoding("utf-8");
+        OutputStream stream = response.getOutputStream();
+
+        byte[] data = StreamUtils.inputStreamToByteArray(in);
+        in.close();
+        stream.write(data);
+        stream.flush();
+        stream.close();
     }
 }

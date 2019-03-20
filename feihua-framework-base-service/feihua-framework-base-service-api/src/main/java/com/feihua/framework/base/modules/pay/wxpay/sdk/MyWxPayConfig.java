@@ -1,4 +1,4 @@
-package com.feihua.framework.base.modules.pay.wxpay;
+package com.feihua.framework.base.modules.pay.wxpay.sdk;
 
 import com.feihua.framework.base.modules.config.api.ApiBaseConfigService;
 import com.feihua.framework.constants.ConfigConstant;
@@ -16,7 +16,7 @@ public class MyWxPayConfig extends WXPayConfig {
 
     static {
         ApiBaseConfigService apiBaseConfigService = SpringContextHolder.getBean(ApiBaseConfigService.class);
-        MyWxPayConfig.payConfig = apiBaseConfigService.getConfigObject(ConfigConstant.WXPAY_STORAGE_CONFIG_KEY, PayConfig.class);
+        MyWxPayConfig.payConfig = apiBaseConfigService.getConfigObject(ConfigConstant.ConfigKey.WXPAY_STORAGE_CONFIG_KEY.name(), PayConfig.class);
     }
 
     /**

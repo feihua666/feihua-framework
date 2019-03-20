@@ -76,6 +76,10 @@ public class ImageUtils {
 		BufferedImage image = ImageIO.read(imageFile); // 读入文件
 		return image;
 	}
+	public final static BufferedImage createImage(InputStream inputStream) throws IOException{
+		BufferedImage image = ImageIO.read(inputStream); // 读入流
+		return image;
+	}
 	/**
 	 * 缓冲图片对象转像对象
 	 * @param image

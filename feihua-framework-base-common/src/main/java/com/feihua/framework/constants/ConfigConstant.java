@@ -6,16 +6,35 @@ package com.feihua.framework.constants;
  * @Description:
  */
 public class ConfigConstant {
-    /**
-     * OSS 系统配置
-     */
-    public final static String OSS_CLOUD_STORAGE_CONFIG_KEY = "OSS_CLOUD_STORAGE_CONFIG_KEY";
 
     /**
-     * 微信支付系统配置
+     * 配置key
      */
-    public final static String WXPAY_STORAGE_CONFIG_KEY = "WXPAY_STORAGE_CONFIG_KEY";
+    public enum ConfigKey{
+        /**
+         * OSS 系统配置
+         */
+        OSS_CLOUD_STORAGE_CONFIG_KEY,
+        /**
+         * 微信支付系统配置
+         */
+        WXPAY_STORAGE_CONFIG_KEY
+    }
 
+    /**
+     * 支付类型
+     */
+    public enum PayType{
+        /**
+         * 微信支付
+         */
+        WXPAY,
+        /**
+         * 阿里支付宝支付
+         */
+        ALIPAY
+
+    }
     /**
      * 云服务商
      */
@@ -24,39 +43,19 @@ public class ConfigConstant {
         /**
          * 阿里云
          */
-        ALIYUN("ALY", "阿里云"),
+        ALY,
         /**
          * 七牛云
          */
-        QINIUCLOUD("QNY", "七牛云"),
+        QNY,
         /**
          * 腾讯云
          */
-        QCLOUD("TXY", "腾讯云");
+        TXY,
+        /**
+         * 本地存储
+         */
+        LOCAL
 
-        private String value;
-        private String name;
-
-        OSSCloud(String value, String name) {
-            this.value = value;
-            this.name = name;
-        }
-
-        public String getValue() {
-            return this.value;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        public static OSSCloud getEnum(String key) {
-            for (OSSCloud cloudService : OSSCloud.values()) {
-                if (cloudService.getValue().equalsIgnoreCase(key) || cloudService.getName().equalsIgnoreCase(key)) {
-                    return cloudService;
-                }
-            }
-            return null;
-        }
     }
 }

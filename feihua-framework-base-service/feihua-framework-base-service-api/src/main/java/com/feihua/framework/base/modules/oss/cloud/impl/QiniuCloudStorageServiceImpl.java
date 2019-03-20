@@ -1,6 +1,7 @@
-package com.feihua.framework.base.modules.oss.cloud;
+package com.feihua.framework.base.modules.oss.cloud.impl;
 
 import com.feihua.exception.BaseException;
+import com.feihua.framework.base.modules.oss.cloud.dto.QiniuStorageConfig;
 import com.qiniu.common.Zone;
 import com.qiniu.http.Response;
 import com.qiniu.storage.Configuration;
@@ -18,13 +19,13 @@ import java.io.InputStream;
  * @Date: 2019/2/20 15:41
  * @Description: 七牛云存储
  */
-public class QiniuCloudStorageService extends CloudStorageService {
-    private static Logger logger = LoggerFactory.getLogger(QiniuCloudStorageService.class);
-
+public class QiniuCloudStorageServiceImpl extends AbstractCloudStorageService {
+    private static Logger logger = LoggerFactory.getLogger(QiniuCloudStorageServiceImpl.class);
+    private QiniuStorageConfig config;
     private UploadManager uploadManager;
     private String token;
 
-    public QiniuCloudStorageService(CloudStorageConfig config){
+    public QiniuCloudStorageServiceImpl(QiniuStorageConfig config){
         this.config = config;
         //初始化
         init();
@@ -37,9 +38,9 @@ public class QiniuCloudStorageService extends CloudStorageService {
     }
 
     @Override
-    public String upload(byte[] data, String path) {
+    public String upload(byte[] data, String filepath) {
         try {
-            Response res = uploadManager.put(data, path, token);
+            Response res = uploadManager.put(data, filepath, token);
             if (!res.isOK()) {
                 logger.error("上传七牛出错：" + res.toString());
                 throw new RuntimeException("上传七牛出错："+res.toString());
@@ -49,19 +50,19 @@ public class QiniuCloudStorageService extends CloudStorageService {
             throw new BaseException("上传文件失败，请核对七牛配置信息");
         }
 
-        return config.getQiniuDomain() + "/" + path;
+        return config.getQiniuDomain() + "/" + filepath;
     }
 
     @Override
-    public String uploadSuffix(byte[] data, String suffix) {
-        return upload(data, getPath(config.getQiniuPrefix(), suffix));
+    public String uploadSuffix(byte[] data,String prefixPath, String suffix) {
+        return upload(data, getPath(config.getQiniuPrefix() + "/" + prefixPath, suffix));
     }
 
     @Override
-    public String upload(InputStream inputStream, String path) {
+    public String upload(InputStream inputStream, String filepath) {
         try {
             byte[] data = IOUtils.toByteArray(inputStream);
-            return this.upload(data, path);
+            return this.upload(data, filepath);
         } catch (IOException e) {
             logger.error(e.getMessage(),e);
             throw new BaseException("七牛上传文件失败");
@@ -69,12 +70,13 @@ public class QiniuCloudStorageService extends CloudStorageService {
     }
 
     @Override
-    public String uploadSuffix(InputStream inputStream, String suffix) {
-        return upload(inputStream, getPath(config.getQiniuPrefix(), suffix));
+    public String uploadSuffix(InputStream inputStream,String prefixPath, String suffix) {
+        return upload(inputStream, getPath(config.getQiniuPrefix() + "/" + prefixPath, suffix));
     }
 
     @Override
-    public void download(String objectName) {
+    public byte[] download(String objectName) {
 
+        return null;
     }
 }

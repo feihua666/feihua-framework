@@ -1,6 +1,6 @@
-package com.feihua.framework.base.modules.pay.wxpay;
+package com.feihua.framework.base.modules.pay.wxpay.sdk;
 
-import com.feihua.framework.base.modules.pay.wxpay.WXPayConstants.SignType;
+import com.feihua.framework.base.modules.pay.wxpay.sdk.WXPayConstants.SignType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Node;
