@@ -937,6 +937,8 @@ public class CalendarUtils {
         YYYY_MM_DD_HH_MM_CN("yyyy年MM月dd日 HH:mm", false),
         YYYY_MM_DD_HH_MM_SS_CN("yyyy年MM月dd日 HH:mm:ss", false),
 
+        YYYYMMDDHHMMSS("yyyyMMddHHmmss", false),
+
         HH_MM("HH:mm", true),
         HH_MM_SS("HH:mm:ss", true),
 
