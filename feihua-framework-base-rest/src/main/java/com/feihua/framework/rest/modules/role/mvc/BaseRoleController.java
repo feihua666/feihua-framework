@@ -70,19 +70,22 @@ public class BaseRoleController extends BaseController {
         logger.info("角色id:{}",getLoginUser().getId());
         ResponseJsonRender resultData = new ResponseJsonRender();
         // 查检
-        BaseRolePo baseRolePoCheckConditon = new BaseRolePo();
-        baseRolePoCheckConditon.setCode(addRoleFormDto.getCode());
-        baseRolePoCheckConditon.setDelFlag(BasePo.YesNo.N.name());
+        if(StringUtils.isNotEmpty(addRoleFormDto.getCode())){
+            BaseRolePo baseRolePoCheckConditon = new BaseRolePo();
+            baseRolePoCheckConditon.setCode(addRoleFormDto.getCode());
+            baseRolePoCheckConditon.setDelFlag(BasePo.YesNo.N.name());
 
-        List dblist = apiBaseRolePoService.selectListSimple(baseRolePoCheckConditon);
-        if (dblist != null && !dblist.isEmpty()) {
-            // 添加失败
-            resultData.setCode(ResponseCode.E409_100001.getCode());
-            resultData.setMsg(ResponseCode.E409_100001.getMsg());
-            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
-            logger.info("添加角色结束，失败");
-            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+            List dblist = apiBaseRolePoService.selectListSimple(baseRolePoCheckConditon);
+            if (dblist != null && !dblist.isEmpty()) {
+                // 添加失败
+                resultData.setCode(ResponseCode.E409_100001.getCode());
+                resultData.setMsg(ResponseCode.E409_100001.getMsg());
+                logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+                logger.info("添加角色结束，失败");
+                return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+            }
         }
+
         
 
         BaseRolePo baseRolePo = new BaseRolePo();
@@ -162,19 +165,22 @@ public class BaseRoleController extends BaseController {
         logger.info("角色id:{}",id);
         ResponseJsonRender resultData=new ResponseJsonRender();
         // 查检
-        BaseRolePo baseRolePoCheckConditon = new BaseRolePo();
-        baseRolePoCheckConditon.setCode(updateRoleFormDto.getCode());
-        baseRolePoCheckConditon.setDelFlag(BasePo.YesNo.N.name());
+        if (StringUtils.isNotEmpty(updateRoleFormDto.getCode())) {
+            BaseRolePo baseRolePoCheckConditon = new BaseRolePo();
+            baseRolePoCheckConditon.setCode(updateRoleFormDto.getCode());
+            baseRolePoCheckConditon.setDelFlag(BasePo.YesNo.N.name());
 
-        List<BaseRolePo> dblist = apiBaseRolePoService.selectListSimple(baseRolePoCheckConditon);
-        if (dblist != null && !dblist.isEmpty() && !dblist.get(0).getId().equals(id)) {
-            // 添加失败
-            resultData.setCode(ResponseCode.E409_100001.getCode());
-            resultData.setMsg(ResponseCode.E409_100001.getMsg());
-            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
-            logger.info("更新角色结束，失败");
-            return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+            List<BaseRolePo> dblist = apiBaseRolePoService.selectListSimple(baseRolePoCheckConditon);
+            if (dblist != null && !dblist.isEmpty() && !dblist.get(0).getId().equals(id)) {
+                // 添加失败
+                resultData.setCode(ResponseCode.E409_100001.getCode());
+                resultData.setMsg(ResponseCode.E409_100001.getMsg());
+                logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+                logger.info("更新角色结束，失败");
+                return new ResponseEntity(resultData,HttpStatus.CONFLICT);
+            }
         }
+
 
         // 更新数据
         BaseRolePo baseRolePo = new BaseRolePo();

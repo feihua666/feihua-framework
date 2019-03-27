@@ -196,7 +196,7 @@ public class ActivityModelController  extends SuperController {
                 baseFilePo.setFilename(exportModelDto.getFileName());
                 baseFilePo.setFilePath(resultPath);
                 baseFilePo.setDownloadNum(Integer.valueOf(0));
-                baseFilePo.setType(DictEnum.FileType.other.name());
+                baseFilePo.setType(DictEnum.UploadDownloadType.export.name());
                 baseFilePo.setDuration(((System.currentTimeMillis() - start)/1000 ) + "");
                 baseFilePo.setDataUserId(getLoginUser().getId());
                 baseFilePo = baseFilePo.service().preInsert(baseFilePo, getLoginUser().getId());

@@ -4,6 +4,7 @@ import com.feihua.framework.base.modules.file.po.BaseFilePo;
 import com.feihua.framework.base.modules.oss.cloud.api.ApiCloudStorageService;
 import com.feihua.framework.base.modules.oss.cloud.dto.CloudStorageConfig;
 import com.feihua.framework.base.modules.oss.cloud.impl.LocalStorageServiceImpl;
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.utils.FileHelper;
 import com.feihua.utils.graphic.ImageUtils;
@@ -133,7 +134,7 @@ public class FileController extends BaseController {
                 baseFilePo.setFilename(file.getOriginalFilename());
                 baseFilePo.setFilePath(resultPath);
                 baseFilePo.setDownloadNum(0);
-                baseFilePo.setType(fileType);
+                baseFilePo.setType(DictEnum.UploadDownloadType.upload.name());
                 baseFilePo.setDuration("0");
                 baseFilePo.setDataUserId(getLoginUser().getId());
                 baseFilePo = baseFilePo.service().preInsert(baseFilePo, getLoginUser().getId());
