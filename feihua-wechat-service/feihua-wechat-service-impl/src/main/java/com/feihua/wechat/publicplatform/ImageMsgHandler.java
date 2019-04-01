@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  * Created by yangwei
  * Created at 2018/7/20 11:42
  */
-@Service
+@Service("default_wx_public_image")
 public class ImageMsgHandler implements MsgTypeHandler {
 
     public String handleMsg( String postXmlData, String which) {

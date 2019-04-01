@@ -37,9 +37,13 @@ public class ApiPublicPlatformServiceImpl implements ApiPublicPlatformService {
             if(StringUtils.isNotEmpty(msgEvent.getName())){
                 stuffix = "_"+ msgEvent.getName();
             }
-            msgTypeHandler = msgHandlers.get(msgType.getName() + stuffix);
+            // 这里没有加default优先取用户自定义的service hander，如果没有定义，使用默认的
+            msgTypeHandler = msgHandlers.get("wx_public_" + msgType.getName() + stuffix);
+            if(msgTypeHandler == null){
+                msgTypeHandler = msgHandlers.get("default_wx_public_" + msgType.getName() + stuffix);
+            }
         }
-        return msgTypeHandler == null?"":msgTypeHandler.handleMsg(postXmlData,which);
+        return msgTypeHandler == null ? "" : msgTypeHandler.handleMsg(postXmlData,which);
     }
 
 }

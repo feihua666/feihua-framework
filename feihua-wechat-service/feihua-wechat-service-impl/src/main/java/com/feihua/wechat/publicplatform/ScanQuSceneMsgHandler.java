@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
  */
 
 /**
- * 扫描带参数二维码事件处理
+ * 扫描带参数二维码事件处理，事件来源分两种，一种是未关注，一种是已关注，参数不同，请注意
  */
-@Service
+@Service("default_wx_public_event_SCAN")
 public class ScanQuSceneMsgHandler implements MsgTypeHandler {
 
     public String handleMsg( String postXmlData, String which) {

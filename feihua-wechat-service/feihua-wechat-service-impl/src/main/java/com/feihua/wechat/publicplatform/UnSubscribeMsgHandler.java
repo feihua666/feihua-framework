@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 /**
  * 取消关注事件处理
  */
-@Service("event_unsubscribe")
+@Service("default_wx_public_event_unsubscribe")
 public class UnSubscribeMsgHandler implements MsgTypeHandler {
 
     @Autowired

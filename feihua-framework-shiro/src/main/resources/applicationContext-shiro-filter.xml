@@ -25,9 +25,10 @@
         </property>
         <property name="securityManager" ref="shiroSecurityManager"/>
         <property name="filterChainDefinitionMap" ref="filterChainDefinitionSectionMetaSource"/>
-        <property name="filterChainDefinitions">
+        <!-- filterChainDefinitionMap 和 filterChainDefinitions 只能使用一种-->
+        <!--<property name="filterChainDefinitions">
             <ref bean="shiroFilterChainDefinitions"/>
-        </property>
+        </property>-->
     </bean>
 
     <bean id="logoutFilter" class="com.feihua.framework.shiro.ShiroLogoutFilter">
@@ -45,13 +46,7 @@
     <bean name="shiroFilterChainDefinitions" class="java.lang.String">
         <constructor-arg>
             <value>
-                /*.css = anon
-                ${shiro.url.logout} = logout
-                /captcha = captcha
-                /qrCode = qrCode
-                /qrCodeCheck = qrCodeCheck
-                /login = authc
-                /** = userSession,perms
+
             </value>
         </constructor-arg>
     </bean>
@@ -60,6 +55,13 @@
         <!-- 这里也可以自定义shiro原始的方式 -->
         <property name="filterChainDefinitions">
             <value>
+                /*.css = anon
+                ${shiro.url.logout} = logout
+                /captcha = captcha
+                /qrCode = qrCode
+                /qrCodeCheck = qrCodeCheck
+                /login = authc
+                /** = userSession,perms
             </value>
         </property>
     </bean>

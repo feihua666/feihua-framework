@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 /**
  * 关注事件处理
  */
-@Service("event_subscribe")
+@Service("default_wx_public_event_subscribe")
 public class SubscribeMsgHandler implements MsgTypeHandler {
 
     @Autowired

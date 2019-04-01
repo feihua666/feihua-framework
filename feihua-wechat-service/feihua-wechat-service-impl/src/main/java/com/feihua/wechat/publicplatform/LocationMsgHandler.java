@@ -17,7 +17,7 @@ import java.math.BigDecimal;
  * Created by yangwei
  * Created at 2018/7/20 11:42
  */
-@Service
+@Service("default_wx_public_event_LOCATION")
 public class LocationMsgHandler implements MsgTypeHandler {
     @Autowired
     private ApiWeixinUserPoService apiWeixinUserPoService;

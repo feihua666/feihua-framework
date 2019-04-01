@@ -42,7 +42,12 @@ public class XmlUtils {
         Element root = document.getRootElement();
         //根据名称定位节点
         Element element = root.element(name);
-        //返回节点内容
-        return element.getText();
+        if (element != null) {
+            //返回节点内容
+            return element.getText();
+        }else {
+            return null;
+        }
+
     }
 }

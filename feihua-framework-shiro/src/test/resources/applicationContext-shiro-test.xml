@@ -21,4 +21,5 @@
     </bean>
     <bean class="com.feihua.framework.shiro.service.DefaultCaptchaServiceImpl"></bean>
     <bean class="com.feihua.framework.shiro.service.DefaultQrCodeServiceImpl"></bean>
+
 </beans>
