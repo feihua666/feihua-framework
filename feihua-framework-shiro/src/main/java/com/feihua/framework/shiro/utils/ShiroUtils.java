@@ -70,18 +70,28 @@ public class ShiroUtils {
         return (ShiroUser) session.getAttribute(SHIRO_USER_SESSION_KEY);
     }
     /**
-     * 把当前登录用户信息放到session中
+     * 把当前登录用户信息放到session
      */
     public static void initCurrentUserToSession(){
         Object principal = SecurityUtils.getSubject().getPrincipal();
         if(principal != null){
             ShiroUser su = getAccountService().findUserInfo(principal.toString());
             if(su != null){
+
                 //登录成功之后设置的
-                su.setLoginType((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_TYPE_KEY));
-                su.setHost(SecurityUtils.getSubject().getSession().getHost());
-                su.setLoginClient((LoginClient) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY));
+                ShiroUser sessionSu = (ShiroUser) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_SESSION_KEY);
+
+                if (sessionSu != null){
+                    su.setLoginType(sessionSu.getLoginType());
+                    su.setHost(sessionSu.getHost());
+                    su.setLoginClient(sessionSu.getLoginClient());
+                }else {
+                    su.setLoginType((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_TYPE_KEY));
+                    su.setHost(SecurityUtils.getSubject().getSession().getHost());
+                    su.setLoginClient((LoginClient) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY));
+                }
                 SecurityUtils.getSubject().getSession().setAttribute(SHIRO_USER_SESSION_KEY,su);
+                SecurityUtils.getSubject().getSession().touch();
             }
         }
     }
@@ -264,5 +274,21 @@ public class ShiroUtils {
                 sessionDAO.update(session);
             }
         }
+    }
+    /**
+     * 刷新当前登录用户信息
+     * 将在下一次请求中生效
+     */
+    public static void refreshShiroUserInfo(){
+        Session session = SecurityUtils.getSubject().getSession();
+        session.setAttribute(REFRESH_SHIROUSER_INFO_FLAG_KEY,"true");
+        session.touch();
+    }
+
+    /**
+     * 立即刷新当前登录用户信息
+     */
+    public static void refreshShiroUserInfoImidiately(){
+        initCurrentUserToSession();
     }
 }

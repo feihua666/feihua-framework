@@ -39,7 +39,7 @@ public class ShiroRedisCache<K, V> implements Cache<K, V> {
         try {
             jedis = JedisUtils.getResource();
             value = (V)JedisUtils.toObject(jedis.hget(JedisUtils.getBytesKey(cacheKeyName), JedisUtils.getBytesKey(key)));
-            logger.debug("get cacheKeyName={} key={} {}", cacheKeyName, key);
+            logger.debug("get cacheKeyName={} key={} value={}", cacheKeyName, key, value);
         } catch (Exception e) {
             logger.error("get cacheKeyName={} key={} {}", cacheKeyName, key, e);
         } finally {
@@ -75,8 +75,8 @@ public class ShiroRedisCache<K, V> implements Cache<K, V> {
         try {
             jedis = JedisUtils.getResource();
             value = (V)JedisUtils.toObject(jedis.hget(JedisUtils.getBytesKey(cacheKeyName), JedisUtils.getBytesKey(key)));
-            jedis.hdel(JedisUtils.getBytesKey(cacheKeyName), JedisUtils.getBytesKey(key));
-            logger.debug("remove {} {}", cacheKeyName, key);
+            Long delNum = jedis.hdel(JedisUtils.getBytesKey(cacheKeyName), JedisUtils.getBytesKey(key));
+            logger.debug("remove {} key={} value={} delNum={}", cacheKeyName, key, value, delNum);
         } catch (Exception e) {
             logger.warn("remove {} {}", cacheKeyName, key, e);
         } finally {

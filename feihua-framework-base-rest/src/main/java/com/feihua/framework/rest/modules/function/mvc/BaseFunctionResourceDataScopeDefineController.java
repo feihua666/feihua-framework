@@ -1,21 +1,16 @@
 package com.feihua.framework.rest.modules.function.mvc;
 
-import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.base.modules.function.api.ApiBaseFunctionResourceDataScopeDefinePoService;
 import com.feihua.framework.base.modules.function.api.ApiBaseFunctionResourceDataScopeDefineSelfPoService;
 import com.feihua.framework.base.modules.function.dto.BaseFunctionResourceDataScopeDefineDto;
 import com.feihua.framework.base.modules.function.dto.FunctionResourceDataScopeParamDto;
-import com.feihua.framework.base.modules.user.api.ApiBaseUserDataScopeDefinePoService;
-import com.feihua.framework.base.modules.user.dto.BaseUserDataScopeDefineDto;
-import com.feihua.framework.base.modules.user.dto.BaseUserDataScopeDefineParamDto;
-import com.feihua.framework.base.modules.user.po.BaseUserDataScopeDefinePo;
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.log.comm.annotation.OperationLog;
-import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
 import com.feihua.framework.rest.modules.function.dto.FunctionResourceDataScopeDefineFormDto;
-import feihua.jdbc.api.pojo.BasePo;
+import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +21,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 功能资源数据范围接口

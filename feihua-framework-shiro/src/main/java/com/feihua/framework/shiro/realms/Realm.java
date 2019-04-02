@@ -102,6 +102,11 @@ public class Realm extends AuthorizingRealm {
     }
 
     @Override
+    protected Object getAuthorizationCacheKey(PrincipalCollection principals) {
+        return principals.toString();
+    }
+
+    @Override
     public boolean supports(AuthenticationToken token) {
         //return super.supports(token);
         return true;

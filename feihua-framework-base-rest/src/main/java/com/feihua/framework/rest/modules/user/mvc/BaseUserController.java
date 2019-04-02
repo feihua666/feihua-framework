@@ -492,6 +492,8 @@ public class BaseUserController extends BaseController {
             logger.info("更新当前用户头像结束，失败");
             return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);
         } else {
+            // 刷新用户信息
+            ShiroUtils.refreshShiroUserInfo();
             // 更新成功，已被成功创建
             logger.info("更新当前用户头像结束，成功");
             return new ResponseEntity(resultData, HttpStatus.CREATED);
