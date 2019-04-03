@@ -93,7 +93,6 @@ public class BaseRoleDataScopeDefineController extends BaseController {
      * @return
      */
     @OperationLog(operation = "角色数据范围定义接口",content = "获取角色数据范围定义")
-    @RepeatFormValidator
     @RequiresPermissions("base:role:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/role/define",method = RequestMethod.GET)
     public ResponseEntity getRoleDataScopedDefine(@PathVariable String dataScopeId){

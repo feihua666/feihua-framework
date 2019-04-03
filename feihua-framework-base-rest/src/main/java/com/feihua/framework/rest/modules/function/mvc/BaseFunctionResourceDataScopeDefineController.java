@@ -83,7 +83,6 @@ public class BaseFunctionResourceDataScopeDefineController extends BaseControlle
      * @return
      */
     @OperationLog(operation = "功能资源数据范围接口",content = "功能资源数据范围定义")
-    @RepeatFormValidator
     @RequiresPermissions("base:functionResource:dataScope:define:get")
     @RequestMapping(value = "/role/{roleId}/functionResource/define",method = RequestMethod.GET)
     public ResponseEntity getFunctionResourceDataScopedDefine(@PathVariable String roleId){

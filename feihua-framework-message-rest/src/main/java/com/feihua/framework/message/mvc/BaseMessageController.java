@@ -199,7 +199,6 @@ public class BaseMessageController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions(value = {"message:getById","user"},logical = Logical.OR)
     @RequestMapping(value = "/message/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -221,7 +220,6 @@ public class BaseMessageController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("message:search")
     @RequestMapping(value = "/messages",method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseMessagesConditionDto dto){
@@ -250,7 +248,6 @@ public class BaseMessageController extends SuperController {
      * @param isRead Y/N 已读未读标识
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("message:viewReadPeople")
     @RequestMapping(value = "/message/{id}/viewReadPeople",method = RequestMethod.GET)
     public ResponseEntity viewReadPeople(@PathVariable String id,String isRead){
@@ -393,7 +390,6 @@ public class BaseMessageController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/message/currentuser/messages",method = RequestMethod.GET)
     public ResponseEntity searchCurrentUserMessages(SearchUserMessageConditionDto dto){

@@ -165,7 +165,6 @@ public class CmsContentCommentController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("contentComment:getById")
     @RequestMapping(value = "/content/comment/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -187,7 +186,6 @@ public class CmsContentCommentController extends BaseController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("contentComment:search")
     @RequestMapping(value = "/content/comments",method = RequestMethod.GET)
     public ResponseEntity search(SearchCmsContentCommentsConditionDto dto){

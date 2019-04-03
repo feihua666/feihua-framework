@@ -89,7 +89,6 @@ public class BaseDictDataScopeDefineController extends BaseController {
      * @return
      */
     @OperationLog(operation = "字典数据范围接口", content = "字典数据范围定义")
-    @RepeatFormValidator
     @RequiresPermissions("base:dict:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/dictDataScope/define",method = RequestMethod.GET)
     public ResponseEntity getDictDataScopedDefine(@PathVariable String dataScopeId){

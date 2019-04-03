@@ -70,7 +70,6 @@ public class BaseUserRoleRelController extends BaseController {
      * @return
      */
     @OperationLog(operation = "用户与角色关系接口",content = "获取用户角色")
-    @RepeatFormValidator
     @RequiresPermissions("base:user:roles:rel:get")
     @RequestMapping(value = "/user/{userId}/roles/rel",method = RequestMethod.GET)
     public ResponseEntity userRoles(@PathVariable String userId){
@@ -122,7 +121,6 @@ public class BaseUserRoleRelController extends BaseController {
      * @return
      */
     @OperationLog(operation = "用户与角色关系接口",content = "获取角色绑定用户")
-    @RepeatFormValidator
     @RequiresPermissions("base:role:users:rel:get")
     @RequestMapping(value = "/role/{roleId}/users/rel",method = RequestMethod.GET)
     public ResponseEntity roleUsers(@PathVariable String roleId){

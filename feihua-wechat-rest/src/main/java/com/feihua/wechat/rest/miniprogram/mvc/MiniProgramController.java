@@ -131,7 +131,6 @@ public class MiniProgramController extends SuperController {
      * @param which 支持多个小程序，区分类型
      * @return
      */
-    @RepeatFormValidator
     @RequestMapping(value = "/loginCredentials/{which}/{code}",method = RequestMethod.GET)
     public ResponseEntity getLoginCredentials(@PathVariable String code,@PathVariable String which){
 

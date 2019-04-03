@@ -187,7 +187,6 @@ public class CmsQuestionOptionsController extends BaseController {
      * @return
      */
     @OperationLog(operation = "调查问题选项管理", content = "单资源，获取id问题选项")
-    @RepeatFormValidator
     @RequiresPermissions("cms:question:options:getById")
     @RequestMapping(value = "/question/options/{id}", method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id) {
@@ -212,7 +211,6 @@ public class CmsQuestionOptionsController extends BaseController {
      * @return
      */
     @OperationLog(operation = "调查问题选项管理", content = "复数资源，搜索问题选项")
-    @RepeatFormValidator
     @RequiresPermissions("cms:question:options:search")
     @RequestMapping(value = "/question/optionss", method = RequestMethod.GET)
     public ResponseEntity search(SearchCmsQuestionOptionssConditionDto dto) {

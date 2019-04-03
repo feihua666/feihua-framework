@@ -289,7 +289,6 @@ public class CmsSurveyController extends BaseController {
      * @return
      */
     @OperationLog(operation = "调查管理", content = "单资源，获取id调查")
-    @RepeatFormValidator
     @RequiresPermissions("cms:survey:getById")
     @RequestMapping(value = "/survey/{id}", method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id) {
@@ -313,7 +312,6 @@ public class CmsSurveyController extends BaseController {
      * @return
      */
     @OperationLog(operation = "调查管理", content = "单资源，获取id调查、问题、选项")
-    @RepeatFormValidator
     @RequiresPermissions("cms:survey:getById")
     @RequestMapping(value = "/survey/{id}/questions", method = RequestMethod.GET)
     public ResponseEntity getSurveyById(@PathVariable String id) {
@@ -357,7 +355,6 @@ public class CmsSurveyController extends BaseController {
      * @return
      */
     @OperationLog(operation = "调查管理", content = "复数资源，搜索调查")
-    @RepeatFormValidator
     @RequiresPermissions("cms:survey:search")
     @RequestMapping(value = "/surveys", method = RequestMethod.GET)
     public ResponseEntity search(SearchCmsSurveysConditionDto dto) {

@@ -222,7 +222,6 @@ public class BaseFileController extends BaseController {
      * @return
      */
     @OperationLog(operation = "文件管理接口", content = "单资源，获取id文件")
-    @RepeatFormValidator
     @RequiresPermissions("base:file:getById")
     @RequestMapping(value = "/file/{id}", method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id) {
@@ -247,7 +246,6 @@ public class BaseFileController extends BaseController {
      * @return
      */
     @OperationLog(operation = "文件管理接口", content = "复数资源，搜索文件")
-    @RepeatFormValidator
     @RequiresPermissions("base:file:search")
     @RequestMapping(value = "/files", method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseFilesConditionDto dto) {

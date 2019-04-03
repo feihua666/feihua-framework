@@ -161,7 +161,6 @@ public class SpiderConfigContentController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("configContent:getById")
     @RequestMapping(value = "/configContent/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -183,7 +182,6 @@ public class SpiderConfigContentController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("configContent:search")
     @RequestMapping(value = "/configContents",method = RequestMethod.GET)
     public ResponseEntity search(SearchSpiderConfigContentsConditionDto dto){

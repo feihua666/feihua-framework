@@ -179,7 +179,6 @@ public class BaseAreaController extends BaseController {
      * @return
      */
     @OperationLog(operation = "区域接口", content = "单资源，获取id区域")
-    @RepeatFormValidator
     @RequiresPermissions("base:area:getById")
     @RequestMapping(value = "/area/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -202,7 +201,6 @@ public class BaseAreaController extends BaseController {
      * @return
      */
     @OperationLog(operation = "区域接口", content = "复数资源，搜索区域")
-    @RepeatFormValidator
     @RequiresPermissions("base:area:search")
     @RequestMapping(value = "/areas",method = RequestMethod.GET)
     public ResponseEntity searchAreas(SearchAreasConditionDto dto, boolean includeParent){

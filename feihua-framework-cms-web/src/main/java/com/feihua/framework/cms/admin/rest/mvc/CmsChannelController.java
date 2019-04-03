@@ -177,7 +177,6 @@ public class CmsChannelController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("channel:getById")
     @RequestMapping(value = "/channel/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -199,7 +198,6 @@ public class CmsChannelController extends BaseController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("channel:search")
     @RequestMapping(value = "/channels",method = RequestMethod.GET)
     public ResponseEntity search(SearchCmsChannelsConditionDto dto, boolean includeParent,boolean includeSite){
@@ -257,7 +255,6 @@ public class CmsChannelController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequestMapping(value = "/channel/{id}/address",method = RequestMethod.GET)
     public ResponseEntity indexAddress(@PathVariable String id){
 
@@ -285,7 +282,6 @@ public class CmsChannelController extends BaseController {
      * 单资源,栏目首页模板
      * @return
      */
-    @RepeatFormValidator
     @RequestMapping(value = "/channel/template",method = RequestMethod.GET)
     public ResponseEntity template(String siteId){
 

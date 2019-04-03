@@ -189,7 +189,6 @@ public class BaseMessageTemplateController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("messageTemplate:getById")
     @RequestMapping(value = "/com/feihua/framework/message/template/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -211,7 +210,6 @@ public class BaseMessageTemplateController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("messageTemplate:search")
     @RequestMapping(value = "/com/feihua/framework/message/templates",method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseMessageTemplatesConditionDto dto){

@@ -94,7 +94,6 @@ public class BaseDataScopeDataScopeDefineController extends BaseController {
      * @return
      */
     @OperationLog(operation = "数据范围的数据范围定义接口", content = "获取数据范围的数据范围定义")
-    @RepeatFormValidator
     @RequiresPermissions("base:dataScope:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/dataScope/define",method = RequestMethod.GET)
     public ResponseEntity getDataScopeDataScopedDefine(@PathVariable String dataScopeId){

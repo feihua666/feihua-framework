@@ -168,7 +168,6 @@ public class BaseDataScopeController extends BaseController {
      * @return
      */
     @OperationLog(operation = "数据范围配置接口", content = "单资源，获取id数据范围")
-    @RepeatFormValidator
     @RequiresPermissions("base:dataScope:getById")
     @RequestMapping(value = "/dataScope/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -191,7 +190,6 @@ public class BaseDataScopeController extends BaseController {
      * @return
      */
     @OperationLog(operation = "数据范围配置接口", content = "复数资源，搜索数据范围")
-    @RepeatFormValidator
     @RequiresPermissions("base:dataScope:search")
     @RequestMapping(value = "/dataScopes",method = RequestMethod.GET)
     public ResponseEntity searchDataScopes(SearchDataScopesConditionDto dto,boolean includeOffice){

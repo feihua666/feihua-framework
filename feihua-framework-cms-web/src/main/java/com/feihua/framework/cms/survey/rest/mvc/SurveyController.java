@@ -142,7 +142,6 @@ public class SurveyController extends BaseController {
      */
     @ResponseBody
     @OperationLog(operation = "调查管理-前台", content = "复数资源，搜索调查")
-    @RepeatFormValidator
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     public ResponseEntity search(SearchCmsSurveysConditionDto dto) {
 

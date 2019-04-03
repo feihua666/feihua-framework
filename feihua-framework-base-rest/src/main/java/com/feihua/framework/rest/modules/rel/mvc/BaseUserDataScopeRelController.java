@@ -47,7 +47,6 @@ public class BaseUserDataScopeRelController extends BaseController {
      * @return
      */
     @OperationLog(operation = "用户与数据范围关系接口",content = "用户绑定数据范围")
-    @RepeatFormValidator
     @RequiresPermissions("base:user:dataScopes:rel:bind")
     @RequestMapping(value = "/user/{userId}/dataScopes/rel",method = RequestMethod.POST)
     public ResponseEntity userBindDataScope(@PathVariable String userId, UserBindDataScopesFormDto userBindDataScopesFormDto){
@@ -80,7 +79,6 @@ public class BaseUserDataScopeRelController extends BaseController {
      * @return
      */
     @OperationLog(operation = "用户与数据范围关系接口",content = "获取用户绑定的数据范围")
-    @RepeatFormValidator
     @RequiresPermissions("base:user:dataScopes:rel:get")
     @RequestMapping(value = "/user/{userId}/dataScopes/rel",method = RequestMethod.GET)
     public ResponseEntity userDataScopes(@PathVariable String userId){
@@ -132,7 +130,6 @@ public class BaseUserDataScopeRelController extends BaseController {
      * @return
      */
     @OperationLog(operation = "用户与数据范围关系接口",content = "获取数据范围绑定的用户")
-    @RepeatFormValidator
     @RequiresPermissions("base:dataScope:users:rel:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/users/rel",method = RequestMethod.GET)
     public ResponseEntity dataScopeUsers(@PathVariable String dataScopeId){

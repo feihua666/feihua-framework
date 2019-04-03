@@ -205,7 +205,6 @@ public class BaseDictController extends BaseController {
      * @return
      */
     @OperationLog(operation = "字典",content = "根据ID获取字典",isInsert = false)
-    @RepeatFormValidator
     @RequiresPermissions("base:dict:getById")
     @RequestMapping(value = "/dict/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -227,8 +226,6 @@ public class BaseDictController extends BaseController {
      * @return
      */
 
-    @RepeatFormValidator
-    // @RequiresPermissions("base:dict:search")
     // 好多地方都用到，不设置权限
     @RequestMapping(value = "/dicts/{type}",method = RequestMethod.GET)
     public ResponseEntity getDictsByParentType(@PathVariable String type){
@@ -277,7 +274,6 @@ public class BaseDictController extends BaseController {
      * @return
      */
     @OperationLog(operation = "字典",content = "列表查询")
-    @RepeatFormValidator
     @RequiresPermissions("base:dict:search")
     @RequestMapping(value = "/dicts",method = RequestMethod.GET)
     public ResponseEntity searchDicts(SearchDictsConditionDto dto, boolean includeParent,boolean includeOffice,boolean includeArea){

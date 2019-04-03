@@ -78,7 +78,6 @@ public class BaseRoleDataScopeRelController extends BaseController {
      * @return
      */
     @OperationLog(operation = "角色与数据范围关系接口",content = "获取角色绑定的数据范围")
-    @RepeatFormValidator
     @RequiresPermissions("base:role:dataScopes:rel:get")
     @RequestMapping(value = "/role/{roleId}/dataScopes/rel",method = RequestMethod.GET)
     public ResponseEntity roleDataScopes(@PathVariable String roleId){
@@ -130,7 +129,6 @@ public class BaseRoleDataScopeRelController extends BaseController {
      * @return
      */
     @OperationLog(operation = "角色与数据范围关系接口",content = "获取数据范围绑定的角色")
-    @RepeatFormValidator
     @RequiresPermissions("base:dataScope:roles:rel:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/roles/rel",method = RequestMethod.GET)
     public ResponseEntity dataScopeRoles(@PathVariable String dataScopeId){
