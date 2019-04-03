@@ -63,7 +63,6 @@ public class BaseDeveloperController extends BaseController {
      * @return
      */
     @OperationLog(operation = "开发者工具接口", content = "搜索url对应的controller方法及注解")
-    @RepeatFormValidator
     @RequiresPermissions("base:developer:urlmapping")
     @RequestMapping(value = "/urlmapping",method = RequestMethod.GET)
     public ResponseEntity urlmapping(String url,String method){

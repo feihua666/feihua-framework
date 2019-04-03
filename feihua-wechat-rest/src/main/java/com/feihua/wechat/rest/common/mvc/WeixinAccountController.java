@@ -154,7 +154,6 @@ public class WeixinAccountController extends SuperController {
      *
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("weixinaccount:getById")
     @RequestMapping(value = "/account/{id}", method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id) {
@@ -178,7 +177,6 @@ public class WeixinAccountController extends SuperController {
      *
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("weixinaccount:search")
     @RequestMapping(value = "/accounts", method = RequestMethod.GET)
     public ResponseEntity search(SearchWeixinAccountsConditionDto dto) {
@@ -209,7 +207,6 @@ public class WeixinAccountController extends SuperController {
      *
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("weixinaccount:wxalltemplates")
     @RequestMapping(value = "/wxalltemplates/{accountId}", method = RequestMethod.GET)
     public ResponseEntity getWxAllPrivateTemplates(@PathVariable String accountId) {

@@ -373,7 +373,6 @@ public class BaseUserController extends BaseController {
      * @return
      */
     @OperationLog(operation = "用户接口", content = "单资源，获取id用户")
-    @RepeatFormValidator
     @RequiresPermissions("base:user:getById")
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id) {
@@ -403,7 +402,6 @@ public class BaseUserController extends BaseController {
      * @return
      */
     @OperationLog(operation = "用户接口", content = "多资源，查询")
-    @RepeatFormValidator
     @RequiresPermissions("base:user:search")
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     public ResponseEntity searchUsers(SearchBaseUsersConditionDto dto, boolean includeOfficeName) {
@@ -444,7 +442,6 @@ public class BaseUserController extends BaseController {
     }
 
     // 以下是当前用户相关
-    @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/user/current", method = RequestMethod.GET)
     public ResponseEntity currentUserInfo() {

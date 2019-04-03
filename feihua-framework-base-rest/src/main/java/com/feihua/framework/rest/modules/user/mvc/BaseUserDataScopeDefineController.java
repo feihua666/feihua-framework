@@ -89,7 +89,6 @@ public class BaseUserDataScopeDefineController extends BaseController {
      * @return
      */
     @OperationLog(operation = "用户数据范围接口", content = "用户数据范围定义")
-    @RepeatFormValidator
     @RequiresPermissions("base:user:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/userDataScope/define",method = RequestMethod.GET)
     public ResponseEntity getUserDataScopedDefine(@PathVariable String dataScopeId){

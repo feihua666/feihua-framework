@@ -174,7 +174,6 @@ public class WeixinMenuController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("weixinmenu:getById")
     @RequestMapping(value = "/menu/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -196,7 +195,6 @@ public class WeixinMenuController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("weixinmenu:search")
     @RequestMapping(value = "/menus",method = RequestMethod.GET)
     public ResponseEntity search(SearchWeixinMenusConditionDto dto){

@@ -240,7 +240,6 @@ public class BaseRoleController extends BaseController {
      * @return
      */
     @OperationLog(operation = "角色接口",content = "多资源，搜索角色")
-    @RepeatFormValidator
     @RequiresPermissions("base:role:search")
     @RequestMapping(value = "/roles",method = RequestMethod.GET)
     public ResponseEntity searchUsers(SearchRolesConditionDto dto, boolean includeParent, boolean includeOffice,boolean includeArea){

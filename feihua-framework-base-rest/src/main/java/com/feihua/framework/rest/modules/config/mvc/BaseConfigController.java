@@ -177,7 +177,6 @@ public class BaseConfigController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("base:config:getById")
     @RequestMapping(value = "/config/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -199,7 +198,6 @@ public class BaseConfigController extends BaseController {
      * @param key
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("base:config:getOssCofing")
     @RequestMapping(value = "/config/ossConfig/{key}",method = RequestMethod.GET)
     public ResponseEntity getOssCofingByKey(@PathVariable String key){
@@ -255,7 +253,6 @@ public class BaseConfigController extends BaseController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("base:config:search")
     @RequestMapping(value = "/configs",method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseConfigsConditionDto dto){
