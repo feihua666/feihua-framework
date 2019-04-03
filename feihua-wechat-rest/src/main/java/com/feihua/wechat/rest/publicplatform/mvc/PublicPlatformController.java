@@ -4,6 +4,7 @@ package com.feihua.wechat.rest.publicplatform.mvc;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.mvc.SuperController;
+import com.feihua.utils.calendar.CalendarUtils;
 import com.feihua.utils.properties.PropertiesUtils;
 import com.feihua.wechat.CommonConstants;
 import com.feihua.wechat.common.api.ApiWeixinUserListener;
@@ -32,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -181,16 +183,36 @@ public class PublicPlatformController extends SuperController {
         weixinUserPoCondition.setDelFlag(BasePo.YesNo.N.name());
 
         WeixinUserPo weixinUserPoDb = apiWeixinUserPoService.selectOneSimple(weixinUserPoCondition);
+
         // 如果库里没有，插入
         if (weixinUserPoDb == null) {
+
             // 根据accessToken获取用户信息
             WeixinUserPo userPo = PublicUtils.getAuthorizeWeixinUser(authorizeAccessToken);
-
             userPo = apiWeixinUserPoService.preInsert(userPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(userPo);
 
             //调用监听
             apiWeixinUserListener.onAddWexinUser(weixinUserDto);
+        }else {
+            // 每天每个用户只更新一次信息
+            if(Math.abs(CalendarUtils.getIntervalDays(new Date(), weixinUserPoDb.getUpdateAt())) > 0) {
+                //调用监听
+                // 根据accessToken获取用户信息
+                WeixinUserPo userPo = PublicUtils.getAuthorizeWeixinUser(authorizeAccessToken);
+                WeixinUserPo weixinUserPoToBeUpdate = new WeixinUserPo();
+                weixinUserPoToBeUpdate.setId(weixinUserPoDb.getId());
+                weixinUserPoToBeUpdate.setNickname(userPo.getNickname());
+                weixinUserPoToBeUpdate.setGender(userPo.getGender());
+                weixinUserPoToBeUpdate.setCity(userPo.getCity());
+                weixinUserPoToBeUpdate.setProvince(userPo.getProvince());
+                weixinUserPoToBeUpdate.setCountry(userPo.getCountry());
+                weixinUserPoToBeUpdate.setHeadImageUrl(userPo.getHeadImageUrl());
+
+                apiWeixinUserPoService.updateByPrimaryKeySelective(weixinUserPoToBeUpdate);
+                apiWeixinUserListener.onUpdateWexinUser(apiWeixinUserPoService.selectByPrimaryKey(weixinUserPoDb.getId()));
+            }
+
         }
 
         return "redirect:" + redirectUrl;

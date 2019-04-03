@@ -26,6 +26,11 @@ public class Test {
 
         //System.out.println(RequestUtils.convertToSlash("\\WEB-INF\\template-cms\\default\\index.html"));
 
-        System.out.println(HttpClientUtils.httpGet("https://www.toutiao.com/a6634127568062644744/"));
+        //System.out.println(HttpClientUtils.httpGet("https://www.toutiao.com/a6634127568062644744/"));
+        System.out.println(CalendarUtils.getIntervalDays("2019-04-03","2019-04-03"));
+        System.out.println(CalendarUtils.getIntervalDays("2019-04-03","2019-04-02"));
+        System.out.println(Math.abs(CalendarUtils.getIntervalDays("2019-04-02","2019-04-03")));
+        System.out.println( Math.abs(CalendarUtils.getIntervalDays(new Date(),new Date())));
+
     }
 }

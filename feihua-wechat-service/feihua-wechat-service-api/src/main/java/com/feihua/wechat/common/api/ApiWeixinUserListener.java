@@ -12,4 +12,5 @@ public interface ApiWeixinUserListener {
      * @param weixinUserDto
      */
     public void onAddWexinUser(WeixinUserDto weixinUserDto);
+    public void onUpdateWexinUser(WeixinUserDto weixinUserDto);
 }

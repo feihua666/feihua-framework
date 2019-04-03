@@ -819,10 +819,10 @@ public class CalendarUtils {
     /**
      * @param date 日期
      * @param otherDate 另一个日期
-     * @return 相差天数。如果失败则返回-1
+     * @return 相差天数。
      */
     public static int getIntervalDays(Date date, Date otherDate) {
-        int num = -1;
+        int num = 0;
         Date dateTmp = CalendarUtils.stringToDate(CalendarUtils.getDate(date), DateStyle.YYYY_MM_DD);
         Date otherDateTmp = CalendarUtils.stringToDate(CalendarUtils.getDate(otherDate), DateStyle.YYYY_MM_DD);
         if (dateTmp != null && otherDateTmp != null) {
