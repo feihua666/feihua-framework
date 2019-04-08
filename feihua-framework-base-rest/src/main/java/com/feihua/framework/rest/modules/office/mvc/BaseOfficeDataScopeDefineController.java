@@ -93,7 +93,6 @@ public class BaseOfficeDataScopeDefineController extends BaseController {
      * @return
      */
     @OperationLog(operation = "机构数据范围定义接口",content = "机构数据范围定义")
-    @RepeatFormValidator
     @RequiresPermissions("base:office:dataScope:define:get")
     @RequestMapping(value = "/dataScope/{dataScopeId}/office/define",method = RequestMethod.GET)
     public ResponseEntity getOfficeDataScopedDefine(@PathVariable String dataScopeId){

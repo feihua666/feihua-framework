@@ -225,7 +225,6 @@ public class BaseFunctionResouceController extends BaseController {
      * @return
      */
     @OperationLog(operation = "功能资源",content = "单资源，获取id功能资源")
-    @RepeatFormValidator
     @RequiresPermissions("base:functionResource:getById")
     @RequestMapping(value = "/functionResource/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -248,7 +247,6 @@ public class BaseFunctionResouceController extends BaseController {
      * @return
      */
     @OperationLog(operation = "功能资源",content = "复数资源，搜索功能资源")
-    @RepeatFormValidator
     @RequiresPermissions(value = {"base:functionResource:search","user"},logical = Logical.OR)
     @RequestMapping(value = "/functionResources",method = RequestMethod.GET)
     public ResponseEntity searchFunctionResources(SearchFunctionResourcesConditionDto dto,boolean includeParent){

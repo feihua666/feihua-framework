@@ -29,12 +29,11 @@ public class DictEnum {
     }
 
     /**
-     * 登录客户端
+     * 登录客户端类型
      */
-    public enum LoginClient{
+    public enum LoginClientType {
         pc,
-        wx_platform,
-        wx_miniprogram,
+        h5,
         app_android,
         app_ios
     }
@@ -164,13 +163,6 @@ public class DictEnum {
         pdf,      //pdf
         other      //其它
     }
-    /**
-     * 平台分类
-     */
-    public enum WeixinType {
-        miniprogram,    //小程序
-        publicplatform,   //公众平台
-    }
 
     /**
      * 用户关注的渠道来源，微信用户怎么来的分类
@@ -211,6 +203,39 @@ public class DictEnum {
         view_limited,        //跳转图文消息URL
         miniprogram        //小程序
     }
+    /**
+     * 微信账号类型
+     */
+    public enum WxAccountType {
+        /**
+         * 小程序
+         */
+        weixin_miniprogram,
+
+        /**
+         * 公众号
+         */
+        weixin_publicplatform
+    }
+
+    /**
+     * 微信消息类型
+     */
+    public enum WxMsgType {
+        /**
+         * 文本
+         */
+        text,
+        /**
+         * 图文
+         */
+        news,
+
+        /**
+         * 图片
+         */
+        image
+    }
 
     /**
      * 消息状态
@@ -238,6 +263,9 @@ public class DictEnum {
         video, //视频
         audio, //音频
     }
-
+    public enum XmlOrJsonType {
+        xml,
+        json
+    }
 
 }

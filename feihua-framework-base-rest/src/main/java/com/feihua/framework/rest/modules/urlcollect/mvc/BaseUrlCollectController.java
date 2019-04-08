@@ -248,7 +248,6 @@ public class BaseUrlCollectController extends BaseController {
      * @return
      */
     @OperationLog(operation = "网址收藏管理",content = "复数资源，搜索网址收藏")
-    @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollects/self",method = RequestMethod.GET)
     public ResponseEntity searchSelf(SearchBaseUrlCollectsConditionDto dto){

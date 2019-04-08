@@ -42,7 +42,6 @@ public class ApiBaseMessageTargetClientPoServiceImpl extends ApiBaseServiceImpl<
         baseMessageTargetClientDto.setDataUserId(po.getDataUserId());
         baseMessageTargetClientDto.setDataType(po.getDataType());
         baseMessageTargetClientDto.setDataAreaId(po.getDataAreaId());
-        baseMessageTargetClientDto.setSubTargetClient(po.getSubTargetClient());
         return baseMessageTargetClientDto;
     }
 
@@ -63,7 +62,6 @@ public class ApiBaseMessageTargetClientPoServiceImpl extends ApiBaseServiceImpl<
             BaseMessageTargetClientPo baseMessageTargetClientPo = new BaseMessageTargetClientPo();
             baseMessageTargetClientPo.setMessageState(messageState.name());
             baseMessageTargetClientPo.setTargetClient(clientParamsDto.getTargetClient());
-            baseMessageTargetClientPo.setSubTargetClient(clientParamsDto.getSubTargetClient());
             baseMessageTargetClientPo.setDelFlag(BasePo.YesNo.N.name());
             return this.selectListSimple(baseMessageTargetClientPo);
         }
@@ -78,7 +76,6 @@ public class ApiBaseMessageTargetClientPoServiceImpl extends ApiBaseServiceImpl<
         BaseMessageTargetClientPo baseMessageTargetClientPo = new BaseMessageTargetClientPo();
         baseMessageTargetClientPo.setMessageState(messageState.name());
         baseMessageTargetClientPo.setTargetClient(clientParamsDto.getTargetClient());
-        baseMessageTargetClientPo.setSubTargetClient(clientParamsDto.getSubTargetClient());
         baseMessageTargetClientPo.setMessageId(messageId);
         baseMessageTargetClientPo.setDelFlag(BasePo.YesNo.N.name());
         baseMessageTargetClientPo = this.selectOneSimple(baseMessageTargetClientPo);

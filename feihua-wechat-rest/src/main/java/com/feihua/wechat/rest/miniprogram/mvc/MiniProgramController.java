@@ -78,10 +78,10 @@ public class MiniProgramController extends SuperController {
             inputStream = request.getInputStream();
             String postData = IOUtils.toString(inputStream, "UTF-8");
             String respMessage = "";
-            if(MiniConstants.MESSAGE_JSON_TYPE.equals(MiniProgramUtils.getAppMsgType(which))){
+            if(DictEnum.XmlOrJsonType.json.equals(MiniProgramUtils.getAppMsgType(which))){
                 // 调用核心业务类接收消息、处理消息
                 respMessage = apiMiniProgramService.processjsonMsg(postData,which);
-            } else if(MiniConstants.MESSAGE_XML_TYPE.equals(MiniProgramUtils.getAppMsgType(which))){
+            } else if(DictEnum.XmlOrJsonType.xml.equals(MiniProgramUtils.getAppMsgType(which))){
                 // 调用核心业务类接收消息、处理消息
                 respMessage = apiMiniProgramService.processXmlMsg(postData,which);
             }
@@ -231,13 +231,13 @@ public class MiniProgramController extends SuperController {
         weiXinUserPo.setHeadImageUrl(weixinUserForm.getAvatarUrl());
         weiXinUserPo.setHowFrom(DictEnum.WeixinUserHowFrom.webAuthorize.name());
         weiXinUserPo.setLanguage(weixinUserForm.getLanguage());
-        weiXinUserPo.setType(DictEnum.WeixinType.miniprogram.name());
+        weiXinUserPo.setType(DictEnum.WxAccountType.weixin_miniprogram.name());
         weiXinUserPo.setWhich(which);
 
         // 根据openid查询是否存在数据
         WeixinUserPo weixinUserPoCondition = new WeixinUserPo();
         weixinUserPoCondition.setOpenid(openid);
-        weixinUserPoCondition.setType(DictEnum.WeixinType.miniprogram.name());
+        weixinUserPoCondition.setType(DictEnum.WxAccountType.weixin_miniprogram.name());
         weixinUserPoCondition.setWhich(which);
         weixinUserPoCondition.setDelFlag(BasePo.YesNo.N.name());
 

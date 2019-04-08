@@ -1,21 +1,15 @@
 package com.feihua.framework.shiro.service;
 
-import com.feihua.framework.shiro.LoginClient;
 import com.feihua.framework.shiro.ShiroFormAuthenticationFilter;
-import com.feihua.framework.shiro.pojo.AuthenticationInfo;
-import com.feihua.framework.shiro.pojo.PasswordAndSalt;
 import com.feihua.framework.shiro.pojo.ShiroUser;
-import com.feihua.framework.shiro.pojo.token.AccountPasswordToken;
-import com.feihua.framework.shiro.pojo.token.EmailPasswordToken;
-import com.feihua.framework.shiro.pojo.token.MobilePasswordToken;
+import com.feihua.utils.properties.PropertiesUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 帐号默认实现基类
@@ -29,12 +23,21 @@ public abstract class AbstractAccountServiceImpl implements AccountService {
         return request.getParameter(ShiroFormAuthenticationFilter.param_loginType_key);
     }
     @Override
-    public LoginClient resolveLoginClient(ServletRequest request) {
-        LoginClient loginClient = new LoginClient();
-        loginClient.setClientType( request.getParameter(ShiroFormAuthenticationFilter.param_loginClient_key));
-        loginClient.setSubClientType( request.getParameter(ShiroFormAuthenticationFilter.param_subloginClient_key));
-        return loginClient;
+    public String resolveLoginClient(ServletRequest request) {
+        return ( request.getParameter(ShiroFormAuthenticationFilter.param_loginClient_key));
     }
+
+    @Override
+    public int resolveLoginClientMaxnum(String loginClient) {
+
+        String maxnum = PropertiesUtils.getProperty("shiro.session." + loginClient + ".maxnum");
+        if(StringUtils.isEmpty(maxnum)){
+            return PropertiesUtils.getInteger("shiro.session.maxnum");
+        }else{
+            return Integer.parseInt(maxnum);
+        }
+    }
+
     @Override
     public boolean validatePasswordWhenLogin(AuthenticationToken authcToken) {
         return true;

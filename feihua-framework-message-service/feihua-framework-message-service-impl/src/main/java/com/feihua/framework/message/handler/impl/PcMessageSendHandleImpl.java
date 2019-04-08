@@ -22,7 +22,7 @@ public class PcMessageSendHandleImpl extends ApiMessageSendHandlerAbstractImpl {
     private ApiBaseMessageTargetClientPoService apiBaseMessageTargetClientPoService;
 
     public PcMessageSendHandleImpl() {
-        super(DictEnum.LoginClient.pc);
+        super("pc");
     }
 
 

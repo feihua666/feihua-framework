@@ -222,7 +222,7 @@ public class PublicUtils {
                 subscribe_scene = DictEnum.WeixinUserHowFrom.ADD_SCENEPROFILE_LINK.name();
             }
             weiXinUserPo.setHowFrom(subscribe_scene);
-            weiXinUserPo.setType(DictEnum.WeixinType.publicplatform.name());
+            weiXinUserPo.setType(DictEnum.WxAccountType.weixin_publicplatform.name());
             weiXinUserPo.setWhich(which);
         } catch (Exception e) {
             logger.error("Error occurs when getWeixinUser, requestUrl:" + url, e);
@@ -505,7 +505,7 @@ public class PublicUtils {
             weiXinUserPo.setHeadImageUrl(jsonObject.getString("headimgurl"));
             weiXinUserPo.setHowFrom(DictEnum.WeixinUserHowFrom.webAuthorize.name());
             weiXinUserPo.setLanguage("zh_CN");
-            weiXinUserPo.setType(DictEnum.WeixinType.publicplatform.name());
+            weiXinUserPo.setType(DictEnum.WxAccountType.weixin_publicplatform.name());
             weiXinUserPo.setWhich(authorizeAccessToken.getWhich());
         } catch (Exception e) {
             logger.error("Error occurs when getWeixinUser, requestUrl:" + url, e);
@@ -646,7 +646,7 @@ public class PublicUtils {
         weixinPo.setDelFlag(BasePo.YesNo.N.name());
         weixinPo.setStatus(BasePo.YesNo.Y.name()); //有效的
         weixinPo.setWhich(which);
-        weixinPo.setType(WxPublicConstants.WxAccountType.WEIXIN_PUBLICPLATFORM.value());
+        weixinPo.setType(DictEnum.WxAccountType.weixin_publicplatform.name());
         return apiWeixinAccountPoService.selectList(weixinPo);
     }
 
@@ -662,7 +662,7 @@ public class PublicUtils {
         if (weixinAccountDtos != null && weixinAccountDtos.size() > 0) {
             final WeixinAccountDto weixinAccountDto = weixinAccountDtos.get(0);
             //TODO 微信关注欢迎语暂时只支持文本类型
-            if (WxPublicConstants.WxMsgType.TEXT.value().equals(weixinAccountDto.getTemplateType()) && StringUtils.isNotBlank(weixinAccountDto.getTemplate())) {
+            if (DictEnum.WxAccountType.weixin_publicplatform.name().equals(weixinAccountDto.getTemplateType()) && StringUtils.isNotBlank(weixinAccountDto.getTemplate())) {
                 return weixinAccountDtos.get(0).getTemplate();
             } else {
                 return null;

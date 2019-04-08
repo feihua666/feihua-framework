@@ -1,6 +1,7 @@
 package com.feihua.wechat.rest.common.mvc;
 
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
@@ -215,7 +216,7 @@ public class WeixinAccountController extends SuperController {
         List<WxTemplate> wxAllPrivateTemplate = null;
         try {
             final WeixinAccountDto weixinAccountDto = apiWeixinAccountPoService.selectByPrimaryKey(accountId);
-            if (WxPublicConstants.WxAccountType.WEIXIN_MINIPROGRAM.value().equals(weixinAccountDto.getType())) {
+            if (DictEnum.WxAccountType.weixin_publicplatform.name().equals(weixinAccountDto.getType())) {
                 wxAllPrivateTemplate = MiniProgramUtils.getWxAllPrivateTemplate(weixinAccountDto.getWhich(), weixinAccountDto.getType());
             } else {
                 wxAllPrivateTemplate = PublicUtils.getWxAllPrivateTemplate(weixinAccountDto.getWhich(), weixinAccountDto.getType());

@@ -28,7 +28,7 @@ public class LocationMsgHandler implements MsgTypeHandler {
 
         WeixinUserPo weixinUserPoCondition = new WeixinUserPo();
         weixinUserPoCondition.setOpenid(requestLocationMessage.getFromUserName());
-        weixinUserPoCondition.setType(DictEnum.WeixinType.publicplatform.name());
+        weixinUserPoCondition.setType(DictEnum.WxAccountType.weixin_publicplatform.name());
         weixinUserPoCondition.setWhich(which);
         weixinUserPoCondition.setDelFlag(BasePo.YesNo.N.name());
 

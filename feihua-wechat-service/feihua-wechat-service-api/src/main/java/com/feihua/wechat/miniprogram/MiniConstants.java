@@ -9,8 +9,7 @@ public class MiniConstants {
 
     public final static String PARAM_JSCODE = "JSCODE";
     public final static String PARAM_ACCESS_TOKEN = "ACCESS_TOKEN";
-    public final static String MESSAGE_XML_TYPE = "xml";
-    public final static String MESSAGE_JSON_TYPE = "json";
+
     /**
      * 获取 session_key 和 openid 等
      * 登录凭证校验。通过 wx.login() 接口获得临时登录凭证 code 后传到开发者服务器调用此接口完成登录流程。更多使用方法详见 小程序登录。

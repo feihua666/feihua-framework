@@ -768,7 +768,6 @@ public class CmsContentController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("content:getById")
     @RequestMapping(value = "/content/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -839,7 +838,6 @@ public class CmsContentController extends BaseController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("content:search")
     @RequestMapping(value = "/contents",method = RequestMethod.GET)
     public ResponseEntity search(SearchCmsContentsConditionDto dto,boolean includeSite,boolean includeChannel){
@@ -896,7 +894,6 @@ public class CmsContentController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequestMapping(value = "/content/{id}/address",method = RequestMethod.GET)
     public ResponseEntity indexAddress(@PathVariable String id){
 
@@ -929,7 +926,6 @@ public class CmsContentController extends BaseController {
      * 单资源,内容模板
      * @return
      */
-    @RepeatFormValidator
     @RequestMapping(value = "/content/template",method = RequestMethod.GET)
     public ResponseEntity template(String siteId){
 

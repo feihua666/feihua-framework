@@ -200,7 +200,6 @@ public class BaseOfficeController extends BaseController {
      * @return
      */
     @OperationLog(operation = "机构树接口",content = "单资源，获取id机构")
-    @RepeatFormValidator
     @RequiresPermissions("base:office:getById")
     @RequestMapping(value = "/office/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -223,7 +222,6 @@ public class BaseOfficeController extends BaseController {
      * @return
      */
     @OperationLog(operation = "机构树接口",content = "复数资源，搜索机构")
-    @RepeatFormValidator
     @RequiresPermissions("base:office:search")
     @RequestMapping(value = "/offices",method = RequestMethod.GET)
     public ResponseEntity searchOffices(SearchOfficesConditionDto dto, boolean includeParent, boolean includeArea){

@@ -10,8 +10,6 @@ public class BaseMessageTargetClientParamsDto extends BaseConditionDto {
 
     private String targetClient;
 
-    private String subTargetClient;
-
     public String getTargetClient() {
         return targetClient;
     }
@@ -20,11 +18,4 @@ public class BaseMessageTargetClientParamsDto extends BaseConditionDto {
         this.targetClient = targetClient;
     }
 
-    public String getSubTargetClient() {
-        return subTargetClient;
-    }
-
-    public void setSubTargetClient(String subTargetClient) {
-        this.subTargetClient = subTargetClient;
-    }
 }

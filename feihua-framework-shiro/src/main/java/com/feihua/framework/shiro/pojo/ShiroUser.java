@@ -1,7 +1,5 @@
 package com.feihua.framework.shiro.pojo;
 
-import com.feihua.framework.shiro.LoginClient;
-
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +80,7 @@ public class ShiroUser implements Serializable{
      */
     private String loginType;
 
-    private LoginClient loginClient;
+    private String loginClient;
 
     /**
      * 用户登录IP
@@ -232,11 +230,11 @@ public class ShiroUser implements Serializable{
         this.host = host;
     }
 
-    public LoginClient getLoginClient() {
+    public String getLoginClient() {
         return loginClient;
     }
 
-    public void setLoginClient(LoginClient loginClient) {
+    public void setLoginClient(String loginClient) {
         this.loginClient = loginClient;
     }
 }

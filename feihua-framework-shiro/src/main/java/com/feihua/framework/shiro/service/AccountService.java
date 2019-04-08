@@ -2,7 +2,6 @@ package com.feihua.framework.shiro.service;
 
 
 import com.feihua.framework.constants.DictEnum;
-import com.feihua.framework.shiro.LoginClient;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
 import com.feihua.framework.shiro.pojo.ShiroUser;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -44,7 +43,8 @@ public interface AccountService {
      * @param request
      * @return
      */
-    public LoginClient resolveLoginClient(ServletRequest request);
+    public String resolveLoginClient(ServletRequest request);
+    public int resolveLoginClientMaxnum(String loginClient);
 
     /**
      * 登录时，是否验证密码

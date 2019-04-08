@@ -116,7 +116,6 @@ public class CalendarController extends BaseController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("base:calendars:search")
     @RequestMapping(value = "/calendars",method = RequestMethod.GET)
     public ResponseEntity searchAreas(SearchCalendarConditionDto dto){

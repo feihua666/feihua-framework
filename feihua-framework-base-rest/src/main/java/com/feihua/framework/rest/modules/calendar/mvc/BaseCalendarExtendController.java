@@ -201,7 +201,6 @@ public class BaseCalendarExtendController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("calendar:extend:getById")
     @RequestMapping(value = "/calendarextend/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -223,7 +222,6 @@ public class BaseCalendarExtendController extends BaseController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("calendar:extend:search")
     @RequestMapping(value = "/calendarextends",method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseCalendarExtendsConditionDto dto){

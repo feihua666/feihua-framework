@@ -29,13 +29,13 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
 
     private static final Logger logger = LoggerFactory.getLogger(ApiMessageSendHandlerAbstractImpl.class);
 
-    private DictEnum.LoginClient loginClient;
+    private String loginClient;
     @Autowired
     private ApiBaseMessageTargetClientPoService apiBaseMessageTargetClientPoService;
     @Autowired
     private ApiBaseMessageTargetClientUserRelPoService apiBaseMessageTargetClientUserRelPoService;
 
-    public ApiMessageSendHandlerAbstractImpl(DictEnum.LoginClient loginClient){
+    public ApiMessageSendHandlerAbstractImpl(String loginClient){
         this.loginClient = loginClient;
     }
 
@@ -44,7 +44,7 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
         if(loginClient == null){
             return false;
         }
-        return loginClient.name().equals(dto.getTargetClient()) ? true : false;
+        return loginClient.equals(dto.getTargetClient()) ? true : false;
     }
 
 
@@ -55,7 +55,6 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
         baseMessageTargetClientPoCheck.setMessageId(baseMessagePo.getId());
         baseMessageTargetClientPoCheck.setDelFlag(BasePo.YesNo.N.name());
         baseMessageTargetClientPoCheck.setTargetClient(dto.getTargetClient());
-        baseMessageTargetClientPoCheck.setSubTargetClient(dto.getSubTargetClient());
         BaseMessageTargetClientPo baseMessageTargetClientPoDb = apiBaseMessageTargetClientPoService.selectOneSimple(baseMessageTargetClientPoCheck);
         if (baseMessageTargetClientPoDb != null) {
             return baseMessageTargetClientPoDb;
@@ -67,7 +66,6 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
         baseMessageTargetClientPo.setMessageState(messageState.name());
 
         baseMessageTargetClientPo.setTargetClient(dto.getTargetClient());
-        baseMessageTargetClientPo.setSubTargetClient(dto.getSubTargetClient());
         baseMessageTargetClientPo = apiBaseMessageTargetClientPoService.preInsert(baseMessageTargetClientPo,dto.getCurrentUserId());
         baseMessageTargetClientPo = apiBaseMessageTargetClientPoService.insertSelectiveSimple(baseMessageTargetClientPo);
         return baseMessageTargetClientPo;
@@ -80,7 +78,6 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
         baseMessageTargetClientPoCheck.setMessageId(baseMessagePo.getId());
         baseMessageTargetClientPoCheck.setDelFlag(BasePo.YesNo.N.name());
         baseMessageTargetClientPoCheck.setTargetClient(dto.getTargetClient());
-        baseMessageTargetClientPoCheck.setSubTargetClient(dto.getSubTargetClient());
         BaseMessageTargetClientPo baseMessageTargetClientPoDb = apiBaseMessageTargetClientPoService.selectOneSimple(baseMessageTargetClientPoCheck);
         if (baseMessageTargetClientPoDb != null) {
             return updateMessageTargetClientState(baseMessageTargetClientPoDb,messageState);
@@ -104,10 +101,9 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
         baseMessageTargetClientPoCheck.setMessageId(baseMessagePo.getId());
         baseMessageTargetClientPoCheck.setDelFlag(BasePo.YesNo.N.name());
         baseMessageTargetClientPoCheck.setTargetClient(dto.getTargetClient());
-        baseMessageTargetClientPoCheck.setSubTargetClient(dto.getSubTargetClient());
         BaseMessageTargetClientPo baseMessageTargetClientPoDb = apiBaseMessageTargetClientPoService.selectOneSimple(baseMessageTargetClientPoCheck);
         if (baseMessageTargetClientPoDb == null) {
-            throw new BaseException("can not find targetClient data from database by targetClien=" + dto.getTargetClient() + " subTargetClient=" + dto.getSubTargetClient());
+            throw new BaseException("can not find targetClient data from database by targetClien=" + dto.getTargetClient());
         }
         BaseMessageTargetClientUserRelPo baseMessageTargetClientUserRelPo = null;
 
@@ -126,7 +122,7 @@ public abstract class ApiMessageSendHandlerAbstractImpl  implements ApiMessageSe
 
     }
     public abstract void doMessageSend(BaseMessageTargetClientParamsDto dto, BaseMessagePo baseMessagePo, BaseUserPo userPo);
-    public DictEnum.LoginClient getLoginClient() {
+    public String getLoginClient() {
         return loginClient;
     }
 }

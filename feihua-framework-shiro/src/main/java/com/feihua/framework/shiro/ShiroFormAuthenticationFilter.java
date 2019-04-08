@@ -46,7 +46,6 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
     public static String param_principal_key = "principal";
     public static String param_password_key = "password";
     public static String param_loginClient_key = "loginClient";
-    public static String param_subloginClient_key = "subloginClient";
 
     private static String failedMsgKey = "loginFailedKey";
     private static String failedStatusKey = "loginFailedStatusKey";
@@ -68,7 +67,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
 
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
-        LoginClient loginClient = this.resolveLoginClient(request);
+        String loginClient = this.resolveLoginClient(request);
         // 如果尝试登录次数已经超越设置，开始验证验证码
         int configMaxNum = PropertiesUtils.getInteger("shiro.tryLoginMaxNum").intValue();
         if(accountService.validateCaptchaWhenLogin(request,response) && getTryLoginMaxNum() >= configMaxNum){
@@ -265,10 +264,10 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
      * @param request
      * @return
      */
-    public  LoginClient resolveLoginClient(ServletRequest request){
+    public  String resolveLoginClient(ServletRequest request){
         // 取登录客户端
-        LoginClient loginClient = accountService.resolveLoginClient(request);
-        if(loginClient == null || StringUtils.isEmpty(loginClient.getClientType())){
+        String loginClient = accountService.resolveLoginClient(request);
+        if(StringUtils.isEmpty(loginClient)){
             throw new BaseException("loginClient can not be null," + ShiroFormAuthenticationFilter.param_loginClient_key + " param must pass");
         }
         return loginClient;
@@ -276,7 +275,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
         String loginType = accountService.resolveLoginType(request);
-        LoginClient loginClient = this.resolveLoginClient(request);
+        String loginClient = this.resolveLoginClient(request);
 
         String principal = request.getParameter(param_principal_key);
 

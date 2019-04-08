@@ -178,7 +178,7 @@ public class PublicPlatformController extends SuperController {
         // 根据openid查询是否存在数据
         WeixinUserPo weixinUserPoCondition = new WeixinUserPo();
         weixinUserPoCondition.setOpenid(authorizeAccessToken.getOpenid());
-        weixinUserPoCondition.setType(DictEnum.WeixinType.publicplatform.name());
+        weixinUserPoCondition.setType(DictEnum.WxAccountType.weixin_publicplatform.name());
         weixinUserPoCondition.setWhich(which);
         weixinUserPoCondition.setDelFlag(BasePo.YesNo.N.name());
 

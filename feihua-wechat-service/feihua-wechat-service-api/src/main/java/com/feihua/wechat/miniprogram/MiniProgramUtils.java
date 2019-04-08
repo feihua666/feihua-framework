@@ -1,5 +1,6 @@
 package com.feihua.wechat.miniprogram;
 
+import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.jedis.utils.JedisUtils;
 import com.feihua.utils.http.httpclient.HttpClientUtils;
 import com.feihua.utils.json.JSONUtils;
@@ -166,7 +167,7 @@ public class MiniProgramUtils {
         weixinPo.setDelFlag(BasePo.YesNo.N.name());
         weixinPo.setStatus(BasePo.YesNo.Y.name()); //有效的
         weixinPo.setWhich(which);
-        weixinPo.setType(WxPublicConstants.WxAccountType.WEIXIN_MINIPROGRAM.value());
+        weixinPo.setType(DictEnum.WxAccountType.weixin_miniprogram.name());
         return apiWeixinAccountPoService.selectList(weixinPo);
     }
 

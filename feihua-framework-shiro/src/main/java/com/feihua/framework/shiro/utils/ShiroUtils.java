@@ -1,15 +1,12 @@
 package com.feihua.framework.shiro.utils;
 
-import com.feihua.framework.shiro.LoginClient;
 import com.feihua.framework.shiro.pojo.PasswordAndSalt;
 import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.realms.Realm;
 import com.feihua.framework.shiro.service.AccountService;
 import com.feihua.framework.shiro.session.ShiroJedisSessionDAO;
 import com.feihua.utils.encode.EncodeUtils;
-import com.feihua.utils.properties.PropertiesUtils;
 import com.feihua.utils.spring.SpringContextHolder;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -88,7 +85,7 @@ public class ShiroUtils {
                 }else {
                     su.setLoginType((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_TYPE_KEY));
                     su.setHost(SecurityUtils.getSubject().getSession().getHost());
-                    su.setLoginClient((LoginClient) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY));
+                    su.setLoginClient((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY));
                 }
                 SecurityUtils.getSubject().getSession().setAttribute(SHIRO_USER_SESSION_KEY,su);
                 SecurityUtils.getSubject().getSession().touch();
@@ -142,17 +139,9 @@ public class ShiroUtils {
      * @param loginClient
      * @return
      */
-    public static int getClientTypeMaxnum(LoginClient loginClient){
-        String _subClientType = loginClient.getSubClientType();
-        if (StringUtils.isNotEmpty(_subClientType)){
-            _subClientType = "-" + _subClientType;
-        }
-        String maxnum = PropertiesUtils.getProperty("shiro.session." + loginClient.getClientType() + _subClientType + ".maxnum");
-        if(StringUtils.isEmpty(maxnum)){
-            return PropertiesUtils.getInteger("shiro.session.maxnum");
-        }else{
-            return Integer.parseInt(maxnum);
-        }
+    public static int getClientMaxnum(String loginClient){
+
+        return accountService.resolveLoginClientMaxnum(loginClient);
     }
 
     /**
@@ -160,7 +149,7 @@ public class ShiroUtils {
      * @param userId
      * @param loginClient  可以为null，表示所有客户端
      */
-    public static void kickoutClient(final String userId,final LoginClient loginClient){
+    public static void kickoutClient(final String userId,final String loginClient){
         final SessionDAO sessionDAO = SpringContextHolder.getBean(DefaultSessionManager.class).getSessionDAO();
         List<Session> sessions  = ((ShiroJedisSessionDAO)sessionDAO).getSessionsByUserId(userId);
         if (sessions != null) {
@@ -185,8 +174,8 @@ public class ShiroUtils {
      * @param userId 踢出的用户id
      * @param loginClient 客户端类型，不可以为null
      */
-    public static void kickoutOtherClient(final String excludeSessionId,final String userId,final LoginClient loginClient){
-        final int  maxnum = getClientTypeMaxnum(loginClient);
+    public static void kickoutOtherClient(final String excludeSessionId,final String userId,final String loginClient){
+        final int  maxnum = getClientMaxnum(loginClient);
         //如果不限制，不踢除用户
         if(-1 == maxnum){
             return;

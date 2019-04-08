@@ -9,11 +9,9 @@ import com.feihua.framework.message.api.ApiBaseMessageTargetClientPoService;
 import com.feihua.framework.message.api.ApiBaseMessageUserStatePoService;
 import com.feihua.framework.message.dto.*;
 import com.feihua.framework.message.po.BaseMessagePo;
-import com.feihua.framework.message.po.BaseMessageTargetClientPo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
-import com.feihua.framework.shiro.LoginClient;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
@@ -399,12 +397,11 @@ public class BaseMessageController extends SuperController {
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
         dto.setCurrentRoleId(((BaseRoleDto)getLoginUser().getRole()).getId());
-        LoginClient loginClient = getLoginUser().getLoginClient();
+        String loginClient = getLoginUser().getLoginClient();
         BaseMessageTargetClientParamsDto baseMessageTargetClientParamsDto = new BaseMessageTargetClientParamsDto();
         baseMessageTargetClientParamsDto.setCurrentRoleId(((BaseRoleDto)getLoginUser().getRole()).getId());
         baseMessageTargetClientParamsDto.setCurrentUserId(getLoginUser().getId());
-        baseMessageTargetClientParamsDto.setTargetClient(loginClient.getClientType());
-        baseMessageTargetClientParamsDto.setSubTargetClient(loginClient.getSubClientType());
+        baseMessageTargetClientParamsDto.setTargetClient(loginClient);
         dto.setTargetClientParamsDto(baseMessageTargetClientParamsDto);
 
         dto.setUserId(getLoginUserId());
@@ -435,11 +432,10 @@ public class BaseMessageController extends SuperController {
         logger.info("读取消息并标记为已读开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         ResponseJsonRender resultData=new ResponseJsonRender();
-        LoginClient loginClient = getLoginUser().getLoginClient();
+        String loginClient = getLoginUser().getLoginClient();
 
         BaseMessageTargetClientParamsDto baseMessageTargetClientParamsDto = new BaseMessageTargetClientParamsDto();
-        baseMessageTargetClientParamsDto.setTargetClient(loginClient.getClientType());
-        baseMessageTargetClientParamsDto.setSubTargetClient(loginClient.getSubClientType());
+        baseMessageTargetClientParamsDto.setTargetClient(loginClient);
         baseMessageTargetClientParamsDto.setCurrentUserId(getLoginUserId());
         baseMessageTargetClientParamsDto.setCurrentRoleId(((BaseRoleDto) (getLoginUser().getRole())).getId());
 

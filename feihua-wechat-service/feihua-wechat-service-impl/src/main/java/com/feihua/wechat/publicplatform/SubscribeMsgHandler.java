@@ -45,7 +45,7 @@ public class SubscribeMsgHandler implements MsgTypeHandler {
         // 根据openid查询是否存在数据
         WeixinUserPo weixinUserPoCondition = new WeixinUserPo();
         weixinUserPoCondition.setOpenid(requestSubscribeMessage.getFromUserName());
-        weixinUserPoCondition.setType(DictEnum.WeixinType.publicplatform.name());
+        weixinUserPoCondition.setType(DictEnum.WxAccountType.weixin_publicplatform.name());
         weixinUserPoCondition.setWhich(which);
         weixinUserPoCondition.setDelFlag(BasePo.YesNo.N.name());
 

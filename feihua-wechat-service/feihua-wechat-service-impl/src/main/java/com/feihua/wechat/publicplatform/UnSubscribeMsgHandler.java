@@ -33,7 +33,7 @@ public class UnSubscribeMsgHandler implements MsgTypeHandler {
 
         WeixinUserPo weixinUserPoCondition = new WeixinUserPo();
         weixinUserPoCondition.setOpenid(requestSubscribeMessage.getFromUserName());
-        weixinUserPoCondition.setType(DictEnum.WeixinType.publicplatform.name());
+        weixinUserPoCondition.setType(DictEnum.WxAccountType.weixin_publicplatform.name());
         weixinUserPoCondition.setWhich(which);
         weixinUserPoCondition.setDelFlag(BasePo.YesNo.N.name());
 
