@@ -17,10 +17,7 @@ import org.apache.shiro.util.ByteSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static com.feihua.framework.shiro.UserSessionFilter.*;
 import static com.feihua.framework.shiro.pojo.PasswordAndSalt.getCredentialsMatcher;
@@ -65,6 +62,29 @@ public class ShiroUtils {
      */
     public static ShiroUser getShiroUser(Session session){
         return (ShiroUser) session.getAttribute(SHIRO_USER_SESSION_KEY);
+    }
+    public static String getLoginType(Session session){
+        return (String) session.getAttribute(SHIRO_USER_LOGIN_TYPE_KEY);
+    }
+    public static String getLoginClient(Session session){
+        return (String) session.getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY);
+    }
+    public static Date getLoginTime(Session session){
+        return session.getStartTimestamp();
+    }
+    public static Date getLastAccessTime(Session session){
+        return session.getLastAccessTime();
+    }
+    public static String getHost(Session session){
+        return session.getHost();
+    }
+    public static String getKickout(Session session){
+        return (String) session.getAttribute(USER_KICKOUT_KEY);
+    }
+    public static List<Session> getSessionsByUserId(final String userId){
+        final SessionDAO sessionDAO = SpringContextHolder.getBean(DefaultSessionManager.class).getSessionDAO();
+        List<Session> sessions  = ((ShiroJedisSessionDAO)sessionDAO).getSessionsByUserId(userId);
+        return sessions;
     }
     /**
      * 把当前登录用户信息放到session

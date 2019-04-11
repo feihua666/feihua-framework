@@ -169,7 +169,6 @@ public class BaseUrlCollectController extends BaseController {
      * @return
      */
     @OperationLog(operation = "网址收藏管理",content = "单资源，获取id网址收藏")
-    @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollect/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -192,7 +191,6 @@ public class BaseUrlCollectController extends BaseController {
      * @return
      */
     @OperationLog(operation = "网址收藏管理",content = "单资源，获取url网址收藏")
-    @RepeatFormValidator
     @RequiresPermissions("user")
     @RequestMapping(value = "/urlcollect/self",method = RequestMethod.GET)
     public ResponseEntity getUrl( String url,String urlType){
@@ -220,7 +218,6 @@ public class BaseUrlCollectController extends BaseController {
      * @return
      */
     @OperationLog(operation = "网址收藏管理",content = "复数资源，搜索网址收藏")
-    @RepeatFormValidator
     @RequiresPermissions("urlcollect:search")
     @RequestMapping(value = "/urlcollects",method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseUrlCollectsConditionDto dto){

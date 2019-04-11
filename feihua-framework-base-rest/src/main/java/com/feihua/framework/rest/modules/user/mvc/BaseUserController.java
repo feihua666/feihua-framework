@@ -1,7 +1,15 @@
 package com.feihua.framework.rest.modules.user.mvc;
 
+import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopePoService;
+import com.feihua.framework.base.modules.datascope.dto.BaseDataScopeDto;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
+import com.feihua.framework.base.modules.rel.api.ApiBaseUserDataScopeRelPoService;
+import com.feihua.framework.base.modules.rel.api.ApiBaseUserRoleRelPoService;
+import com.feihua.framework.base.modules.rel.dto.BaseUserDataScopeRelDto;
+import com.feihua.framework.base.modules.rel.dto.BaseUserRoleRelDto;
+import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
+import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserAuthPoService;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
 import com.feihua.framework.base.modules.user.dto.BaseUserAddParamDto;
@@ -52,7 +60,9 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户接口
@@ -70,6 +80,15 @@ public class BaseUserController extends BaseController {
     private ApiBaseUserAuthPoService apiBaseUserAuthPoService;
     @Autowired
     private ApiBaseOfficePoService apiBaseOfficePoService;
+    @Autowired
+    private ApiBaseUserRoleRelPoService apiBaseUserRoleRelPoService;
+    @Autowired
+    private ApiBaseRolePoService apiBaseRolePoService;
+    @Autowired
+    private ApiBaseUserDataScopeRelPoService apiBaseUserDataScopeRelPoService;
+    @Autowired
+    private ApiBaseDataScopePoService apiBaseDataScopePoService;
+
 
     /**
      * 单资源，添加用户
@@ -393,7 +412,75 @@ public class BaseUserController extends BaseController {
             return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);
         }
     }
+    /**
+     * 单资源，获取详情
+     *
+     * @param id
+     *
+     * @return
+     */
+    @OperationLog(operation = "用户接口", content = "单资源，获取登录信息")
+    @RequiresPermissions("base:user:detail")
+    @RequestMapping(value = "/user/{id}/detail", method = RequestMethod.GET)
+    public ResponseEntity userDetail(@PathVariable String id) {
 
+        ResponseJsonRender resultData = new ResponseJsonRender();
+        BaseUserDto baseUserDto = apiBaseUserPoService.selectByPrimaryKey(id, false);
+        if (baseUserDto != null) {
+            BaseUserVo vo = new BaseUserVo(baseUserDto);
+            BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(id, DictEnum.LoginType.ACCOUNT.name());
+            if (userAuthDto != null) {
+                vo.setAccount(userAuthDto.getIdentifier());
+            }
+            // 所在机构
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(id);
+            if (officeDto != null) {
+                vo.setDataOfficeName(officeDto.getName());
+            }
+            resultData.setData(vo);
+            // 用户角色
+            BaseRoleDto role = apiBaseRolePoService.selectByUserId(id);
+            List<BaseRoleDto> roles = new ArrayList<>();
+            if(role != null){
+                roles.add(role);
+            }
+            resultData.addData("roles",roles);
+
+            // 个人数据权限
+            List<BaseUserDataScopeRelDto> userDataScopeRelDtos = apiBaseUserDataScopeRelPoService.selectByUserId(id);
+            if (userDataScopeRelDtos != null) {
+                List<String> dataScopeIds = new ArrayList<>(userDataScopeRelDtos.size());
+                for (BaseUserDataScopeRelDto userDataScopeRelDto : userDataScopeRelDtos) {
+                    dataScopeIds.add(userDataScopeRelDto.getDataScopeId());
+                }
+                List<BaseDataScopeDto> dataScopeDtos = apiBaseDataScopePoService.selectByPrimaryKeys(dataScopeIds,false);
+                resultData.addData("personalDataScopes",dataScopeDtos);
+            }
+
+            // 登录情况
+            List<org.apache.shiro.session.Session> sessions = ShiroUtils.getSessionsByUserId(id);
+            if (sessions != null) {
+                List<Map<String,Object>> loginInfo = new ArrayList<>();
+                for (org.apache.shiro.session.Session session : sessions) {
+                    Map<String,Object> item = new HashMap<>();
+                    item.put("loginType",ShiroUtils.getLoginType(session));
+                    item.put("loginClient",ShiroUtils.getLoginClient(session));
+                    item.put("loginTime",ShiroUtils.getLoginTime(session));
+                    item.put("lastAccessTime",ShiroUtils.getLastAccessTime(session));
+                    item.put("host",ShiroUtils.getHost(session));
+                    item.put("kickout",ShiroUtils.getKickout(session));
+                    loginInfo.add(item);
+                }
+                resultData.addData("loginInfo",loginInfo);
+            }
+
+            return new ResponseEntity(resultData, HttpStatus.OK);
+        } else {
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);
+        }
+    }
     /**
      * 多资源，查询
      *
@@ -497,6 +584,23 @@ public class BaseUserController extends BaseController {
         }
     }
 
+    /**
+     * 踢除用户下线，使用户下线
+     *
+     * @param id
+     *
+     * @return
+     */
+    @OperationLog(operation = "用户接口", content = "使用户下线")
+    @RepeatFormValidator
+    @RequiresPermissions("base:user:kickoutClient")
+    @RequestMapping(value = "/user/{id}/kickoutClient", method = RequestMethod.POST)
+    public ResponseEntity kickoutClient(@PathVariable String id,String loginClient) {
+        ResponseJsonRender resultData = new ResponseJsonRender();
+
+        ShiroUtils.kickoutClient(id,loginClient);
+        return new ResponseEntity(resultData, HttpStatus.OK);
+    }
     /**
      * 修改当前用户密码
      *

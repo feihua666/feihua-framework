@@ -73,7 +73,6 @@ public class BaseLogController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("log:getById")
     @RequestMapping(value = "/log/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -95,7 +94,6 @@ public class BaseLogController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("log:search")
     @RequestMapping(value = "/logs",method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseLogsConditionDto dto){

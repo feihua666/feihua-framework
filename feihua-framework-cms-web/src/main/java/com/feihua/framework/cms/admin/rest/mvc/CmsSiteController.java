@@ -176,7 +176,6 @@ public class CmsSiteController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("site:getById")
     @RequestMapping(value = "/site/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -198,7 +197,6 @@ public class CmsSiteController extends BaseController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("site:search")
     @RequestMapping(value = "/sites",method = RequestMethod.GET)
     public ResponseEntity search(SearchCmsSitesConditionDto dto){
@@ -228,7 +226,6 @@ public class CmsSiteController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequestMapping(value = "/site/{id}/address",method = RequestMethod.GET)
     public ResponseEntity indexAddress(@PathVariable String id){
 
@@ -250,7 +247,6 @@ public class CmsSiteController extends BaseController {
      * 单资源,站点模板路径
      * @return
      */
-    @RepeatFormValidator
     @RequestMapping(value = "/site/templatepath",method = RequestMethod.GET)
     public ResponseEntity templatepath(){
 
@@ -270,7 +266,6 @@ public class CmsSiteController extends BaseController {
      * 单资源,站点首页模板
      * @return
      */
-    @RepeatFormValidator
     @RequestMapping(value = "/site/template",method = RequestMethod.GET)
     public ResponseEntity template(String templatePath){
 
