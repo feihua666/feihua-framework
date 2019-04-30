@@ -44,6 +44,11 @@ public class DefaultAccountServiceImpl extends AbstractAccountServiceImpl{
     }
 
     @Override
+    public String getClientIdByClientCode(String clientCode) {
+        return null;
+    }
+
+    @Override
     public boolean validatePasswordWhenLogin(AuthenticationToken authcToken) {
         return true;
     }

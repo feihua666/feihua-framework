@@ -36,37 +36,37 @@
 
 
     <!--定义fanout-exchange 发布订阅 Publish/Subscribe 所有绑定的队列都发送-->
-    <rabbit:fanout-exchange name="fanoutExChange" durable="true" auto-delete="false">
+    <!--<rabbit:fanout-exchange name="fanoutExChange" durable="true" auto-delete="false">
         <rabbit:bindings>
             <rabbit:binding queue="queueTest"></rabbit:binding>
         </rabbit:bindings>
 
-    </rabbit:fanout-exchange>
+    </rabbit:fanout-exchange>-->
 
 
     <!--定义direct-exchange routing 发送到与routing key 相等的队列上-->
     <rabbit:direct-exchange name="directExChange" durable="true" auto-delete="false">
         <rabbit:bindings>
-            <rabbit:binding queue="queueTest" key="queueTest" ></rabbit:binding>
             <rabbit:binding queue="queueEmail" key="queueEmail" ></rabbit:binding>
             <rabbit:binding queue="queueSms" key="queueSms" ></rabbit:binding>
+            <rabbit:binding queue="queueJob" key="queueJob" ></rabbit:binding>
         </rabbit:bindings>
 
     </rabbit:direct-exchange>
 
     <!--定义topic-exchange 发送到与routing key 匹配的队列上-->
-    <rabbit:topic-exchange name="topicExChange"
+    <!--<rabbit:topic-exchange name="topicExChange"
                            durable="true" auto-delete="false">
         <rabbit:bindings>
             <rabbit:binding queue="queueTest" pattern="queueTest"></rabbit:binding>
         </rabbit:bindings>
-    </rabbit:topic-exchange>
+    </rabbit:topic-exchange>-->
 
 
 
     <!--定义queue -->
-    <rabbit:queue id="queueTest" name="queueTest" queue-arguments="amqpQueueArguments"/>
     <rabbit:queue id="queueEmail" name="queueEmail" queue-arguments="amqpQueueArguments"/>
     <rabbit:queue id="queueSms" name="queueSms" queue-arguments="amqpQueueArguments"/>
+    <rabbit:queue id="queueJob" name="queueJob" queue-arguments="amqpQueueArguments"/>
 
 </beans>

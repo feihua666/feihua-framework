@@ -234,7 +234,7 @@ public class BaseLoginClientController extends BaseController {
         return returnList(list,resultData);
     }
     /**
-     * 复数资源获取绑定的渠道
+     * 绑定渠道
      * @param id
      * @return
      */

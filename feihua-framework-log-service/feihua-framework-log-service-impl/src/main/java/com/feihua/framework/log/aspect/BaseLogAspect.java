@@ -6,7 +6,6 @@ import com.feihua.framework.log.service.po.BaseLogPo;
 import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.utils.ShiroUtils;
 import com.feihua.utils.exception.ExceptionsUtils;
-import com.feihua.utils.http.IPUtils;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.json.JSONUtils;
 import org.aspectj.lang.JoinPoint;
@@ -142,7 +141,7 @@ public class BaseLogAspect {
         //获取request
         HttpServletRequest request = RequestUtils.getRequest();
         //设置IP地址
-        logPo.setIp(IPUtils.getIp(request));
+        logPo.setIp(RequestUtils.getRemoteAddr(request));
         
         //请求的参数
         Object[] args = joinPoint.getArgs();

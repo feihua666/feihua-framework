@@ -34,4 +34,12 @@ public interface ApiBaseUserPoService extends feihua.jdbc.api.service.ApiBaseSer
      * @return
      */
     public BaseUserPo addUser(BaseUserAddParamDto addParamDto);
+
+    /**
+     * 查询所有区域不为空的用户
+     * @param pageAndOrderbyParamDto
+     * @return
+     */
+    PageResultDto<BaseUserPo> selectAllAndAreaNotNull(PageAndOrderbyParamDto pageAndOrderbyParamDto);
+
 }

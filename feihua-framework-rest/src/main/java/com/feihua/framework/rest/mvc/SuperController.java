@@ -8,6 +8,7 @@ import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -68,6 +69,19 @@ public class SuperController {
             resultData.setData(obj);
             return new ResponseEntity(resultData, HttpStatus.OK);
         }
+    }
+    public ResponseEntity returnBadRequest(String code,String msg,ResponseJsonRender resultData){
+        if (StringUtils.isEmpty(code)) {
+            resultData.setCode(ResponseCode.E400_100000.getCode());
+        }else {
+            resultData.setCode(code);
+        }
+        if (StringUtils.isEmpty(msg)) {
+            resultData.setMsg(ResponseCode.E400_100000.getMsg());
+        }else {
+            resultData.setMsg(msg);
+        }
+        return new ResponseEntity(resultData,HttpStatus.BAD_REQUEST);
     }
     /**
      * 封装object

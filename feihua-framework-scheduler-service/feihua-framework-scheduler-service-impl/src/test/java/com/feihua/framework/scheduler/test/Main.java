@@ -1,12 +1,13 @@
 package com.feihua.framework.scheduler.test;
 
 import com.feihua.framework.scheduler.api.ApiBaseQuartzJobManager;
-import org.quartz.JobDetail;
-import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.Trigger;
+import org.quartz.*;
+import org.quartz.impl.JobDetailImpl;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.*;
 
 /**
  * Created by yangwei
@@ -15,8 +16,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Main {
     public static void main(String[] args) throws SchedulerException {
         ApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext-scheduler-service-test.xml");
-
-        simpleTriggerJob(applicationContext);
+        //cronTriggerJob(applicationContext);
+        scheduler(applicationContext);
     }
     public static void cronTriggerJob(ApplicationContext applicationContext) throws SchedulerException {
 
@@ -38,5 +39,32 @@ public class Main {
                         .repeatForever() // 重复次数
                 ,true);
         apiBaseQuartzJobManager.schedulerStart(jobDetail,trigger);
+    }
+    public static void scheduler(ApplicationContext applicationContext) throws SchedulerException{
+        Scheduler scheduler = applicationContext.getBean(Scheduler.class);
+        System.out.println(scheduler.getSchedulerName());
+        System.out.println(scheduler.getCalendarNames());
+        System.out.println(scheduler.getCurrentlyExecutingJobs());
+        System.out.println(scheduler.getJobGroupNames());
+        System.out.println(scheduler.getPausedTriggerGroups());
+        System.out.println(scheduler.getTriggerGroupNames());
+        List<String> triggerGroupNames = scheduler.getTriggerGroupNames();
+        List<Map<String,Object>> list = new ArrayList<>();
+        for (String groupName : triggerGroupNames) { //组装group的匹配，为了模糊获取所有的triggerKey或者jobKey
+             GroupMatcher groupMatcher = GroupMatcher.groupEquals(groupName); //获取所有的triggerKey
+            Set<TriggerKey> triggerKeySet = scheduler.getTriggerKeys(groupMatcher);
+            for (TriggerKey triggerKey : triggerKeySet) { //通过triggerKey在scheduler中获取trigger对象
+                 Trigger trigger = scheduler.getTrigger(triggerKey); //获取trigger拥有的Job
+                JobKey jobKey = trigger.getJobKey();
+                JobDetailImpl jobDetail = (JobDetailImpl) scheduler.getJobDetail(jobKey); //组装页面需要显示的数据
+                 Map<String,Object> quartzJobsVO = new HashMap<>();
+                 quartzJobsVO.put("groupName",groupName);
+                 quartzJobsVO.put("getName",jobDetail.getName());
+                list.add(quartzJobsVO);
+            }
+        }
+        System.out.println(list);
+
+
     }
 }

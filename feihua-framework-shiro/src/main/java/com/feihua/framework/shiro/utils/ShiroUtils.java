@@ -7,6 +7,7 @@ import com.feihua.framework.shiro.service.AccountService;
 import com.feihua.framework.shiro.session.ShiroJedisSessionDAO;
 import com.feihua.utils.encode.EncodeUtils;
 import com.feihua.utils.spring.SpringContextHolder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -33,7 +34,8 @@ public class ShiroUtils {
 
     private static String SHIRO_USER_SESSION_KEY = "shiro_user_session_key";
     public static String SHIRO_USER_LOGIN_TYPE_KEY = "shiro_user_login_type_key";
-    public static String SHIRO_USER_LOGIN_CLIENT_KEY = "SHIRO_USER_LOGIN_CLIENT_KEY";
+    public static String SHIRO_USER_LOGIN_CLIENT_ID_KEY = "SHIRO_USER_LOGIN_CLIENT_ID_KEY";
+    public static String SHIRO_USER_LOGIN_CLIENT_CODE_KEY = "SHIRO_USER_LOGIN_CLIENT_CODE_KEY";
 
 
     private static AccountService accountService;
@@ -66,8 +68,8 @@ public class ShiroUtils {
     public static String getLoginType(Session session){
         return (String) session.getAttribute(SHIRO_USER_LOGIN_TYPE_KEY);
     }
-    public static String getLoginClient(Session session){
-        return (String) session.getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY);
+    public static String getLoginClientId(Session session){
+        return (String) session.getAttribute(SHIRO_USER_LOGIN_CLIENT_ID_KEY);
     }
     public static Date getLoginTime(Session session){
         return session.getStartTimestamp();
@@ -101,11 +103,12 @@ public class ShiroUtils {
                 if (sessionSu != null){
                     su.setLoginType(sessionSu.getLoginType());
                     su.setHost(sessionSu.getHost());
-                    su.setLoginClient(sessionSu.getLoginClient());
+                    su.setLoginClientId(sessionSu.getLoginClientId());
                 }else {
                     su.setLoginType((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_TYPE_KEY));
                     su.setHost(SecurityUtils.getSubject().getSession().getHost());
-                    su.setLoginClient((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_KEY));
+                    String clientId = (String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_ID_KEY);
+                    su.setLoginClientId(clientId);
                 }
                 SecurityUtils.getSubject().getSession().setAttribute(SHIRO_USER_SESSION_KEY,su);
                 SecurityUtils.getSubject().getSession().touch();
@@ -167,19 +170,19 @@ public class ShiroUtils {
     /**
      * 踢出用户，使其不在登录状态，一般用于使用用户下线，
      * @param userId
-     * @param loginClient  可以为null，表示所有客户端
+     * @param loginClientId  可以为null，表示所有客户端
      */
-    public static void kickoutClient(final String userId,final String loginClient){
+    public static void kickoutClient(final String userId,final String loginClientId){
         final SessionDAO sessionDAO = SpringContextHolder.getBean(DefaultSessionManager.class).getSessionDAO();
         List<Session> sessions  = ((ShiroJedisSessionDAO)sessionDAO).getSessionsByUserId(userId);
         if (sessions != null) {
             for (Session session : sessions) {
-                if(loginClient == null){
+                if(loginClientId == null){
                     session.setAttribute(USER_KICKOUT_KEY,USER_KICKOUT_VALUE_KICKOUT);
                     sessionDAO.update(session);
                 }else{
                     ShiroUser su = getShiroUser(session);
-                    if (su != null && su.getLoginClient().equals(loginClient)) {
+                    if (su != null && su.getLoginClientId().equals(loginClientId)) {
                         session.setAttribute(USER_KICKOUT_KEY,USER_KICKOUT_VALUE_KICKOUT);
                         sessionDAO.update(session);
                     }
@@ -192,10 +195,10 @@ public class ShiroUtils {
      * 该方法不会将用户所有设备都下线，每个设备保留的登录数以设置为准
      * @param excludeSessionId 不包括的sessionId,
      * @param userId 踢出的用户id
-     * @param loginClient 客户端类型，不可以为null
+     * @param loginClientId 客户端类型，不可以为null
      */
-    public static void kickoutOtherClient(final String excludeSessionId,final String userId,final String loginClient){
-        final int  maxnum = getClientMaxnum(loginClient);
+    public static void kickoutOtherClient(final String excludeSessionId,final String userId,final String loginClientId){
+        final int  maxnum = getClientMaxnum(loginClientId);
         //如果不限制，不踢除用户
         if(-1 == maxnum){
             return;
@@ -213,7 +216,7 @@ public class ShiroUtils {
                 }
                 ShiroUser su = getShiroUser(session);
                 // 默认没有clienttype 则为pc
-                if (su != null && su.getLoginClient().equals(loginClient)) {
+                if (su != null && su.getLoginClientId().equals(loginClientId)) {
                     currentUsers.add(session);
                 }
             }

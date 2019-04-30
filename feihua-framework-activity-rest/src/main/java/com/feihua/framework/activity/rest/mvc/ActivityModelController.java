@@ -151,11 +151,12 @@ public class ActivityModelController  extends SuperController {
             proccessId = activityModelService.deploy(id);
         } catch (Exception e) {
             logger.error(e.getMessage(),e);
-            resultData.setCode(ResponseCode.E400_100001.getCode());
-            resultData.setMsg("model view is invalid");
             logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
             logger.info("根据模型部署流程结束，失败");
-            return new ResponseEntity(resultData,HttpStatus.BAD_REQUEST);
+            resultData.setCode(ResponseCode.E400_100001.getCode());
+            resultData.setMsg("model view is invalid");
+
+            return returnBadRequest(ResponseCode.E400_100001.getCode(),"model view is invalid",resultData);
         }
 
         if(StringUtils.isEmpty(proccessId)){

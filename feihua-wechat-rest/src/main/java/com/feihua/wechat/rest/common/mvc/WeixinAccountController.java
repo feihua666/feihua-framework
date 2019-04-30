@@ -217,9 +217,9 @@ public class WeixinAccountController extends SuperController {
         try {
             final WeixinAccountDto weixinAccountDto = apiWeixinAccountPoService.selectByPrimaryKey(accountId);
             if (DictEnum.WxAccountType.weixin_publicplatform.name().equals(weixinAccountDto.getType())) {
-                wxAllPrivateTemplate = MiniProgramUtils.getWxAllPrivateTemplate(weixinAccountDto.getWhich(), weixinAccountDto.getType());
-            } else {
                 wxAllPrivateTemplate = PublicUtils.getWxAllPrivateTemplate(weixinAccountDto.getWhich(), weixinAccountDto.getType());
+            } else {
+                wxAllPrivateTemplate = MiniProgramUtils.getWxAllPrivateTemplate(weixinAccountDto.getWhich(), weixinAccountDto.getType());
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

@@ -15,15 +15,11 @@ public class UpdateBaseMessageFormDto extends UpdateFormDto {
 
     private String content;
 
-    private String targets;
-
-    private String targetsValue;
-
-    private Integer predictNum;
-
     private String msgType;
 
     private String msgState;
+
+    private String messageTemplateId;
 
     public String getTitle() {
         return title;
@@ -47,30 +43,6 @@ public class UpdateBaseMessageFormDto extends UpdateFormDto {
 
     public void setContent(String content) {
         this.content = content;
-    }
-
-    public String getTargets() {
-        return targets;
-    }
-
-    public void setTargets(String targets) {
-        this.targets = targets;
-    }
-
-    public String getTargetsValue() {
-        return targetsValue;
-    }
-
-    public void setTargetsValue(String targetsValue) {
-        this.targetsValue = targetsValue;
-    }
-
-    public Integer getPredictNum() {
-        return predictNum;
-    }
-
-    public void setPredictNum(Integer predictNum) {
-        this.predictNum = predictNum;
     }
 
     public String getMsgType() {
@@ -99,4 +71,11 @@ public class UpdateBaseMessageFormDto extends UpdateFormDto {
 
     private String msgLevel;
 
+    public String getMessageTemplateId() {
+        return messageTemplateId;
+    }
+
+    public void setMessageTemplateId(String messageTemplateId) {
+        this.messageTemplateId = messageTemplateId;
+    }
 }

@@ -43,6 +43,11 @@
             <artifactId>jsp-api</artifactId>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-base-service-api</artifactId>
+            <version>${feihua-framework.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

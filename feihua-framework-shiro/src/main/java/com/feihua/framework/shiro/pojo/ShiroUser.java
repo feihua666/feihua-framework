@@ -63,9 +63,10 @@ public class ShiroUser implements Serializable{
     private String qq;
 
     /**
-     * 用户的来源
+     * 用户的来源,客户端id
      */
-    private String source;
+    private String fromClientId;
+
 
     /**
      * 是否锁定
@@ -80,7 +81,12 @@ public class ShiroUser implements Serializable{
      */
     private String loginType;
 
-    private String loginClient;
+    /**
+     * 用户登录的客户端id
+     */
+    private String loginClientId;
+
+
 
     /**
      * 用户登录IP
@@ -182,14 +188,6 @@ public class ShiroUser implements Serializable{
         this.qq = qq;
     }
 
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
     public boolean isLocked() {
         return locked;
     }
@@ -230,11 +228,21 @@ public class ShiroUser implements Serializable{
         this.host = host;
     }
 
-    public String getLoginClient() {
-        return loginClient;
+    public String getLoginClientId() {
+        return loginClientId;
     }
 
-    public void setLoginClient(String loginClient) {
-        this.loginClient = loginClient;
+    public void setLoginClientId(String loginClientId) {
+        this.loginClientId = loginClientId;
     }
+
+    public String getFromClientId() {
+        return fromClientId;
+    }
+
+    public void setFromClientId(String fromClientId) {
+        this.fromClientId = fromClientId;
+    }
+
+
 }

@@ -34,6 +34,8 @@
         <module>feihua-framework-scheduler-rest</module>
         <module>feihua-framework-log-service</module>
         <module>feihua-framework-log-rest</module>
+        <module>feihua-framework-statistic-service</module>
+        <module>feihua-framework-statistic-rest</module>
     </modules>
     <packaging>pom</packaging>
 

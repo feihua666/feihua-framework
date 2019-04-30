@@ -4,9 +4,12 @@ import com.feihua.framework.base.modules.loginclient.api.ApiBaseLoginClientPoSer
 import com.feihua.framework.base.modules.loginclient.dto.BaseLoginClientDto;
 import com.feihua.framework.base.modules.loginclient.po.BaseLoginClientPo;
 import com.github.pagehelper.Page;
+import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
 import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,17 @@ public class ApiBaseLoginClientPoServiceImpl extends ApiBaseServiceImpl<BaseLogi
         Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
         List<com.feihua.framework.base.modules.loginclient.dto.BaseLoginClientDto> list = this.wrapDtos(BaseLoginClientPoMapper.searchBaseLoginClients(dto));
         return new PageResultDto(list, this.wrapPage(p));
+    }
+
+    @Override
+    public BaseLoginClientPo selectByClientCode(String clientCode) {
+        if (StringUtils.isNotEmpty(clientCode)) {
+            BaseLoginClientPo condition = new BaseLoginClientPo();
+            condition.setDelFlag(BasePo.YesNo.N.name());
+            condition.setClientCode(clientCode);
+            return selectOneSimple(condition);
+        }
+        return null;
     }
 
     @Override

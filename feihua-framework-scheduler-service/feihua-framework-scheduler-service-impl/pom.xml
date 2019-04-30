@@ -29,11 +29,17 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
         </dependency>
+        <!-- 统计的其它模块依赖 -->
         <dependency>
             <groupId>feihua</groupId>
-            <artifactId>feihua-framework-mybatis-orm-datasource</artifactId>
+            <artifactId>feihua-framework-statistic-service-api</artifactId>
             <version>${feihua-framework.version}</version>
-            <scope>test</scope>
+        </dependency>
+        <!-- 因为service和rest是依赖发布，所以这里只引入shiro包以获取在线用户信息，如果单独部署，则再需要引入shiro的spring配置文件 -->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-framework-shiro</artifactId>
+            <version>${feihua-framework.version}</version>
         </dependency>
     </dependencies>
 

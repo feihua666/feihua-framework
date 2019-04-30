@@ -5,10 +5,13 @@ import com.feihua.framework.base.modules.area.dto.BaseAreaDto;
 import com.feihua.framework.base.modules.area.dto.SearchAreasConditionDto;
 import com.feihua.framework.base.mapper.BaseAreaPoMapper;
 import com.feihua.framework.base.modules.area.po.BaseAreaPo;
+import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
+import com.feihua.framework.base.modules.user.po.BaseUserPo;
 import com.github.pagehelper.Page;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseTreeServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,12 +32,25 @@ public class ApiBaseAreaPoServiceImpl extends ApiBaseTreeServiceImpl<BaseAreaPo,
 
     @Autowired
     private BaseAreaPoMapper baseAreaPoMapper;
+    @Autowired
+    private ApiBaseUserPoService apiBaseUserPoService;
+
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
     public PageResultDto<BaseAreaDto> searchAreasDsf(SearchAreasConditionDto conditionDto, PageAndOrderbyParamDto pageAndOrderbyParamDto) {
         Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
         List<BaseAreaDto> list = this.wrapDtos(baseAreaPoMapper.searchAreas(conditionDto));
         return new PageResultDto(list, this.wrapPage(p));
+    }
+
+    @Override
+    public BaseAreaPo selectAreaByUserId(String userId) {
+        BaseUserPo userPo = apiBaseUserPoService.selectByPrimaryKeySimple(userId,false);
+        // 如果用户存在
+        if(userPo != null && StringUtils.isNotEmpty(userPo.getDataOfficeId())){
+            return this.selectByPrimaryKeySimple(userPo.getDataOfficeId(),false);
+        }
+        return null;
     }
 
     @Override
@@ -54,6 +70,8 @@ public class ApiBaseAreaPoServiceImpl extends ApiBaseTreeServiceImpl<BaseAreaPo,
         baseAreaDto.setDataAreaId(po.getDataAreaId());
         baseAreaDto.setDataType(po.getDataType());
         baseAreaDto.setDataUserId(po.getDataUserId());
+        baseAreaDto.setLongitude(po.getLongitude());
+        baseAreaDto.setLatitude(po.getLatitude());
         return baseAreaDto;
     }
 }

@@ -17,4 +17,11 @@ public interface BaseUserPoMapper extends feihua.jdbc.api.dao.CrudDao<BaseUserPo
      * @return
      */
     List<BaseUserPo> searchBaseUsers(SearchBaseUsersConditionDto dto);
+
+    /**
+     * 查询所有区域不为空的用户
+     * @return
+     */
+    List<BaseUserPo> selectAllAndAreaNotNull();
+
 }

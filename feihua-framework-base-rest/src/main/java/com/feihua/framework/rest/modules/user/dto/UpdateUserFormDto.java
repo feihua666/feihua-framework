@@ -18,6 +18,7 @@ public class UpdateUserFormDto extends UpdateFormDto {
     private String nickname;
     private String gender;
     private String dataOfficeId;
+    private String dataAreaId;
 
     public String getLocked() {
         return locked;
@@ -57,5 +58,13 @@ public class UpdateUserFormDto extends UpdateFormDto {
 
     public void setDataOfficeId(String dataOfficeId) {
         this.dataOfficeId = dataOfficeId;
+    }
+
+    public String getDataAreaId() {
+        return dataAreaId;
+    }
+
+    public void setDataAreaId(String dataAreaId) {
+        this.dataAreaId = dataAreaId;
     }
 }

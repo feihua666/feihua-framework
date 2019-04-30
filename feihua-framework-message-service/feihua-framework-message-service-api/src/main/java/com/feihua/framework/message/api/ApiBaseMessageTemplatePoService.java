@@ -11,4 +11,11 @@ import feihua.jdbc.api.pojo.PageResultDto;
  */
 public interface ApiBaseMessageTemplatePoService extends feihua.jdbc.api.service.ApiBaseService<BaseMessageTemplatePo, BaseMessageTemplateDto, String> {
     PageResultDto<BaseMessageTemplateDto> searchBaseMessageTemplatesDsf(SearchBaseMessageTemplatesConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto);
+
+    /**
+     * 根据模板查询编码
+     * @param code
+     * @return
+     */
+    BaseMessageTemplatePo selectByTemplateCode(String code);
 }

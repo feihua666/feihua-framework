@@ -2,6 +2,7 @@ package com.feihua.framework.rest;
 
 
 import com.feihua.exception.BaseException;
+import com.feihua.exception.ParamInvalidException;
 import com.feihua.framework.log.comm.LogType;
 import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
@@ -56,7 +57,7 @@ public class ExceptionHandler {
             code = ResponseCode.E403_100001.getCode();
         } catch (BindException | MissingServletRequestParameterException ex) {
             msg = ResponseCode.E400_100000.getMsg();
-            httpcode = HttpServletResponse.SC_NOT_IMPLEMENTED;
+            httpcode = HttpServletResponse.SC_BAD_REQUEST;
             code = ResponseCode.E400_100000.getCode();
             logger.error(ex.getMessage(), ex);
         }catch (HttpRequestMethodNotSupportedException e) {
@@ -67,18 +68,28 @@ public class ExceptionHandler {
             msg = "unknown session error";
             code = ResponseCode.E500_100000.getCode();
             logger.error(e.getMessage(), e);
-        } catch (BaseException e){
+        }catch (ParamInvalidException e){
+            msg = e.getMessage();
+            code = e.getCode();
+            if(e.isHttpException()){
+                httpcode = e.getHttpStatus();
+            }else {
+                httpcode = HttpServletResponse.SC_BAD_REQUEST;
+            }
+            logger.error(e.getMessage(), e);
+        }
+        catch (BaseException e){
             msg = e.getMessage();
             code = e.getCode();
             if(e.isHttpException()){
                 httpcode = e.getHttpStatus();
             }
 
-            logger.error(exception.getMessage(), exception);
+            logger.error(e.getMessage(), e);
         } catch (Exception e) {
             msg = ResponseCode.E500_100000.getMsg();
             code = ResponseCode.E500_100000.getCode();
-            logger.error(exception.getMessage(), exception);
+            logger.error(e.getMessage(), e);
         } finally {
             responseJsonRender.setMsg(msg);
             responseJsonRender.setCode(code);

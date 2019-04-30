@@ -12,7 +12,7 @@
 		http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
 >
     <!-- 定义扫描的包路径 -->
-    <context:component-scan use-default-filters="false" base-package="com.feihua.wechat">
+    <context:component-scan use-default-filters="false" base-package="com.feihua.wechat.impl,com.feihua.wechat.miniprogram,com.feihua.wechat.publicplatform">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
 

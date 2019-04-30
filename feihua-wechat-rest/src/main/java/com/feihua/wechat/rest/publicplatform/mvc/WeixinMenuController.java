@@ -257,15 +257,15 @@ public class WeixinMenuController extends SuperController {
             for (WeixinMenuDto rootWeixinMenuDto : firstWeixinMenuDtos) {
                 List<WeixinMenuDto> secondWeixinMenuDtos = apiWeixinMenuPoService.wrapDtos(apiWeixinMenuPoService.getChildren(rootWeixinMenuDto.getId(),orderby));
                 firstMenuItem = MenuItemFactory.createMenuItem(rootWeixinMenuDto);
-                if ( StringUtils.isNotEmpty(rootWeixinMenuDto.getType())|| (secondWeixinMenuDtos != null && !secondWeixinMenuDtos.isEmpty())) {
+                if ((secondWeixinMenuDtos != null && !secondWeixinMenuDtos.isEmpty())) {
                     for (WeixinMenuDto secondWeixinMenuDto : secondWeixinMenuDtos) {
                         if(StringUtils.isNotEmpty(secondWeixinMenuDto.getType())){
                             secondMenuItem = MenuItemFactory.createMenuItem(secondWeixinMenuDto);
                             firstMenuItem.addSubButton(secondMenuItem);
                         }
                     }
-                    menu.addMenuItem(firstMenuItem);
                 }
+                menu.addMenuItem(firstMenuItem);
             }
 
         }

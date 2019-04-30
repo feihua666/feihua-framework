@@ -21,6 +21,12 @@
             <ref bean="multipleDataSource"/>
         </property>
         <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+        <property name="globalJobListeners">
+            <list>
+                <bean class="com.feihua.framework.scheduler.GlobalQuartzJobListener"/>
+            </list>
+        </property>
+        <property name="startupDelay" value="20"/>
         <property name="quartzProperties">
             <props>
                 <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
@@ -31,10 +37,13 @@
                 <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.StdJDBCDelegate</prop>
                 <!-- 数据表设置 -->
                 <prop key="org.quartz.jobStore.tablePrefix">QRTZ_</prop>
-                <prop key="org.quartz.jobStore.dataSource">myDS</prop>
+                <!--<prop key="org.quartz.jobStore.dataSource">myDS</prop>-->
             </props>
         </property>
     </bean>
 
+    <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
+        <property name="basePackage" value="com.feihua.framework.scheduler.mapper"/>
+    </bean>
 
 </beans>

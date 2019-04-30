@@ -1,6 +1,7 @@
 package com.feihua.framework.message.dto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yangwei
@@ -8,31 +9,40 @@ import java.util.List;
  */
 public class MessageSendFormDto {
 
-    private String targets;
-    private List<String> targetsValue;
-    private java.util.List<BaseMessageTargetClientParamsDto> targetClients;
+    private String templateParams;
+    private String targetType;
+    private List<String> targetValues;
+    private java.util.List<String> clientIds;
 
-    public String getTargets() {
-        return targets;
+    public String getTargetType() {
+        return targetType;
     }
 
-    public void setTargets(String targets) {
-        this.targets = targets;
+    public void setTargetType(String targetType) {
+        this.targetType = targetType;
     }
 
-    public List<String> getTargetsValue() {
-        return targetsValue;
+    public List<String> getTargetValues() {
+        return targetValues;
     }
 
-    public void setTargetsValue(List<String> targetsValue) {
-        this.targetsValue = targetsValue;
+    public void setTargetValues(List<String> targetValues) {
+        this.targetValues = targetValues;
     }
 
-    public List<BaseMessageTargetClientParamsDto> getTargetClients() {
-        return targetClients;
+    public List<String> getClientIds() {
+        return clientIds;
     }
 
-    public void setTargetClients(List<BaseMessageTargetClientParamsDto> targetClients) {
-        this.targetClients = targetClients;
+    public void setClientIds(List<String> clientIds) {
+        this.clientIds = clientIds;
+    }
+
+    public String getTemplateParams() {
+        return templateParams;
+    }
+
+    public void setTemplateParams(String templateParams) {
+        this.templateParams = templateParams;
     }
 }

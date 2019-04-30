@@ -23,5 +23,11 @@
             <artifactId>feihua-framework-mybatis-orm-datasource</artifactId>
             <version>${feihua-framework.version}</version>
         </dependency>
+        <!-- 依赖微信发消息 -->
+        <dependency>
+            <groupId>feihua</groupId>
+            <artifactId>feihua-wechat-service-api</artifactId>
+            <version>${feihua-framework.version}</version>
+        </dependency>
     </dependencies>
 </project>

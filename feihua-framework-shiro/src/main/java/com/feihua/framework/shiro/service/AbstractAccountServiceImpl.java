@@ -24,7 +24,7 @@ public abstract class AbstractAccountServiceImpl implements AccountService {
     }
     @Override
     public String resolveLoginClient(ServletRequest request) {
-        return ( request.getParameter(ShiroFormAuthenticationFilter.param_loginClient_key));
+        return ( request.getParameter(ShiroFormAuthenticationFilter.param_loginClient_code_key));
     }
 
     @Override

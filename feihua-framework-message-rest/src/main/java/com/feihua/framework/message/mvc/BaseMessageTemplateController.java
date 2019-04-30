@@ -1,22 +1,25 @@
 package com.feihua.framework.message.mvc;
 
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.constants.DictEnum;
+import com.feihua.framework.message.MsgTemplateUtils;
 import com.feihua.framework.message.api.ApiBaseMessageTemplatePoService;
-import com.feihua.framework.message.dto.BaseMessageTemplateDto;
-import com.feihua.framework.message.dto.SearchBaseMessageTemplatesConditionDto;
+import com.feihua.framework.message.api.ApiBaseMessageTemplateThirdBindPoService;
+import com.feihua.framework.message.dto.*;
 import com.feihua.framework.message.po.BaseMessageTemplatePo;
+import com.feihua.framework.message.po.BaseMessageTemplateThirdBindPo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
+import com.feihua.utils.string.RegexUtils;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
-import com.feihua.framework.message.dto.AddBaseMessageTemplateFormDto;
-import com.feihua.framework.message.dto.UpdateBaseMessageTemplateFormDto;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -42,6 +46,8 @@ public class BaseMessageTemplateController extends SuperController {
 
     @Autowired
     private ApiBaseMessageTemplatePoService apiBaseMessageTemplatePoService;
+    @Autowired
+    private ApiBaseMessageTemplateThirdBindPoService apiBaseMessageTemplateThirdBindPoService;
 
     /**
      * 单资源，添加
@@ -50,7 +56,7 @@ public class BaseMessageTemplateController extends SuperController {
      */
     @RepeatFormValidator
     @RequiresPermissions("messageTemplate:add")
-    @RequestMapping(value = "/com/feihua/framework/message/template",method = RequestMethod.POST)
+    @RequestMapping(value = "/message/template",method = RequestMethod.POST)
     public ResponseEntity add(AddBaseMessageTemplateFormDto addFormDto){
         logger.info("添加消息模板开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
@@ -75,6 +81,10 @@ public class BaseMessageTemplateController extends SuperController {
         basePo.setName(addFormDto.getName());
         basePo.setCode(addFormDto.getCode());
         basePo.setContent(addFormDto.getContent());
+        basePo.setTitle(addFormDto.getTitle());
+        basePo.setProfile(addFormDto.getProfile());
+        basePo.setMsgLevel(addFormDto.getMsgLevel());
+        basePo.setMsgType(addFormDto.getMsgType());
 
         basePo = apiBaseMessageTemplatePoService.preInsert(basePo,getLoginUser().getId());
         BaseMessageTemplateDto r = apiBaseMessageTemplatePoService.insert(basePo);
@@ -101,7 +111,7 @@ public class BaseMessageTemplateController extends SuperController {
      */
     @RepeatFormValidator
     @RequiresPermissions("messageTemplate:delete")
-    @RequestMapping(value = "/com/feihua/framework/message/template/{id}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/message/template/{id}",method = RequestMethod.DELETE)
     public ResponseEntity delete(@PathVariable String id){
         logger.info("删除消息模板开始");
         logger.info("用户id:{}",getLoginUser().getId());
@@ -132,7 +142,7 @@ public class BaseMessageTemplateController extends SuperController {
      */
     @RepeatFormValidator
     @RequiresPermissions("messageTemplate:update")
-    @RequestMapping(value = "/com/feihua/framework/message/template/{id}",method = RequestMethod.PUT)
+    @RequestMapping(value = "/message/template/{id}",method = RequestMethod.PUT)
     public ResponseEntity update(@PathVariable String id, UpdateBaseMessageTemplateFormDto updateFormDto){
         logger.info("更新消息模板开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
@@ -161,6 +171,10 @@ public class BaseMessageTemplateController extends SuperController {
         basePo.setName(updateFormDto.getName());
         basePo.setCode(updateFormDto.getCode());
         basePo.setContent(updateFormDto.getContent());
+        basePo.setTitle(updateFormDto.getTitle());
+        basePo.setProfile(updateFormDto.getProfile());
+        basePo.setMsgLevel(updateFormDto.getMsgLevel());
+        basePo.setMsgType(updateFormDto.getMsgType());
 
         // 用条件更新，乐观锁机制
         BaseMessageTemplatePo basePoCondition = new BaseMessageTemplatePo();
@@ -190,7 +204,7 @@ public class BaseMessageTemplateController extends SuperController {
      * @return
      */
     @RequiresPermissions("messageTemplate:getById")
-    @RequestMapping(value = "/com/feihua/framework/message/template/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "/message/template/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
@@ -211,7 +225,7 @@ public class BaseMessageTemplateController extends SuperController {
      * @return
      */
     @RequiresPermissions("messageTemplate:search")
-    @RequestMapping(value = "/com/feihua/framework/message/templates",method = RequestMethod.GET)
+    @RequestMapping(value = "/message/templates",method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseMessageTemplatesConditionDto dto){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
@@ -230,5 +244,91 @@ public class BaseMessageTemplateController extends SuperController {
             resultData.setMsg(ResponseCode.E404_100001.getMsg());
             return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
         }
+    }
+
+    // 以下是绑定三方模板相关
+    @RequiresPermissions("messageTemplate:third:getById")
+    @RequestMapping(value = "/message/template/{id}/third",method = RequestMethod.GET)
+    public ResponseEntity thirdGetById(@PathVariable String id){
+
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        BaseMessageTemplateThirdBindPo condition = new BaseMessageTemplateThirdBindPo();
+        condition.setMessageTemplateId(id);
+        condition.setDelFlag(BasePo.YesNo.N.name());
+        List<BaseMessageTemplateThirdBindDto> list = apiBaseMessageTemplateThirdBindPoService.selectList(condition);
+        return returnList(list,resultData);
+    }
+    @RequiresPermissions("messageTemplate:third:bind")
+    @RequestMapping(value = "/message/template/{id}/third",method = RequestMethod.POST)
+    public ResponseEntity channelBind(@PathVariable String id, ThirdTemplateBindFormDto dto){
+
+        ResponseJsonRender resultData=new ResponseJsonRender();
+        // 先删除再添加
+
+        BaseMessageTemplateThirdBindPo deleteConditon = new BaseMessageTemplateThirdBindPo();
+        deleteConditon.setMessageTemplateId(id);
+        apiBaseMessageTemplateThirdBindPoService.deleteSelective(deleteConditon);
+        // 微信公众帐号
+        if(StringUtils.isNotEmpty(dto.getWeixinPublicplatformAccoutId())){
+            BaseMessageTemplateThirdBindPo weixinPublic = new BaseMessageTemplateThirdBindPo();
+            weixinPublic.setThirdType(DictEnum.WxAccountType.weixin_publicplatform.name());
+            weixinPublic.setMessageTemplateId(id);
+            weixinPublic.setThirdId(dto.getWeixinPublicplatformAccoutId());
+            weixinPublic.setThirdTemplateContent(dto.getWeixinPublicplatformMsgTemplateContent());
+            weixinPublic.setThirdTemplateId(dto.getWeixinPublicplatformMsgTemplateId());
+            weixinPublic = apiBaseMessageTemplateThirdBindPoService.preInsert(weixinPublic,getLoginUserId());
+            apiBaseMessageTemplateThirdBindPoService.insert(weixinPublic);
+        }
+
+        // 微信小程序
+        if(StringUtils.isNotEmpty(dto.getWeixinMiniprogramAccoutId())){
+            BaseMessageTemplateThirdBindPo weixinMiniprogram = new BaseMessageTemplateThirdBindPo();
+            weixinMiniprogram.setThirdType(DictEnum.WxAccountType.weixin_miniprogram.name());
+            weixinMiniprogram.setMessageTemplateId(id);
+            weixinMiniprogram.setThirdId(dto.getWeixinMiniprogramAccoutId());
+            weixinMiniprogram.setThirdTemplateContent(dto.getWeixinMiniprogramMsgTemplateContent());
+            weixinMiniprogram.setThirdTemplateId(dto.getWeixinMiniprogramMsgTemplateId());
+            weixinMiniprogram = apiBaseMessageTemplateThirdBindPoService.preInsert(weixinMiniprogram,getLoginUserId());
+            apiBaseMessageTemplateThirdBindPoService.insert(weixinMiniprogram);
+
+        }
+
+        return new ResponseEntity(resultData, HttpStatus.OK);
+    }
+
+
+    /**
+     * 获取消息模板中已设置的参数
+     * @param id
+     * @return
+     */
+    @RequiresPermissions("messageTemplate:params")
+    @RequestMapping(value = "/message/template/{id}/params",method = RequestMethod.GET)
+    public ResponseEntity params(@PathVariable String id){
+
+        ResponseJsonRender resultData=new ResponseJsonRender();
+
+        // 获取模板
+        BaseMessageTemplateDto messageTemplateDto = apiBaseMessageTemplatePoService.selectByPrimaryKey(id,false);
+        if (messageTemplateDto == null) {
+            return returnDto(null,resultData);
+        }
+        // 获取三方模板
+        BaseMessageTemplateThirdBindPo condition = new BaseMessageTemplateThirdBindPo();
+        condition.setMessageTemplateId(id);
+        condition.setDelFlag(BasePo.YesNo.N.name());
+        List<BaseMessageTemplateThirdBindDto> list = apiBaseMessageTemplateThirdBindPoService.selectList(condition);
+
+        StringBuffer sb = new StringBuffer();
+        com.feihua.utils.string.StringUtils.appendIfNotEmpty(sb,messageTemplateDto.getTitle());
+        com.feihua.utils.string.StringUtils.appendIfNotEmpty(sb,messageTemplateDto.getProfile());
+        com.feihua.utils.string.StringUtils.appendIfNotEmpty(sb,messageTemplateDto.getContent());
+        if (list != null) {
+            for (BaseMessageTemplateThirdBindDto baseMessageTemplateThirdBindDto : list) {
+                com.feihua.utils.string.StringUtils.appendIfNotEmpty(sb,baseMessageTemplateThirdBindDto.getThirdTemplateContent());
+            }
+        }
+        List<String> r = RegexUtils.getMatchedString(MsgTemplateUtils.label_pattern, sb.toString());
+        return returnList(r,resultData);
     }
 }

@@ -2,6 +2,7 @@ package com.feihua.utils.collection;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -95,4 +96,36 @@ public class CollectionUtils {
 		return resultArray;
 	}
 
+	/**
+	 * 集合过滤
+	 * @param list
+	 * @param hook
+	 * @param <T>
+	 * @return
+	 */
+	public static <T> Collection<T> filter(Collection<T> list, Filter<T> hook) {
+		Iterator<T> iterator = list.iterator();
+		while (iterator.hasNext()){
+			if (hook.filter(iterator.next()) == false) {
+				iterator.remove();
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回true表示过滤掉
+	 * @param <T>
+	 */
+	public static interface Filter<T>{
+		public boolean filter(T obj);
+	}
+	public static String listToString(List<String> list, String separator) {
+		if (list == null || list.isEmpty()) return "";
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < list.size(); i++) {
+			sb.append(list.get(i)).append(separator);
+		}
+		return sb.toString().substring(0, sb.toString().length() - 1);
+	}
 }

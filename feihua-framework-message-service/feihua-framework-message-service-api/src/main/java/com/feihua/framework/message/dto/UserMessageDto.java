@@ -3,6 +3,8 @@ package com.feihua.framework.message.dto;
 import com.feihua.framework.message.api.ApiBaseMessagePoService;
 import feihua.jdbc.api.pojo.BaseDto;
 
+import java.util.Date;
+
 /**
  * 指定用户消息实体
  *
@@ -22,6 +24,10 @@ public class UserMessageDto extends BaseDto {
     private String msgLevel;
 
     private String isRead;
+
+    private Date readTime;
+
+    private String readClientId;
 
     public String getId() {
         return id;
@@ -77,5 +83,21 @@ public class UserMessageDto extends BaseDto {
 
     public void setIsRead(String isRead) {
         this.isRead = isRead;
+    }
+
+    public Date getReadTime() {
+        return readTime;
+    }
+
+    public void setReadTime(Date readTime) {
+        this.readTime = readTime;
+    }
+
+    public String getReadClientId() {
+        return readClientId;
+    }
+
+    public void setReadClientId(String readClientId) {
+        this.readClientId = readClientId;
     }
 }

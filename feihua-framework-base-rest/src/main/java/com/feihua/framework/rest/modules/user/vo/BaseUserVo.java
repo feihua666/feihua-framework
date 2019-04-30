@@ -22,6 +22,8 @@ public class BaseUserVo {
     private String serialNo;
     private String dataOfficeId;
     private String dataOfficeName;
+    private String dataAreaId;
+    private String dataAreaName;
     private String photo;
 
 
@@ -33,6 +35,7 @@ public class BaseUserVo {
         this.gender = userDto.getGender();
         this.serialNo = userDto.getSerialNo();
         this.dataOfficeId = userDto.getDataOfficeId();
+        this.dataAreaId = userDto.getDataAreaId();
         this.photo = userDto.getPhoto();
     }
     public BaseUserVo(BaseUserDto userDto,String dataOfficeName) {
@@ -124,5 +127,21 @@ public class BaseUserVo {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public String getDataAreaId() {
+        return dataAreaId;
+    }
+
+    public void setDataAreaId(String dataAreaId) {
+        this.dataAreaId = dataAreaId;
+    }
+
+    public String getDataAreaName() {
+        return dataAreaName;
+    }
+
+    public void setDataAreaName(String dataAreaName) {
+        this.dataAreaName = dataAreaName;
     }
 }

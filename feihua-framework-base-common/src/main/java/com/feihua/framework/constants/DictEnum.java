@@ -34,8 +34,11 @@ public class DictEnum {
     public enum LoginClientType {
         pc,
         h5,
+        wx_miniprogram,
+        wx_publicplatform,
         app_android,
-        app_ios
+        app_ios,
+        virtual
     }
 
     /**
@@ -246,9 +249,9 @@ public class DictEnum {
         sending   //发送中
     }
     /**
-     * 消息发送目标
+     * 消息发送目标类型
      */
-    public enum MessageTargets {
+    public enum MessageTargetType {
         all,            // 所有人
         multi_people,   //多个人
         multi_office,      //机构下的人
@@ -268,4 +271,15 @@ public class DictEnum {
         json
     }
 
+    /**
+     * 任务计划状态
+     */
+    public enum SchedulerStatus {
+        offline, //脱机，不在线
+        normal, //正常，任务计划中
+        error, //错误
+        blocked, //阻塞
+        complete, //完成
+        pause //暂停
+    }
 }

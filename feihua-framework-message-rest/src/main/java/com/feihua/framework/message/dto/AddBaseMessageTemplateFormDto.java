@@ -14,6 +14,14 @@ public class AddBaseMessageTemplateFormDto {
 
     private String content;
 
+    private String title;
+
+    private String profile;
+
+    private String msgType;
+
+    private String msgLevel;
+
     public String getName() {
         return name;
     }
@@ -36,5 +44,37 @@ public class AddBaseMessageTemplateFormDto {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getProfile() {
+        return profile;
+    }
+
+    public void setProfile(String profile) {
+        this.profile = profile;
+    }
+
+    public String getMsgType() {
+        return msgType;
+    }
+
+    public void setMsgType(String msgType) {
+        this.msgType = msgType;
+    }
+
+    public String getMsgLevel() {
+        return msgLevel;
+    }
+
+    public void setMsgLevel(String msgLevel) {
+        this.msgLevel = msgLevel;
     }
 }

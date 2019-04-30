@@ -6,6 +6,7 @@ import feihua.jdbc.api.pojo.PageResultDto;
 import java.util.List;
 
 /**
+ * 分页迭代接口
  * Created by yangwei
  * Created at 2018/11/1 20:35
  */

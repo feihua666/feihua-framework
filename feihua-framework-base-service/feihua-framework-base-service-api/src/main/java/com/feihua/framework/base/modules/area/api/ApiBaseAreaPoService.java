@@ -19,5 +19,5 @@ public interface ApiBaseAreaPoService extends feihua.jdbc.api.service.ApiBaseTre
      */
     public PageResultDto<BaseAreaDto> searchAreasDsf(SearchAreasConditionDto conditionDto, PageAndOrderbyParamDto pageAndOrderbyParamDto);
 
-
+    BaseAreaPo selectAreaByUserId(String userId);
 }

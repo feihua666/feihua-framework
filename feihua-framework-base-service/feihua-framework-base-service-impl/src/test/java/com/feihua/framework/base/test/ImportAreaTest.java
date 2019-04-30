@@ -2,7 +2,11 @@ package com.feihua.framework.base.test;
 
 
 import com.feihua.framework.base.modules.area.api.ApiBaseAreaPoService;
+import com.feihua.framework.base.modules.area.dto.BaseAreaDto;
 import com.feihua.framework.base.modules.area.po.BaseAreaPo;
+import com.feihua.utils.http.httpclient.HttpClientUtils;
+import com.feihua.utils.json.JSONUtils;
+import feihua.jdbc.api.utils.OrderbyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.htmlparser.Node;
 import org.htmlparser.Parser;
@@ -17,8 +21,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by feihua on 2016/9/15.
@@ -34,8 +42,42 @@ public class ImportAreaTest {
     @Autowired
     ApiBaseAreaPoService sysAreaService;
     @Test
-    public void testEmpty(){
+    public void testEmpty() throws Exception {
+        List<BaseAreaDto> list = sysAreaService.selectAll(true);
+        List<String> updateSql = new ArrayList<>(list.size());
+        for (BaseAreaDto areaDto : list) {
 
+            String name = getName(areaDto);
+            System.out.println(name);
+            name = URLEncoder.encode(name,"GBK");
+            System.out.println(name);
+            String r = HttpClientUtils.httpGet("http://api.map.baidu.com/geocoder/v2/?address=" + name +"&output=json&ak=69a5a1e7260cd2cd298c33666e436530");
+
+            Map mapr = JSONUtils.json2map(r);
+            String lng = "";
+            String lat = "";
+            Map location = ((Map) ((Map) mapr.get("result")).get("location"));
+            lng = location.get("lng").toString();
+            lat = location.get("lat").toString();
+            updateSql.add("update base_area set longitude='"+ lng +"',latitude='"+ lat +"' where id='" + areaDto.getId() +"' and name='" + areaDto.getName() +"';");
+        }
+        for (String s : updateSql) {
+            System.out.println(s);
+        }
+    }
+    private String getName(BaseAreaDto areaDto){
+        Map order = new HashMap();
+        order.put("orderby","level-asc");
+        order.put("orderable","true");
+        List<BaseAreaPo> p = sysAreaService.getParents(areaDto.getId(),OrderbyUtils.getOrderbyFromMap(order));
+        String r = "";
+        if (p != null) {
+            for (BaseAreaPo baseAreaPo : p) {
+                r += baseAreaPo.getName() + " ";
+            }
+        }
+        r += areaDto.getName();
+        return r;
     }
     //@Test
     public void test() throws ParserException {

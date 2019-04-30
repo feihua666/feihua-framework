@@ -14,17 +14,13 @@ public class AddBaseMessageFormDto {
 
     private String content;
 
-    private String targets;
-
-    private String targetsValue;
-
-    private Integer predictNum;
-
     private String msgType;
 
     private String msgState;
 
     private String msgLevel;
+
+    private String messageTemplateId;
 
     public String getTitle() {
         return title;
@@ -49,31 +45,6 @@ public class AddBaseMessageFormDto {
     public void setContent(String content) {
         this.content = content;
     }
-
-    public String getTargets() {
-        return targets;
-    }
-
-    public void setTargets(String targets) {
-        this.targets = targets;
-    }
-
-    public String getTargetsValue() {
-        return targetsValue;
-    }
-
-    public void setTargetsValue(String targetsValue) {
-        this.targetsValue = targetsValue;
-    }
-
-    public Integer getPredictNum() {
-        return predictNum;
-    }
-
-    public void setPredictNum(Integer predictNum) {
-        this.predictNum = predictNum;
-    }
-
     public String getMsgType() {
         return msgType;
     }
@@ -96,5 +67,13 @@ public class AddBaseMessageFormDto {
 
     public void setMsgLevel(String msgLevel) {
         this.msgLevel = msgLevel;
+    }
+
+    public String getMessageTemplateId() {
+        return messageTemplateId;
+    }
+
+    public void setMessageTemplateId(String messageTemplateId) {
+        this.messageTemplateId = messageTemplateId;
     }
 }

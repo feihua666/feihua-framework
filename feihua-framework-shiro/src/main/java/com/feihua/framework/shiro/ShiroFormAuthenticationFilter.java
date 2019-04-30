@@ -4,7 +4,6 @@ package com.feihua.framework.shiro;
 import com.feihua.exception.BaseException;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.jedis.utils.JedisUtils;
-import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.pojo.token.*;
 import com.feihua.framework.shiro.service.AccountService;
 
@@ -18,7 +17,6 @@ import com.feihua.utils.properties.PropertiesUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
@@ -45,7 +43,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
     public static String param_loginType_key = "loginType";
     public static String param_principal_key = "principal";
     public static String param_password_key = "password";
-    public static String param_loginClient_key = "loginClient";
+    public static String param_loginClient_code_key = "client";
 
     private static String failedMsgKey = "loginFailedKey";
     private static String failedStatusKey = "loginFailedStatusKey";
@@ -268,14 +266,15 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
         // 取登录客户端
         String loginClient = accountService.resolveLoginClient(request);
         if(StringUtils.isEmpty(loginClient)){
-            throw new BaseException("loginClient can not be null," + ShiroFormAuthenticationFilter.param_loginClient_key + " param must pass");
+            throw new BaseException("loginClient can not be null," + ShiroFormAuthenticationFilter.param_loginClient_code_key + " param must pass");
         }
         return loginClient;
     }
     @Override
     protected boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
         String loginType = accountService.resolveLoginType(request);
-        String loginClient = this.resolveLoginClient(request);
+        String loginClientCode = this.resolveLoginClient(request);
+        String  loginClientId = accountService.getClientIdByClientCode(loginClientCode);
 
         String principal = request.getParameter(param_principal_key);
 
@@ -294,7 +293,8 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
         }
         // 注意调用先后顺序，initCurrentUserToSession中用到了该值，一定要放在前面
         SecurityUtils.getSubject().getSession().setAttribute(ShiroUtils.SHIRO_USER_LOGIN_TYPE_KEY,loginType);
-        SecurityUtils.getSubject().getSession().setAttribute(ShiroUtils.SHIRO_USER_LOGIN_CLIENT_KEY,loginClient);
+        SecurityUtils.getSubject().getSession().setAttribute(ShiroUtils.SHIRO_USER_LOGIN_CLIENT_CODE_KEY,loginClientCode);
+        SecurityUtils.getSubject().getSession().setAttribute(ShiroUtils.SHIRO_USER_LOGIN_CLIENT_ID_KEY,loginClientId);
         // 把当前登录用户放session中
         ShiroUtils.initCurrentUserToSession();
 
@@ -302,7 +302,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
         removeTryLoginMaxNum();
 
         // 踢出其它同一客户端
-        ShiroUtils.kickoutOtherClient(subject.getSession().getId().toString(),ShiroUtils.getCurrentUser().getId(),loginClient);
+        ShiroUtils.kickoutOtherClient(subject.getSession().getId().toString(),ShiroUtils.getCurrentUser().getId(),loginClientId);
 
         // 回调登录成功
         accountService.onLoginSuccess(token,subject,request,response);

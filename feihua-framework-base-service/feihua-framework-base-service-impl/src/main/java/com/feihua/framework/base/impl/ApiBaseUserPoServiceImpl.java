@@ -1,6 +1,7 @@
 package com.feihua.framework.base.impl;
 
 import com.feihua.exception.DataExistsException;
+import com.feihua.exception.ParamInvalidException;
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
@@ -255,6 +256,9 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
     @Transactional(rollbackFor = Exception.class,readOnly = false)
     @Override
     public BaseUserPo addUser(BaseUserAddParamDto addParamDto) {
+        if(org.apache.commons.lang3.StringUtils.isEmpty(addParamDto.getFromClientId())){
+            throw new ParamInvalidException("fromClientId can not be null");
+        }
         BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByIdentifierAndType(addParamDto.getIdentifier(),addParamDto.getIdentityType());
         if (userAuthDto != null) {
             throw new DataExistsException("account already exist");
@@ -266,7 +270,9 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
         userPo.setGender(addParamDto.getGender());
         userPo.setLocked(addParamDto.getLocked());
         userPo.setDataOfficeId(addParamDto.getDataOfficeId());
+        userPo.setDataAreaId(addParamDto.getDataAreaId());
         userPo.setPhoto(addParamDto.getPhoto());
+        userPo.setFromClientId(addParamDto.getFromClientId());
         userPo = this.preInsert(userPo,addParamDto.getCurrentUserId());
         userPo = this.insertSimple(userPo);
 
@@ -284,6 +290,13 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
     }
 
     @Override
+    public PageResultDto<BaseUserPo> selectAllAndAreaNotNull(PageAndOrderbyParamDto pageAndOrderbyParamDto) {
+        com.github.pagehelper.Page p = pageAndOrderbyStart(pageAndOrderbyParamDto);
+        List<BaseUserPo> list = BaseUserPoMapper.selectAllAndAreaNotNull();
+        return new PageResultDto<BaseUserPo>(list,wrapPage(p));
+    }
+
+    @Override
     public BaseUserDto wrapDto(BaseUserPo po) {
         if (po == null) {
             return null;
@@ -296,6 +309,7 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
         baseUserDto.setNickname(po.getNickname());
         baseUserDto.setDataUserId(po.getDataUserId());
         baseUserDto.setId(po.getId());
+        baseUserDto.setFromClientId(po.getFromClientId());
         baseUserDto.setDataType(po.getDataType());
         baseUserDto.setUpdateAt(po.getUpdateAt());
         baseUserDto.setDataAreaId(po.getDataAreaId());

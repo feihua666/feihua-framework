@@ -922,6 +922,7 @@ public class CalendarUtils {
     }
     public enum DateStyle {
 
+        YYYY("yyyy", false),
         YYYY_MM("yyyy-MM", false),
         YYYY_MM_DD("yyyy-MM-dd", false),
         YYYY_MM_DD_HH_MM("yyyy-MM-dd HH:mm", false),

@@ -39,7 +39,13 @@ public interface AccountService {
     public String resolveLoginType(ServletRequest request);
 
     /**
-     * 提取用户登录的客户端
+     * 根据客户端编码获取id
+     * @param clientCode
+     * @return
+     */
+    public String getClientIdByClientCode(String clientCode);
+    /**
+     * 提取用户登录的客户端编码
      * @param request
      * @return
      */

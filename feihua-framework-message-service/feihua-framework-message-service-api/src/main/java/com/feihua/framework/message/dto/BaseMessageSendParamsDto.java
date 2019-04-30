@@ -1,8 +1,10 @@
 package com.feihua.framework.message.dto;
 
+import com.feihua.framework.base.modules.loginclient.dto.BaseLoginClientDto;
 import feihua.jdbc.api.pojo.BaseConditionDto;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by yangwei
@@ -14,25 +16,31 @@ public class BaseMessageSendParamsDto extends BaseConditionDto {
      * 如果要发送一条已经存在的消息只需要指定id
      */
     private String messageId;
-    /**
-     * messageId和以下其它属性选其一
-     */
-    private String title;
-    private String profile;
-    private String content;
-    private String msgType;
-    private String msgLevel;
 
     /**
-     * 必填
+     * 消息模板id
      */
-    private String targets;
-    /**
-     * 必填
-     */
-    private List<String> targetsValue;
+    private String MsgTemplateCode;
 
-    private List<BaseMessageTargetClientParamsDto> targetClients;
+    /**
+     * 消息模板参数
+     */
+    private Map<String,String> templateParam;
+
+    /**
+     * 客户端用来推送三方消息，如果没有则不进行推送，一般pc端和h5等不需要
+     */
+    private List<BaseLoginClientDto> clients;
+
+    /**
+     * targetType 目标人类型，如office=机构下的人等，self=自定义人
+     */
+    private String targetType;
+
+    /**
+     * targetValues 自定义目标人的值，比如userId集合
+     */
+    private List<String> targetValues;
 
     public String getMessageId() {
         return messageId;
@@ -42,67 +50,44 @@ public class BaseMessageSendParamsDto extends BaseConditionDto {
         this.messageId = messageId;
     }
 
-    public String getTitle() {
-        return title;
+    public List<BaseLoginClientDto> getClients() {
+        return clients;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setClients(List<BaseLoginClientDto> clients) {
+        this.clients = clients;
     }
 
-    public String getProfile() {
-        return profile;
+    public String getTargetType() {
+        return targetType;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setTargetType(String targetType) {
+        this.targetType = targetType;
     }
 
-    public String getContent() {
-        return content;
+    public List<String> getTargetValues() {
+        return targetValues;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setTargetValues(List<String> targetValues) {
+        this.targetValues = targetValues;
     }
 
-    public String getMsgType() {
-        return msgType;
+    public String getMsgTemplateCode() {
+        return MsgTemplateCode;
     }
 
-    public void setMsgType(String msgType) {
-        this.msgType = msgType;
+    public void setMsgTemplateCode(String msgTemplateCode) {
+        MsgTemplateCode = msgTemplateCode;
     }
 
-    public String getMsgLevel() {
-        return msgLevel;
+    public Map<String, String> getTemplateParam() {
+        return templateParam;
     }
 
-    public void setMsgLevel(String msgLevel) {
-        this.msgLevel = msgLevel;
+    public void setTemplateParam(Map<String, String> templateParam) {
+        this.templateParam = templateParam;
     }
 
-    public String getTargets() {
-        return targets;
-    }
-
-    public void setTargets(String targets) {
-        this.targets = targets;
-    }
-
-    public List<String> getTargetsValue() {
-        return targetsValue;
-    }
-
-    public void setTargetsValue(List<String> targetsValue) {
-        this.targetsValue = targetsValue;
-    }
-
-    public List<BaseMessageTargetClientParamsDto> getTargetClients() {
-        return targetClients;
-    }
-
-    public void setTargetClients(List<BaseMessageTargetClientParamsDto> targetClients) {
-        this.targetClients = targetClients;
-    }
 }

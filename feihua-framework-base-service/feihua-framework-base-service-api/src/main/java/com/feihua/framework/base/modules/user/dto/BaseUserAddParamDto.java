@@ -18,8 +18,11 @@ public class BaseUserAddParamDto extends BaseAddParamDto {
     private String nickname;
     private String gender;
     private String dataOfficeId;
+    private String dataAreaId;
     // 头像
     private String photo;
+    // 来自哪个客户端，必填
+    private String fromClientId;
 
     private String identityType;
 
@@ -94,5 +97,21 @@ public class BaseUserAddParamDto extends BaseAddParamDto {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public String getFromClientId() {
+        return fromClientId;
+    }
+
+    public void setFromClientId(String fromClientId) {
+        this.fromClientId = fromClientId;
+    }
+
+    public String getDataAreaId() {
+        return dataAreaId;
+    }
+
+    public void setDataAreaId(String dataAreaId) {
+        this.dataAreaId = dataAreaId;
     }
 }

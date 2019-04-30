@@ -15,14 +15,16 @@
     <context:component-scan use-default-filters="false" base-package="com.feihua.framework.message.impl">
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
-    <bean class="com.feihua.framework.message.handler.impl.MessageUsersHandlerImpl"/>
-    <bean class="com.feihua.framework.message.handler.impl.PcMessageSendHandleImpl"/>
+    <bean class="com.feihua.framework.message.handler.impl.DefaultFindMessageUsersHandlerImpl"/>
+    <bean class="com.feihua.framework.message.handler.impl.PcMessageSenderImpl"/>
+    <bean class="com.feihua.framework.message.handler.impl.H5MessageSenderImpl"/>
+    <bean class="com.feihua.framework.message.handler.impl.H5WeixinPublicPlatformTemplateMessageSenderImpl"/>
 
     <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
         <property name="basePackage" value="com.feihua.framework.message.mapper"/>
         <property name="cacheConfig">
             <map>
-                <entry key="com.feihua.framework.message.mapper.BaseMessageTargetClientUserRelPoMapper">
+                <entry key="com.feihua.framework.message.mapper.BaseMessageUserPoMapper">
                     <list>
                         <value>com.feihua.framework.message.mapper.BaseMessagePoMapper.searchUserMessage</value>
                     </list>

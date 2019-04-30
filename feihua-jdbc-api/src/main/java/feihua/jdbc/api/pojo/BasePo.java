@@ -60,7 +60,7 @@ public class BasePo<PK> extends BasePojo{
     /**
      * 是否删除
      */
-    private String delFlag;
+    private String delFlag = YesNo.N.name();
     /**
      * 数据归属人id
      */

@@ -17,6 +17,8 @@ public class AddUserFormDto {
     private String nickname;
     private String gender;
     private String dataOfficeId;
+    private String dataAreaId;
+    private String clientCode;
 
     public String getAccount() {
         return account;
@@ -80,5 +82,20 @@ public class AddUserFormDto {
 
     public void setDataOfficeId(String dataOfficeId) {
         this.dataOfficeId = dataOfficeId;
+    }
+    public String getDataAreaId() {
+        return dataAreaId;
+    }
+
+    public void setDataAreaId(String dataAreaId) {
+        this.dataAreaId = dataAreaId;
+    }
+
+    public String getClientCode() {
+        return clientCode;
+    }
+
+    public void setClientCode(String clientCode) {
+        this.clientCode = clientCode;
     }
 }

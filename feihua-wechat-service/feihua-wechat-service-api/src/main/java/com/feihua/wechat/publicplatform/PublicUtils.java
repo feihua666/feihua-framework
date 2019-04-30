@@ -9,13 +9,10 @@ import com.feihua.utils.json.JSONUtils;
 import com.feihua.utils.properties.PropertiesUtils;
 import com.feihua.utils.spring.SpringContextHolder;
 import com.feihua.wechat.CommonConstants;
-import com.feihua.wechat.common.WxPublicConstants;
 import com.feihua.wechat.common.dto.WeixinAccountDto;
 import com.feihua.wechat.common.po.WeixinUserPo;
 import com.feihua.wechat.common.api.ApiWeixinAccountPoService;
 import com.feihua.wechat.common.dto.WxTemplate;
-import com.feihua.wechat.miniprogram.MiniConstants;
-import com.feihua.wechat.miniprogram.MiniProgramUtils;
 import com.feihua.wechat.publicplatform.dto.*;
 import com.feihua.wechat.common.po.WeixinAccountPo;
 import feihua.jdbc.api.pojo.BasePo;
@@ -31,10 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.codec.multipart.FilePart;
 
 import java.beans.PropertyDescriptor;
-import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -601,7 +596,7 @@ public class PublicUtils {
      * @param wxPublicTemplate 模板实体
      * @param which            公众号类型
      */
-    public static void sendWxPublicTemplateMsg(WxPublicTemplate wxPublicTemplate, String which) {
+    public static void sendWxPublicTemplateMsg(WxPublicTemplateParam wxPublicTemplate, String which) {
         sedTemlateMsg(wxPublicTemplate, which, 0);
     }
 
@@ -612,7 +607,7 @@ public class PublicUtils {
      * @param which            公众号类型
      * @param maxRetries       最多重试三次
      */
-    private static void sedTemlateMsg(WxPublicTemplate wxPublicTemplate, String which, int maxRetries) {
+    private static void sedTemlateMsg(WxPublicTemplateParam wxPublicTemplate, String which, int maxRetries) {
         try {
             //获取请求路径
             String url = PublicConstants.SEND_TEMPLATE_MSG.replace(PublicConstants.PARAM_ACCESS_TOKEN, getAccessToken(which).getToken());

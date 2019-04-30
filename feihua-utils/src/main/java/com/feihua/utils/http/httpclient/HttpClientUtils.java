@@ -4,11 +4,13 @@ import com.feihua.utils.string.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
@@ -29,11 +31,13 @@ public class HttpClientUtils {
     public static final int readTimeout = 10000;
     public static final String charset = "UTF-8";
     private static HttpClient client = null;
+    private static BasicCookieStore cookieStore;
     static {
+        cookieStore  = new BasicCookieStore();
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         cm.setMaxTotal(128);
         cm.setDefaultMaxPerRoute(128);
-        client = HttpClients.custom().setConnectionManager(cm).build();
+        client = HttpClients.custom().setConnectionManager(cm).setDefaultCookieStore(cookieStore).build();
     }
 
     public static String httpGet(String url) throws IOException {
@@ -51,6 +55,9 @@ public class HttpClientUtils {
 
     public static HttpClient getClient() {
         return client;
+    }
+    public static CookieStore getCookieStore() {
+        return cookieStore;
     }
 
     /**

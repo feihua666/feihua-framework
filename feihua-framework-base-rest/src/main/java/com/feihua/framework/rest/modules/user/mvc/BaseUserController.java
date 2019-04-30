@@ -1,13 +1,16 @@
 package com.feihua.framework.rest.modules.user.mvc;
 
+import com.feihua.framework.base.modules.area.api.ApiBaseAreaPoService;
+import com.feihua.framework.base.modules.area.po.BaseAreaPo;
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopePoService;
 import com.feihua.framework.base.modules.datascope.dto.BaseDataScopeDto;
+import com.feihua.framework.base.modules.loginclient.api.ApiBaseLoginClientPoService;
+import com.feihua.framework.base.modules.loginclient.po.BaseLoginClientPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.framework.base.modules.rel.api.ApiBaseUserDataScopeRelPoService;
 import com.feihua.framework.base.modules.rel.api.ApiBaseUserRoleRelPoService;
 import com.feihua.framework.base.modules.rel.dto.BaseUserDataScopeRelDto;
-import com.feihua.framework.base.modules.rel.dto.BaseUserRoleRelDto;
 import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserAuthPoService;
@@ -56,9 +59,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.mail.MessagingException;
 import javax.mail.Session;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,6 +89,10 @@ public class BaseUserController extends BaseController {
     private ApiBaseUserDataScopeRelPoService apiBaseUserDataScopeRelPoService;
     @Autowired
     private ApiBaseDataScopePoService apiBaseDataScopePoService;
+    @Autowired
+    private ApiBaseAreaPoService apiBaseAreaPoService;
+    @Autowired
+    private ApiBaseLoginClientPoService apiBaseLoginClientPoService;
 
 
     /**
@@ -105,6 +110,17 @@ public class BaseUserController extends BaseController {
         logger.info("添加用户开始");
         logger.info("当前登录用户id:{}", getLoginUser().getId());
         ResponseJsonRender resultData = new ResponseJsonRender();
+
+        BaseLoginClientPo clientPo = apiBaseLoginClientPoService.selectByClientCode(addUserFormDto.getClientCode());
+        if (clientPo == null) {
+            resultData.setCode(ResponseCode.E400_100000.getCode());
+            resultData.setMsg("clientCode can not be null or can not find client by clientCode=" + addUserFormDto.getClientCode());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("用户注册结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.BAD_REQUEST);
+        }
+
+
         // 表单值设置
         BaseUserAddParamDto baseUserAddParamDto = new BaseUserAddParamDto();
 
@@ -114,9 +130,11 @@ public class BaseUserController extends BaseController {
         baseUserAddParamDto.setSerialNo(addUserFormDto.getSerialNo());
         baseUserAddParamDto.setLocked(addUserFormDto.getLocked());
         baseUserAddParamDto.setDataOfficeId(addUserFormDto.getDataOfficeId());
+        baseUserAddParamDto.setDataAreaId(addUserFormDto.getDataAreaId());
         baseUserAddParamDto.setGender(addUserFormDto.getGender());
         baseUserAddParamDto.setIdentityType(DictEnum.LoginType.ACCOUNT.name());
         baseUserAddParamDto.setNickname(addUserFormDto.getNickname());
+        baseUserAddParamDto.setFromClientId(clientPo.getId());
 
         PasswordAndSalt ps = PasswordAndSalt.entryptPassword(addUserFormDto.getPassword());
 
@@ -247,6 +265,7 @@ public class BaseUserController extends BaseController {
         baseUserPo.setSerialNo(updateUserFormDto.getSerialNo());
         baseUserPo.setLocked(updateUserFormDto.getLocked());
         baseUserPo.setDataOfficeId(updateUserFormDto.getDataOfficeId());
+        baseUserPo.setDataAreaId(updateUserFormDto.getDataAreaId());
         baseUserPo.setGender(updateUserFormDto.getGender());
         baseUserPo.setNickname(updateUserFormDto.getNickname());
         baseUserPo = apiBaseUserPoService.preUpdate(baseUserPo, getLoginUser().getId());
@@ -437,6 +456,12 @@ public class BaseUserController extends BaseController {
             if (officeDto != null) {
                 vo.setDataOfficeName(officeDto.getName());
             }
+            // 所在区域
+            BaseAreaPo areaPo = apiBaseAreaPoService.selectAreaByUserId(id);
+            if (areaPo != null) {
+                vo.setDataAreaName(areaPo.getName());
+
+            }
             resultData.setData(vo);
             // 用户角色
             BaseRoleDto role = apiBaseRolePoService.selectByUserId(id);
@@ -464,7 +489,7 @@ public class BaseUserController extends BaseController {
                 for (org.apache.shiro.session.Session session : sessions) {
                     Map<String,Object> item = new HashMap<>();
                     item.put("loginType",ShiroUtils.getLoginType(session));
-                    item.put("loginClient",ShiroUtils.getLoginClient(session));
+                    item.put("loginClient",ShiroUtils.getLoginClientId(session));
                     item.put("loginTime",ShiroUtils.getLoginTime(session));
                     item.put("lastAccessTime",ShiroUtils.getLastAccessTime(session));
                     item.put("host",ShiroUtils.getHost(session));
@@ -669,6 +694,15 @@ public class BaseUserController extends BaseController {
         logger.info("用户注册开始");
         logger.info("用户注册信息参数:{}", ToStringBuilder.reflectionToString(dto, ToStringStyle.SHORT_PREFIX_STYLE));
         ResponseJsonRender resultData=new ResponseJsonRender();
+        BaseLoginClientPo clientPo = apiBaseLoginClientPoService.selectByClientCode(dto.getClientCode());
+        if (clientPo == null) {
+            resultData.setCode(ResponseCode.E400_100000.getCode());
+            resultData.setMsg("clientCode can not be null or can not find client by clientCode=" + dto.getClientCode());
+            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
+            logger.info("用户注册结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.BAD_REQUEST);
+        }
+
         boolean mobile = false,email = false,account = false;
         if(StringUtils.isNotEmpty(dto.getMobile())){
             BaseUserAuthDto userAuthDto = apiBaseUserAuthPoService.selectByUserIdAndType(dto.getMobile(),DictEnum.LoginType.MOBILE.name());

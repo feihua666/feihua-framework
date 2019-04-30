@@ -17,9 +17,12 @@ public class SearchUserMessageConditionDto extends BaseConditionDto {
     private String isRead;
 
     private String msgLevel;
-    private String userId;
 
-    BaseMessageTargetClientParamsDto targetClientParamsDto;
+    private String userId;
+    /**
+     * 客户端id
+     */
+    private String clientId;
 
     public String getTitle() {
         return title;
@@ -53,19 +56,19 @@ public class SearchUserMessageConditionDto extends BaseConditionDto {
         this.isRead = isRead;
     }
 
-    public BaseMessageTargetClientParamsDto getTargetClientParamsDto() {
-        return targetClientParamsDto;
-    }
-
-    public void setTargetClientParamsDto(BaseMessageTargetClientParamsDto targetClientParamsDto) {
-        this.targetClientParamsDto = targetClientParamsDto;
-    }
-
     public String getUserId() {
         return userId;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 }

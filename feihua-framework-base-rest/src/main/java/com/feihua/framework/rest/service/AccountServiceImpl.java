@@ -1,39 +1,46 @@
 package com.feihua.framework.rest.service;
 
 
+import com.feihua.framework.base.modules.area.api.ApiBaseAreaPoService;
+import com.feihua.framework.base.modules.area.dto.BaseAreaDto;
 import com.feihua.framework.base.modules.function.api.ApiBaseFunctionResourcePoService;
 import com.feihua.framework.base.modules.function.dto.BaseFunctionResourceDto;
 import com.feihua.framework.base.modules.function.dto.SearchFunctionResourcesConditionDto;
+import com.feihua.framework.base.modules.loginclient.api.ApiBaseLoginClientPoService;
+import com.feihua.framework.base.modules.loginclient.po.BaseLoginClientPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.base.modules.user.api.ApiBaseRecordUserLoginPoService;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserAuthPoService;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
 import com.feihua.framework.base.modules.user.dto.BaseUserAuthDto;
 import com.feihua.framework.base.modules.user.dto.BaseUserDto;
+import com.feihua.framework.base.modules.user.po.BaseRecordUserLoginPo;
 import com.feihua.framework.base.modules.user.po.BaseUserAuthPo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.utils.Utils;
-import com.feihua.framework.shiro.ShiroFormAuthenticationFilter;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
 import com.feihua.framework.shiro.pojo.PasswordAndSalt;
 import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.pojo.token.*;
 import com.feihua.framework.shiro.service.AbstractAccountServiceImpl;
-import com.feihua.framework.shiro.service.AccountService;
 import com.feihua.framework.shiro.utils.ShiroUtils;
 import com.feihua.utils.string.StringUtils;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageResultDto;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 /**
@@ -52,6 +59,13 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
     private ApiBaseFunctionResourcePoService apiBaseFunctionResourcePoService;
     @Autowired
     private ApiBaseOfficePoService apiBaseOfficePoService;
+    @Autowired
+    private ApiBaseAreaPoService apiBaseAreaPoService;
+    @Autowired
+    private ApiBaseRecordUserLoginPoService apiBaseRecordUserLoginPoService;
+    @Autowired
+    private ApiBaseLoginClientPoService apiBaseLoginClientPoService;
+
 
     @Override
     public AuthenticationInfo findUserByToken(AuthenticationToken authcToken) {
@@ -90,6 +104,17 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         if (userAuthDto != null) {
             return userAuthDto.getUserId();
         }
+        return null;
+    }
+
+    @Override
+    public String getClientIdByClientCode(String clientCode) {
+
+        BaseLoginClientPo condition = apiBaseLoginClientPoService.selectByClientCode(clientCode);
+        if (condition != null) {
+            return condition.getId();
+        }
+
         return null;
     }
 
@@ -164,6 +189,8 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         user.setSerialNo(userDto.getSerialNo());
         user.setNickname(userDto.getNickname());
         user.setGender(userDto.getGender());
+        user.setFromClientId(userDto.getFromClientId());
+
         // 角色信息
         BaseRoleDto roleDto = apiBaseRolePoService.selectByUserId(userId);
         if(roleDto != null && BasePo.YesNo.N.name().equals(roleDto.getDisabled())){
@@ -173,6 +200,11 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(userId);
         if (officeDto != null) {
             user.setOffice(officeDto);
+        }
+        // 区域信息
+        BaseAreaDto areaDto = apiBaseAreaPoService.wrapDto( apiBaseAreaPoService.selectAreaByUserId(userId));
+        if (areaDto != null) {
+            user.setArea(areaDto);
         }
 
         // 添加其它额外信息
@@ -233,16 +265,37 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         super.onLoginSuccess(token, subject, request, response);
         // 修改用户最新登录信息
         ShiroUser su = ShiroUtils.getCurrentUser();
+        Date now = new Date();
         BaseUserAuthPo baseUserAuthPoCondition = new BaseUserAuthPo();
         baseUserAuthPoCondition.setUserId(su.getId());
         baseUserAuthPoCondition.setDelFlag(BasePo.YesNo.N.name());
         baseUserAuthPoCondition.setIdentityType(su.getLoginType());
 
         BaseUserAuthPo baseUserAuthPo = new BaseUserAuthPo();
-        baseUserAuthPo.setLastTime(new Date());
+        baseUserAuthPo.setLastTime(now);
         baseUserAuthPo.setLastIp(su.getHost());
 
         baseUserAuthPo = apiBaseUserAuthPoService.preUpdate(baseUserAuthPo,su.getId());
         apiBaseUserAuthPoService.updateSelective(baseUserAuthPo,baseUserAuthPoCondition);
+
+        // 添加登录记录信息
+        Session session = SecurityUtils.getSubject().getSession();
+        BaseRecordUserLoginPo baseRecordUserLoginPo = new BaseRecordUserLoginPo();
+        baseRecordUserLoginPo.setUserId(su.getId());
+        baseRecordUserLoginPo.setUserNickname(su.getNickname());
+        baseRecordUserLoginPo.setClientCode(ShiroUtils.getLoginClientId(session));
+        baseRecordUserLoginPo.setLoginIp(su.getHost());
+        baseRecordUserLoginPo.setLoginTime(now);
+        HttpServletRequest r = ((HttpServletRequest)request);
+        baseRecordUserLoginPo.setUserAgent(r.getHeader("user-agent"));
+        baseRecordUserLoginPo.setAppversion(r.getHeader("appversion"));
+        baseRecordUserLoginPo.setOsversion(r.getHeader("osversion"));
+        baseRecordUserLoginPo.setScreenwidth(r.getHeader("screenwidth"));
+        baseRecordUserLoginPo.setScreenheight(r.getHeader("screenheight"));
+        baseRecordUserLoginPo.setScreenscale(r.getHeader("screenscale"));
+        baseRecordUserLoginPo.setDeviceId(r.getHeader("deviceid"));
+        baseRecordUserLoginPo.setDevicetype(r.getHeader("devicetype"));
+        baseRecordUserLoginPo = apiBaseRecordUserLoginPoService.preInsert(baseRecordUserLoginPo,su.getId());
+        apiBaseRecordUserLoginPoService.insert(baseRecordUserLoginPo);
     }
 }

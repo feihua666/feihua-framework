@@ -13,6 +13,17 @@ public class StringUtils {
 		return (null == str || "".equals(str))?true:false;
 	}
 
+	/**
+	 *
+	 * @param sb
+	 * @param str
+	 */
+	public static void appendIfNotEmpty(StringBuffer sb,String str){
+		if (!isEmpty(str)) {
+			sb.append(str);
+		}
+	}
+
 	/**4
 	 * +
 	 * 判断是否所以的都这空

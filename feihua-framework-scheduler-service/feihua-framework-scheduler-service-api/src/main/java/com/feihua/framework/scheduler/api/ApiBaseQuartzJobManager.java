@@ -1,13 +1,16 @@
 package com.feihua.framework.scheduler.api;
 
+import com.feihua.framework.scheduler.dto.JobAndTriggerWrapperDto;
+import com.feihua.framework.scheduler.dto.SchedulerDto;
 import org.quartz.*;
+
+import java.util.List;
 
 /**
  * Created by yangwei
  * Created at 2018/12/18 16:40
  */
 public interface ApiBaseQuartzJobManager{
-
 
     /**
      * 新建一个新job，group名默认
@@ -25,6 +28,8 @@ public interface ApiBaseQuartzJobManager{
      * @return
      */
     JobDetail newJob( String jobName,String jobGroupName, Class cls);
+
+    JobDetail newJob( String jobName,String jobGroupName, String cls) throws ClassNotFoundException;
 
     /**
      * 新建一个触发器，group名默认
@@ -77,7 +82,7 @@ public interface ApiBaseQuartzJobManager{
      * @param cron
      * @throws SchedulerException
      */
-    void modifyJobTime(String triggerName, String cron) throws SchedulerException;
+    void modifyJobTime(String triggerName, String cron, boolean startNow) throws SchedulerException;
 
     /**
      * 修改任务时间
@@ -86,7 +91,7 @@ public interface ApiBaseQuartzJobManager{
      * @param cron
      * @throws SchedulerException
      */
-    void modifyJobTime(String triggerName,String triggerGroupName, String cron) throws SchedulerException;
+    void modifyJobTime(String triggerName,String triggerGroupName, String cron, boolean startNow) throws SchedulerException;
 
     /**
      * 删除一个任务job，group名默认
@@ -121,4 +126,26 @@ public interface ApiBaseQuartzJobManager{
      * @throws SchedulerException
      */
     void shutdownJobsSafety(Scheduler scheduler) throws SchedulerException;
+
+
+
+    /**
+     * 获取状态
+     * 参见 com.feihua.framework.constants.DictEnum.SchedulerStatus
+     * @param
+     * @return
+     */
+    Trigger.TriggerState getTriggerState(String triggerName, String triggerGroupName) throws SchedulerException;
+    Trigger.TriggerState getTriggerState(Trigger trigger) throws SchedulerException;
+    Trigger.TriggerState getTriggerState(TriggerKey triggerKey) throws SchedulerException;
+
+    Trigger getTrigger(String triggerName, String triggerGroupName) throws SchedulerException;
+    JobDetail getJobDetail(String jobName, String jobGroupName) throws SchedulerException;
+
+    List<JobAndTriggerWrapperDto> getAllJobs() throws SchedulerException;
+    public void pauseJob(JobKey jobKey) throws SchedulerException;
+    public void pauseTrigger(TriggerKey triggerKey) throws SchedulerException;
+    public void resumeJob(JobKey jobKey) throws SchedulerException;
+    public void resumeTrigger(TriggerKey triggerKey) throws SchedulerException;
+
 }

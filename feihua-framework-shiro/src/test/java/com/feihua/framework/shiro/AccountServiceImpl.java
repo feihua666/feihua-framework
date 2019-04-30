@@ -5,7 +5,6 @@ import com.feihua.framework.shiro.pojo.AuthenticationInfo;
 import com.feihua.framework.shiro.pojo.PasswordAndSalt;
 import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.framework.shiro.service.AbstractAccountServiceImpl;
-import com.feihua.framework.shiro.service.AccountService;
 import org.apache.shiro.authc.AuthenticationToken;
 
 import javax.servlet.ServletRequest;
@@ -34,7 +33,12 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
 
     @Override
     public String resolveLoginType(ServletRequest request) {
-        return request.getParameter(ShiroFormAuthenticationFilter.param_loginClient_key);
+        return request.getParameter(ShiroFormAuthenticationFilter.param_loginClient_code_key);
+    }
+
+    @Override
+    public String getClientIdByClientCode(String clientCode) {
+        return null;
     }
 
     @Override

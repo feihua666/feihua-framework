@@ -20,18 +20,4 @@ public interface ApiBaseMessagePoService extends feihua.jdbc.api.service.ApiBase
      */
     PageResultDto<UserMessageDto> searchUserMessage(SearchUserMessageConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto);
 
-    /**
-     * 消息发送
-     * @param dto
-     * @param asyn true=异步，false=同步
-     */
-    void messageSend(BaseMessageSendParamsDto dto,boolean asyn);
-
-    /**
-     * 将用户某一客户端消息标记为已读
-     * @param messageId
-     * @param targetClientParamsDto
-     * @return 返回消息
-     */
-    int readMessage(String messageId,String userId,BaseMessageTargetClientParamsDto targetClientParamsDto);
 }
