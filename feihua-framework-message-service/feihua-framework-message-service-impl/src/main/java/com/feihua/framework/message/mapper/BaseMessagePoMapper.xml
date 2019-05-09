@@ -1573,7 +1573,7 @@
     JOIN base_message_user tc on tc.MESSAGE_ID = m.id
     where m.del_flag = 'N'
     <if test="clientId != null and clientId != ''">
-      and exists (select mc.id from base_message_client mc where mc.message_id = m.id and mc.client_id = #{clientId})
+      and exists (select mc.id from base_message_send_client mc where mc.message_id = m.id and mc.client_id = #{clientId})
     </if>
     <if test="userId != null and userId != ''">
       and tc.user_id = #{userId}

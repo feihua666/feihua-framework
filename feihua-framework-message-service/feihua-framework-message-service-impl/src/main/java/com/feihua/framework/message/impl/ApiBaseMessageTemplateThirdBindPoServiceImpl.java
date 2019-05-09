@@ -43,13 +43,13 @@ public class ApiBaseMessageTemplateThirdBindPoServiceImpl extends ApiBaseService
     }
 
     @Override
-    public BaseMessageTemplateThirdBindPo selectByTemplateIdAndThirdType(String templateId, String thirdType) {
+    public List<BaseMessageTemplateThirdBindPo> selectByTemplateIdAndThirdType(String templateId, String thirdType) {
         if(StringUtils.isAnyEmpty(thirdType,templateId)) return null;
         BaseMessageTemplateThirdBindPo condition = new BaseMessageTemplateThirdBindPo();
         condition.setDelFlag(BasePo.YesNo.N.name());
         condition.setThirdType(thirdType);
         condition.setMessageTemplateId(templateId);
-        return selectOneSimple(condition);
+        return selectListSimple(condition);
     }
 
     @Override

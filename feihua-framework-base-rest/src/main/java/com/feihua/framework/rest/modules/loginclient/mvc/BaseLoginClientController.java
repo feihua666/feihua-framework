@@ -66,12 +66,12 @@ public class BaseLoginClientController extends BaseController {
         ResponseJsonRender resultData=new ResponseJsonRender();
         // 表单值设置
         BaseLoginClientPo basePo = new BaseLoginClientPo();
-        basePo.setClientCode(dto.getClientCode());
-        basePo.setClientName(dto.getClientName());
-        basePo.setClientType(dto.getClientType());
+        basePo.setCode(dto.getCode());
+        basePo.setName(dto.getName());
+        basePo.setType(dto.getType());
         basePo.setDescription(dto.getDescription());
-        basePo.setClientLoginMaxnum(dto.getClientMaxnum());
-
+        basePo.setLoginMaxnum(dto.getMaxnum());
+        basePo.setIsVirtual(dto.getIsVirtual());
 
         basePo = apiBaseLoginClientPoService.preInsert(basePo,getLoginUser().getId());
         BaseLoginClientDto r = apiBaseLoginClientPoService.insert(basePo);
@@ -139,11 +139,12 @@ public class BaseLoginClientController extends BaseController {
         BaseLoginClientPo basePo = new BaseLoginClientPo();
         // id
         basePo.setId(id);
-        basePo.setClientCode(dto.getClientCode());
-        basePo.setClientName(dto.getClientName());
-        basePo.setClientType(dto.getClientType());
+        basePo.setCode(dto.getCode());
+        basePo.setName(dto.getName());
+        basePo.setType(dto.getType());
         basePo.setDescription(dto.getDescription());
-        basePo.setClientLoginMaxnum(dto.getClientMaxnum());
+        basePo.setLoginMaxnum(dto.getMaxnum());
+        basePo.setIsVirtual(dto.getIsVirtual());
         // 用条件更新，乐观锁机制
         BaseLoginClientPo basePoCondition = new BaseLoginClientPo();
         basePoCondition.setId(id);

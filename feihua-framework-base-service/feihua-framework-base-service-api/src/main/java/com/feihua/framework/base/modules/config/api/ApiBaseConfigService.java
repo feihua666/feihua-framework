@@ -16,4 +16,6 @@ public interface ApiBaseConfigService extends feihua.jdbc.api.service.ApiBaseSer
      * @param clazz  Object对象
      */
     public <T> T getConfigObject(String key, Class<T> clazz);
+
+    BaseConfig selectByConfigKey(String key);
 }

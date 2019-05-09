@@ -49,7 +49,7 @@ public class JSONUtils {
     /**
      * json string convert to map
      */
-    public static <T> Map<String, Object> json2map(String jsonStr)
+    public static Map<String, Object> json2map(String jsonStr)
             throws Exception {
         return objectMapper.readValue(jsonStr, Map.class);
     }
@@ -64,7 +64,14 @@ public class JSONUtils {
                 });
         Map<String, T> result = new HashMap<String, T>();
         for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
-            result.put(entry.getKey(), map2pojo(entry.getValue(), clazz));
+            if (entry.getValue() == null){
+                result.put(entry.getKey(), null);
+            }else
+            if (entry.getValue() instanceof Map){
+                result.put(entry.getKey(), map2pojo(entry.getValue(), clazz));
+            }else{
+                result.put(entry.getKey(), (T) entry.getValue());
+            }
         }
         return result;
     }

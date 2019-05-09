@@ -13,5 +13,5 @@ public interface ApiPublicTemplateMessageService {
      * @param wxPublicTemplate
      * @param which
      */
-    void send(WxPublicTemplateParam wxPublicTemplate, String which);
+    void send(WxPublicTemplateParam wxPublicTemplate, String which) throws Exception;
 }

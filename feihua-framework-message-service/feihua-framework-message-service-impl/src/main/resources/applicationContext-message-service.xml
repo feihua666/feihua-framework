@@ -16,9 +16,12 @@
         <context:include-filter type="annotation" expression="org.springframework.stereotype.Service"/>
     </context:component-scan>
     <bean class="com.feihua.framework.message.handler.impl.DefaultFindMessageUsersHandlerImpl"/>
-    <bean class="com.feihua.framework.message.handler.impl.PcMessageSenderImpl"/>
-    <bean class="com.feihua.framework.message.handler.impl.H5MessageSenderImpl"/>
-    <bean class="com.feihua.framework.message.handler.impl.H5WeixinPublicPlatformTemplateMessageSenderImpl"/>
+
+    <bean class="com.feihua.framework.message.handler.impl.DefaultFindMessageVUsersHandlerImpl"/>
+    <bean class="com.feihua.framework.message.handler.impl.WeixinPublicPlatformTemplateMessageSenderImpl"/>
+    <bean class="com.feihua.framework.message.handler.impl.EmailMessageSenderImpl"/>
+    <bean class="com.feihua.framework.message.handler.impl.SmsMessageSenderImpl"/>
+
 
     <bean class="com.feihua.framework.mybatis.orm.DefaultMybatisMapperConfig">
         <property name="basePackage" value="com.feihua.framework.message.mapper"/>

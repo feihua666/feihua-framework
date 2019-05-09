@@ -22,6 +22,8 @@ public class AddBaseMessageFormDto {
 
     private String messageTemplateId;
 
+    private String templateParams;
+
     public String getTitle() {
         return title;
     }
@@ -75,5 +77,13 @@ public class AddBaseMessageFormDto {
 
     public void setMessageTemplateId(String messageTemplateId) {
         this.messageTemplateId = messageTemplateId;
+    }
+
+    public String getTemplateParams() {
+        return templateParams;
+    }
+
+    public void setTemplateParams(String templateParams) {
+        this.templateParams = templateParams;
     }
 }

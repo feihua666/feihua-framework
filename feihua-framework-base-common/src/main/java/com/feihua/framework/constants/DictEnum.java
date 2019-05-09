@@ -38,7 +38,10 @@ public class DictEnum {
         wx_publicplatform,
         app_android,
         app_ios,
-        virtual
+        virtual_wx_miniprogram,
+        virtual_wx_publicplatform,
+        virtual_sms,
+        virtual_email
     }
 
     /**
@@ -247,6 +250,18 @@ public class DictEnum {
         sended,      //已发送
         to_be_sended,   //待发送
         sending   //发送中
+    }
+
+    /**
+     * 客户端消息支持类型
+     * 目前这么多
+     */
+    public enum MessageClientType{
+        sms,                          // 短信
+        email,                        // 邮件
+        wx_publicplatform_template,   // 微信公众号模板消息
+        wx_miniprogram_template,     // 微信小程序模板消息
+        app_message_push             // app消息推送
     }
     /**
      * 消息发送目标类型

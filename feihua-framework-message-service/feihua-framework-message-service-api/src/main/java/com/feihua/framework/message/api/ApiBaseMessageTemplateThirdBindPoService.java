@@ -18,7 +18,7 @@ public interface ApiBaseMessageTemplateThirdBindPoService extends feihua.jdbc.ap
      * @param thirdType 必填 第三方类型 目前支持 com.feihua.framework.constants.DictEnum.WxAccountType
      * @return
      */
-    BaseMessageTemplateThirdBindPo selectByTemplateIdAndThirdType(String templateId,String thirdType);
+    List<BaseMessageTemplateThirdBindPo> selectByTemplateIdAndThirdType(String templateId,String thirdType);
 
     /**
      * 根据模板id查询

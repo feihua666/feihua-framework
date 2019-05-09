@@ -20,4 +20,25 @@ public interface ApiBaseMessagePoService extends feihua.jdbc.api.service.ApiBase
      */
     PageResultDto<UserMessageDto> searchUserMessage(SearchUserMessageConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto);
 
+    /**
+     * 添加或更新消息
+     * messageId为空添加消息，否则更新消息
+     * @param createMessageParamsDto
+     * @return
+     */
+    BaseMessagePo saveMessage(CreateMessageParamsDto createMessageParamsDto);
+
+    /**
+     *
+     * @param createMessageParamsDto
+     * @return
+     */
+    BaseMessagePo addMessage(CreateMessageParamsDto createMessageParamsDto);
+
+    /**
+     *
+     * @param createMessageParamsDto
+     * @return
+     */
+    BaseMessagePo updateMessage(CreateMessageParamsDto createMessageParamsDto);
 }

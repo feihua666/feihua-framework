@@ -32,15 +32,12 @@ public class ApiBaseConfigServiceImpl extends ApiBaseServiceImpl<BaseConfig, Bas
 
     @Override
     public <T> T getConfigObject(String key, Class<T> clazz) {
-        BaseConfig query = new BaseConfig();
-        query.setDelFlag(BasePo.YesNo.N.name());
-        query.setConfigKey(key);
-        final List<BaseConfigDto> baseConfigDtos = selectList(query);
         String value = null;
-        if (baseConfigDtos != null && baseConfigDtos.size() > 0) {
-            final BaseConfigDto baseConfigDto = baseConfigDtos.get(0);
-            value = baseConfigDto.getConfigValue();
+        BaseConfig config = selectByConfigKey(key);
+        if (config != null) {
+            value = config.getConfigValue();
         }
+
         if (StringUtils.isNotBlank(value)) {
             return new Gson().fromJson(value, clazz);
         }
@@ -50,6 +47,15 @@ public class ApiBaseConfigServiceImpl extends ApiBaseServiceImpl<BaseConfig, Bas
         } catch (Exception e) {
             throw new BaseException("获取参数失败");
         }
+    }
+
+    @Override
+    public BaseConfig selectByConfigKey(String key) {
+        if (org.apache.commons.lang3.StringUtils.isEmpty(key)) return null;
+        BaseConfig query = new BaseConfig();
+        query.setDelFlag(BasePo.YesNo.N.name());
+        query.setConfigKey(key);
+        return selectOneSimple(query);
     }
 
     @Override

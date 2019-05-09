@@ -15,7 +15,8 @@ public class EmailTest {
     public static void main(String[] args) throws IOException, MessagingException {
         Session session  = EmailUtils.createSession("smtp.sina.com","feihua666@sina.com","xiaobudian123",true,false,"25");
         Mail mail = new Mail();
-        mail.addToAddress("654593600@qq.com");
+        //mail.addToAddress("654593600@qq.com");
+        mail.addToAddress("feihua666@sina.com");
         mail.setSubject("subject");
         mail.setFrom("feihua666@sina.com");
         mail.setContent("test");

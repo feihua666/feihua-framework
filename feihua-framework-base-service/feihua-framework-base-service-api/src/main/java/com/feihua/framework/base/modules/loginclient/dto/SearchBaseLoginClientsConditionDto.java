@@ -11,33 +11,33 @@ import java.util.Date;
 */
 public class SearchBaseLoginClientsConditionDto extends BaseConditionDto {
 
-    private String clientCode;
+    private String code;
 
-    private String clientName;
+    private String name;
 
-    private String clientType;
+    private String type;
 
-    public String getClientCode() {
-        return clientCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setClientCode(String clientCode) {
-        this.clientCode = clientCode;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getClientName() {
-        return clientName;
+    public String getName() {
+        return name;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getClientType() {
-        return clientType;
+    public String getType() {
+        return type;
     }
 
-    public void setClientType(String clientType) {
-        this.clientType = clientType;
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -38,7 +38,7 @@ public class ApiBaseLoginClientPoServiceImpl extends ApiBaseServiceImpl<BaseLogi
         if (StringUtils.isNotEmpty(clientCode)) {
             BaseLoginClientPo condition = new BaseLoginClientPo();
             condition.setDelFlag(BasePo.YesNo.N.name());
-            condition.setClientCode(clientCode);
+            condition.setCode(clientCode);
             return selectOneSimple(condition);
         }
         return null;
@@ -49,16 +49,17 @@ public class ApiBaseLoginClientPoServiceImpl extends ApiBaseServiceImpl<BaseLogi
         if (po == null) { return null; }
         BaseLoginClientDto dto = new BaseLoginClientDto();
         dto.setId(po.getId());
-        dto.setClientCode(po.getClientCode());
-        dto.setClientName(po.getClientName());
-        dto.setClientType(po.getClientType());
-        dto.setClientLoginMaxnum(po.getClientLoginMaxnum());
+        dto.setCode(po.getCode());
+        dto.setName(po.getName());
+        dto.setType(po.getType());
+        dto.setLoginMaxnum(po.getLoginMaxnum());
         dto.setDescription(po.getDescription());
         dto.setDataUserId(po.getDataUserId());
         dto.setDataOfficeId(po.getDataOfficeId());
         dto.setDataType(po.getDataType());
         dto.setDataAreaId(po.getDataAreaId());
         dto.setUpdateAt(po.getUpdateAt());
+        dto.setIsVirtual(po.getIsVirtual());
         return dto;
     }
 }

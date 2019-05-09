@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApiPublicTemplateMessageImpl implements ApiPublicTemplateMessageService {
     @Override
-    public void send(WxPublicTemplateParam wxPublicTemplate, String which) {
+    public void send(WxPublicTemplateParam wxPublicTemplate, String which) throws Exception {
         PublicUtils.sendWxPublicTemplateMsg(wxPublicTemplate,which);
     }
 }

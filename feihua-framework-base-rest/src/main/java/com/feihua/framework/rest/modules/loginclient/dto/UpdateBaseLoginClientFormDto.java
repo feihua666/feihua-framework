@@ -11,37 +11,47 @@ import java.util.Date;
 */
 public class UpdateBaseLoginClientFormDto extends UpdateFormDto {
 
-    private String clientCode;
 
-    private String clientName;
+    private String code;
 
-    private String clientType;
-    private String clientMaxnum;
+    private String name;
+
+    private String type;
+    private String maxnum;
 
     private String description;
+    private String isVirtual;
 
-    public String getClientCode() {
-        return clientCode;
+    public String getCode() {
+        return code;
     }
 
-    public void setClientCode(String clientCode) {
-        this.clientCode = clientCode;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getClientName() {
-        return clientName;
+    public String getName() {
+        return name;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getClientType() {
-        return clientType;
+    public String getType() {
+        return type;
     }
 
-    public void setClientType(String clientType) {
-        this.clientType = clientType;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getMaxnum() {
+        return maxnum;
+    }
+
+    public void setMaxnum(String maxnum) {
+        this.maxnum = maxnum;
     }
 
     public String getDescription() {
@@ -52,11 +62,11 @@ public class UpdateBaseLoginClientFormDto extends UpdateFormDto {
         this.description = description;
     }
 
-    public String getClientMaxnum() {
-        return clientMaxnum;
+    public String getIsVirtual() {
+        return isVirtual;
     }
 
-    public void setClientMaxnum(String clientMaxnum) {
-        this.clientMaxnum = clientMaxnum;
+    public void setIsVirtual(String isVirtual) {
+        this.isVirtual = isVirtual;
     }
 }

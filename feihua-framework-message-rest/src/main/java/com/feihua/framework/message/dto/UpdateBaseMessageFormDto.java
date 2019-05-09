@@ -20,6 +20,7 @@ public class UpdateBaseMessageFormDto extends UpdateFormDto {
     private String msgState;
 
     private String messageTemplateId;
+    private String templateParams;
 
     public String getTitle() {
         return title;
@@ -77,5 +78,13 @@ public class UpdateBaseMessageFormDto extends UpdateFormDto {
 
     public void setMessageTemplateId(String messageTemplateId) {
         this.messageTemplateId = messageTemplateId;
+    }
+
+    public String getTemplateParams() {
+        return templateParams;
+    }
+
+    public void setTemplateParams(String templateParams) {
+        this.templateParams = templateParams;
     }
 }

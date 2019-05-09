@@ -1,13 +1,8 @@
 package com.feihua.framework.message.handler;
 
 import com.feihua.framework.base.modules.loginclient.dto.BaseLoginClientDto;
-import com.feihua.framework.base.modules.user.po.BaseUserPo;
-import com.feihua.framework.message.dto.BaseMessageSendParamsDto;
+import com.feihua.framework.message.dto.BaseMessageClientDto;
 import com.feihua.framework.message.dto.ClientMessageSendParamDto;
-import com.feihua.framework.message.dto.MsgTemplateThirdParamDto;
-import com.feihua.framework.message.po.BaseMessagePo;
-import com.feihua.framework.message.po.BaseMessageTemplatePo;
-import com.feihua.framework.message.po.BaseMessageTemplateThirdBindPo;
 
 import java.util.List;
 
@@ -29,6 +24,6 @@ public interface ApiClientMessageSender {
      * @param clientDto 客户端
      * @return 是否支持客户的发送
      */
-    public boolean support(BaseLoginClientDto clientDto);
+    public boolean support(BaseLoginClientDto clientDto, List<BaseMessageClientDto> messageClientDtos);
 
 }

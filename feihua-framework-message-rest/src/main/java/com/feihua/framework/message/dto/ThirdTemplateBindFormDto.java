@@ -1,68 +1,38 @@
 package com.feihua.framework.message.dto;
 
+import java.util.List;
+
 /**
+ * 绑定第三方模板表单
  * Created by yangwei
  * Created at 2019/4/8 10:40
  */
 public class ThirdTemplateBindFormDto {
+
     /**
-     * 绑定的微信公众帐号id
+     * 微信公众号模板消息
      */
-    private String weixinPublicplatformAccoutId;
-    private String weixinPublicplatformMsgTemplateId;
-    private String weixinPublicplatformMsgTemplateContent;
+    List<WeixinPublicPlatform> weixinPublicPlatforms;
     /**
-     * 绑定的微信小程序帐号id
+     * 微信小程序模板消息
      */
-    private String weixinMiniprogramAccoutId;
-    private String weixinMiniprogramMsgTemplateId;
-    private String weixinMiniprogramMsgTemplateContent;
+    List<WeixinMiniProgram> weixinMiniPrograms;
 
-    public String getWeixinPublicplatformAccoutId() {
-        return weixinPublicplatformAccoutId;
+    public List<WeixinPublicPlatform> getWeixinPublicPlatforms() {
+        return weixinPublicPlatforms;
     }
 
-    public void setWeixinPublicplatformAccoutId(String weixinPublicplatformAccoutId) {
-        this.weixinPublicplatformAccoutId = weixinPublicplatformAccoutId;
+    public void setWeixinPublicPlatforms(List<WeixinPublicPlatform> weixinPublicPlatforms) {
+        this.weixinPublicPlatforms = weixinPublicPlatforms;
     }
 
-    public String getWeixinMiniprogramAccoutId() {
-        return weixinMiniprogramAccoutId;
+    public List<WeixinMiniProgram> getWeixinMiniPrograms() {
+        return weixinMiniPrograms;
     }
 
-    public void setWeixinMiniprogramAccoutId(String weixinMiniprogramAccoutId) {
-        this.weixinMiniprogramAccoutId = weixinMiniprogramAccoutId;
+    public void setWeixinMiniPrograms(List<WeixinMiniProgram> weixinMiniPrograms) {
+        this.weixinMiniPrograms = weixinMiniPrograms;
     }
 
-    public String getWeixinPublicplatformMsgTemplateId() {
-        return weixinPublicplatformMsgTemplateId;
-    }
 
-    public void setWeixinPublicplatformMsgTemplateId(String weixinPublicplatformMsgTemplateId) {
-        this.weixinPublicplatformMsgTemplateId = weixinPublicplatformMsgTemplateId;
-    }
-
-    public String getWeixinPublicplatformMsgTemplateContent() {
-        return weixinPublicplatformMsgTemplateContent;
-    }
-
-    public void setWeixinPublicplatformMsgTemplateContent(String weixinPublicplatformMsgTemplateContent) {
-        this.weixinPublicplatformMsgTemplateContent = weixinPublicplatformMsgTemplateContent;
-    }
-
-    public String getWeixinMiniprogramMsgTemplateId() {
-        return weixinMiniprogramMsgTemplateId;
-    }
-
-    public void setWeixinMiniprogramMsgTemplateId(String weixinMiniprogramMsgTemplateId) {
-        this.weixinMiniprogramMsgTemplateId = weixinMiniprogramMsgTemplateId;
-    }
-
-    public String getWeixinMiniprogramMsgTemplateContent() {
-        return weixinMiniprogramMsgTemplateContent;
-    }
-
-    public void setWeixinMiniprogramMsgTemplateContent(String weixinMiniprogramMsgTemplateContent) {
-        this.weixinMiniprogramMsgTemplateContent = weixinMiniprogramMsgTemplateContent;
-    }
 }

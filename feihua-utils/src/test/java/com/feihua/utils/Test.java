@@ -1,6 +1,7 @@
 package com.feihua.utils;
 
 import com.feihua.utils.json.JSONUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.*;
 
@@ -38,5 +39,7 @@ public class Test {
                 "}";
         Map ssss = JSONUtils.json2map(aa,String.class);
         System.out.println(ssss);
+        System.out.println(BooleanUtils.toBoolean("true"));
+
     }
 }

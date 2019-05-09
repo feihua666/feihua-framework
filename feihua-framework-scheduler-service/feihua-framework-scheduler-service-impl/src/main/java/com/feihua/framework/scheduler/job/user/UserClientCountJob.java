@@ -111,8 +111,8 @@ public class UserClientCountJob extends BaseQuartzJob {
             countHistoryPo.setOnlineMaleNum(onlineFemaleNum);
             countHistoryPo.setOnlineGenderOtherNum(onlineGenderOtherNum);
             countHistoryPo.setClientId(clientPo.getId());
-            countHistoryPo.setClientName(clientPo.getClientName());
-            countHistoryPo.setClientCode(clientPo.getClientCode());
+            countHistoryPo.setClientName(clientPo.getName());
+            countHistoryPo.setClientCode(clientPo.getCode());
             countHistoryPo = apiStatisticUserClientCountHistoryPoService.preInsert(countHistoryPo, BasePo.DEFAULT_USER_ID);
             historyToBeInsert.add(countHistoryPo);
 
@@ -128,8 +128,8 @@ public class UserClientCountJob extends BaseQuartzJob {
             countPo.setOnlineMaleNum(onlineFemaleNum);
             countPo.setOnlineGenderOtherNum(onlineGenderOtherNum);
             countPo.setClientId(clientPo.getId());
-            countPo.setClientName(clientPo.getClientName());
-            countPo.setClientCode(clientPo.getClientCode());
+            countPo.setClientName(clientPo.getName());
+            countPo.setClientCode(clientPo.getCode());
             countPo = apiStatisticUserClientCountPoService.preInsert(countPo, BasePo.DEFAULT_USER_ID);
 
             toBeInsert.add(countPo);

@@ -17,30 +17,9 @@ public class BaseMessageSendParamsDto extends BaseConditionDto {
      */
     private String messageId;
 
-    /**
-     * 消息模板id
-     */
-    private String MsgTemplateCode;
+    private List<BaseMessageSendVClientParamDto> vClientParamDtos;
+    private BaseMessageSendClientParamDto clientParamDto;
 
-    /**
-     * 消息模板参数
-     */
-    private Map<String,String> templateParam;
-
-    /**
-     * 客户端用来推送三方消息，如果没有则不进行推送，一般pc端和h5等不需要
-     */
-    private List<BaseLoginClientDto> clients;
-
-    /**
-     * targetType 目标人类型，如office=机构下的人等，self=自定义人
-     */
-    private String targetType;
-
-    /**
-     * targetValues 自定义目标人的值，比如userId集合
-     */
-    private List<String> targetValues;
 
     public String getMessageId() {
         return messageId;
@@ -50,44 +29,19 @@ public class BaseMessageSendParamsDto extends BaseConditionDto {
         this.messageId = messageId;
     }
 
-    public List<BaseLoginClientDto> getClients() {
-        return clients;
+    public List<BaseMessageSendVClientParamDto> getvClientParamDtos() {
+        return vClientParamDtos;
     }
 
-    public void setClients(List<BaseLoginClientDto> clients) {
-        this.clients = clients;
+    public void setvClientParamDtos(List<BaseMessageSendVClientParamDto> vClientParamDtos) {
+        this.vClientParamDtos = vClientParamDtos;
     }
 
-    public String getTargetType() {
-        return targetType;
+    public BaseMessageSendClientParamDto getClientParamDto() {
+        return clientParamDto;
     }
 
-    public void setTargetType(String targetType) {
-        this.targetType = targetType;
+    public void setClientParamDto(BaseMessageSendClientParamDto clientParamDto) {
+        this.clientParamDto = clientParamDto;
     }
-
-    public List<String> getTargetValues() {
-        return targetValues;
-    }
-
-    public void setTargetValues(List<String> targetValues) {
-        this.targetValues = targetValues;
-    }
-
-    public String getMsgTemplateCode() {
-        return MsgTemplateCode;
-    }
-
-    public void setMsgTemplateCode(String msgTemplateCode) {
-        MsgTemplateCode = msgTemplateCode;
-    }
-
-    public Map<String, String> getTemplateParam() {
-        return templateParam;
-    }
-
-    public void setTemplateParam(Map<String, String> templateParam) {
-        this.templateParam = templateParam;
-    }
-
 }

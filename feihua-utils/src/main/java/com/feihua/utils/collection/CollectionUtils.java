@@ -1,9 +1,8 @@
 package com.feihua.utils.collection;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import com.feihua.utils.string.StringUtils;
+
+import java.util.*;
 
 /**
  * 集合数组操作工具类
@@ -33,6 +32,16 @@ public class CollectionUtils {
 		}
 		return result;
 	}
+
+	/**
+	 * 判断是否为空
+	 * @param c
+	 * @return
+	 */
+	public static boolean isNullOrEmpty(List c){
+		return c == null || c.isEmpty();
+	}
+
 	/**
 	 * 判断是否为空
 	 * @param c
@@ -120,12 +129,35 @@ public class CollectionUtils {
 	public static interface Filter<T>{
 		public boolean filter(T obj);
 	}
-	public static String listToString(List<String> list, String separator) {
+	public static String listToString(List<String> list, String seperator) {
 		if (list == null || list.isEmpty()) return "";
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < list.size(); i++) {
-			sb.append(list.get(i)).append(separator);
+			sb.append(list.get(i)).append(seperator);
 		}
 		return sb.toString().substring(0, sb.toString().length() - 1);
+	}
+	public static List<String> StringToList(String str,String seperator){
+		if (StringUtils.isEmpty(str)) return null;
+		String []a = str.split(seperator);
+		return Arrays.asList(a);
+	}
+	public static <T> List<T> subList(int from, int to,List<T> list){
+		if (isNullOrEmpty(list)) {
+			return null;
+		}
+		int _from = from;
+		int _to = to;
+		int size = list.size();
+		if (_from > size - 1) {
+			return null;
+		}
+		if(_to >  size) {
+			_to = size;
+		}
+		if (_from > _to){
+			return null;
+		}
+		return list.subList(_from,_to);
 	}
 }

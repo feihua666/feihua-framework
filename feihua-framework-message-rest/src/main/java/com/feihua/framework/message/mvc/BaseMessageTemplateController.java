@@ -11,6 +11,7 @@ import com.feihua.framework.message.po.BaseMessageTemplateThirdBindPo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
+import com.feihua.utils.collection.CollectionUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.utils.string.RegexUtils;
 import feihua.jdbc.api.pojo.BasePo;
@@ -18,7 +19,6 @@ import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -235,7 +235,7 @@ public class BaseMessageTemplateController extends SuperController {
         dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
         PageResultDto<BaseMessageTemplateDto> list = apiBaseMessageTemplatePoService.searchBaseMessageTemplatesDsf(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(!CollectionUtils.isNullOrEmpty(list.getData())){
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);
@@ -258,6 +258,14 @@ public class BaseMessageTemplateController extends SuperController {
         List<BaseMessageTemplateThirdBindDto> list = apiBaseMessageTemplateThirdBindPoService.selectList(condition);
         return returnList(list,resultData);
     }
+
+    /**
+     * 绑定/删除三方模板
+     * 如果不选择三方模板，视为删除先前绑定的三方模板，只填写模板内容无效，请谨慎操作
+     * @param id
+     * @param dto
+     * @return
+     */
     @RequiresPermissions("messageTemplate:third:bind")
     @RequestMapping(value = "/message/template/{id}/third",method = RequestMethod.POST)
     public ResponseEntity channelBind(@PathVariable String id, ThirdTemplateBindFormDto dto){
@@ -268,29 +276,44 @@ public class BaseMessageTemplateController extends SuperController {
         BaseMessageTemplateThirdBindPo deleteConditon = new BaseMessageTemplateThirdBindPo();
         deleteConditon.setMessageTemplateId(id);
         apiBaseMessageTemplateThirdBindPoService.deleteSelective(deleteConditon);
+
+        List<BaseMessageTemplateThirdBindPo> tobeInsert = new ArrayList<>();
         // 微信公众帐号
-        if(StringUtils.isNotEmpty(dto.getWeixinPublicplatformAccoutId())){
-            BaseMessageTemplateThirdBindPo weixinPublic = new BaseMessageTemplateThirdBindPo();
-            weixinPublic.setThirdType(DictEnum.WxAccountType.weixin_publicplatform.name());
-            weixinPublic.setMessageTemplateId(id);
-            weixinPublic.setThirdId(dto.getWeixinPublicplatformAccoutId());
-            weixinPublic.setThirdTemplateContent(dto.getWeixinPublicplatformMsgTemplateContent());
-            weixinPublic.setThirdTemplateId(dto.getWeixinPublicplatformMsgTemplateId());
-            weixinPublic = apiBaseMessageTemplateThirdBindPoService.preInsert(weixinPublic,getLoginUserId());
-            apiBaseMessageTemplateThirdBindPoService.insert(weixinPublic);
+        List<WeixinPublicPlatform> weixinPublicPlatforms = dto.getWeixinPublicPlatforms();
+        if (!CollectionUtils.isNullOrEmpty(weixinPublicPlatforms)) {
+            for (WeixinPublicPlatform weixinPublicPlatform : weixinPublicPlatforms) {
+                if(StringUtils.isNotEmpty(weixinPublicPlatform.getWeixinPublicplatformAccoutId())){
+                    BaseMessageTemplateThirdBindPo weixinPublic = new BaseMessageTemplateThirdBindPo();
+                    weixinPublic.setThirdType(DictEnum.WxAccountType.weixin_publicplatform.name());
+                    weixinPublic.setMessageTemplateId(id);
+                    weixinPublic.setThirdId(weixinPublicPlatform.getWeixinPublicplatformAccoutId());
+                    weixinPublic.setThirdTemplateContent(weixinPublicPlatform.getWeixinPublicplatformMsgTemplateContent());
+                    weixinPublic.setThirdTemplateId(weixinPublicPlatform.getWeixinPublicplatformMsgTemplateId());
+                    weixinPublic = apiBaseMessageTemplateThirdBindPoService.preInsert(weixinPublic,getLoginUserId());
+                    tobeInsert.add(weixinPublic);
+                }
+            }
         }
 
         // 微信小程序
-        if(StringUtils.isNotEmpty(dto.getWeixinMiniprogramAccoutId())){
-            BaseMessageTemplateThirdBindPo weixinMiniprogram = new BaseMessageTemplateThirdBindPo();
-            weixinMiniprogram.setThirdType(DictEnum.WxAccountType.weixin_miniprogram.name());
-            weixinMiniprogram.setMessageTemplateId(id);
-            weixinMiniprogram.setThirdId(dto.getWeixinMiniprogramAccoutId());
-            weixinMiniprogram.setThirdTemplateContent(dto.getWeixinMiniprogramMsgTemplateContent());
-            weixinMiniprogram.setThirdTemplateId(dto.getWeixinMiniprogramMsgTemplateId());
-            weixinMiniprogram = apiBaseMessageTemplateThirdBindPoService.preInsert(weixinMiniprogram,getLoginUserId());
-            apiBaseMessageTemplateThirdBindPoService.insert(weixinMiniprogram);
+        List<WeixinMiniProgram> weixinMiniPrograms = dto.getWeixinMiniPrograms();
+        if (!CollectionUtils.isNullOrEmpty(weixinMiniPrograms)) {
+            for (WeixinMiniProgram weixinMiniProgram : weixinMiniPrograms) {
+                if(StringUtils.isNotEmpty(weixinMiniProgram.getWeixinMiniprogramAccoutId())){
+                    BaseMessageTemplateThirdBindPo weixinMiniprogram = new BaseMessageTemplateThirdBindPo();
+                    weixinMiniprogram.setThirdType(DictEnum.WxAccountType.weixin_miniprogram.name());
+                    weixinMiniprogram.setMessageTemplateId(id);
+                    weixinMiniprogram.setThirdId(weixinMiniProgram.getWeixinMiniprogramAccoutId());
+                    weixinMiniprogram.setThirdTemplateContent(weixinMiniProgram.getWeixinMiniprogramMsgTemplateContent());
+                    weixinMiniprogram.setThirdTemplateId(weixinMiniProgram.getWeixinMiniprogramMsgTemplateId());
+                    weixinMiniprogram = apiBaseMessageTemplateThirdBindPoService.preInsert(weixinMiniprogram,getLoginUserId());
+                    tobeInsert.add(weixinMiniprogram);
 
+                }
+            }
+        }
+        if (!CollectionUtils.isNullOrEmpty(tobeInsert)) {
+            apiBaseMessageTemplateThirdBindPoService.insertBatch(tobeInsert);
         }
 
         return new ResponseEntity(resultData, HttpStatus.OK);

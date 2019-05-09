@@ -6,16 +6,15 @@ import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
 import com.feihua.framework.base.modules.user.dto.BaseUserDto;
 import com.feihua.framework.constants.DictEnum;
-import com.feihua.framework.message.api.ApiBaseMessagePoService;
-import com.feihua.framework.message.api.ApiBaseMessageTemplatePoService;
-import com.feihua.framework.message.api.ApiBaseMessageUserPoService;
-import com.feihua.framework.message.api.ApiMessageService;
+import com.feihua.framework.message.api.*;
 import com.feihua.framework.message.dto.*;
 import com.feihua.framework.message.po.BaseMessagePo;
+import com.feihua.framework.message.po.BaseMessageThirdPo;
 import com.feihua.framework.message.po.BaseMessageUserPo;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.mvc.SuperController;
+import com.feihua.utils.collection.CollectionUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.utils.json.JSONUtils;
 import feihua.jdbc.api.pojo.BasePo;
@@ -23,7 +22,6 @@ import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -65,6 +63,8 @@ public class BaseMessageController extends SuperController {
     private ApiBaseLoginClientPoService apiBaseLoginClientPoService;
     @Autowired
     private ApiBaseMessageTemplatePoService apiBaseMessageTemplatePoService;
+    @Autowired
+    private ApiBaseMessageThirdPoService apiBaseMessageThirdPoService;
 
     /**
      * 单资源，添加
@@ -77,19 +77,27 @@ public class BaseMessageController extends SuperController {
     public ResponseEntity add(AddBaseMessageFormDto addFormDto){
         logger.info("添加消息开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
+        String currentRoleId = ((BaseRoleDto)getLoginUser().getRole()).getId();
         ResponseJsonRender resultData=new ResponseJsonRender();
         // 表单值设置
-        BaseMessagePo basePo = new BaseMessagePo();
-        basePo.setTitle(addFormDto.getTitle());
-        basePo.setProfile(addFormDto.getProfile());
-        basePo.setContent(addFormDto.getContent());
-        basePo.setMsgType(addFormDto.getMsgType());
-        basePo.setMsgLevel(addFormDto.getMsgLevel());
-        basePo.setMsgState(DictEnum.MessageState.to_be_sended.name());
-        basePo.setMessageTemplateId(addFormDto.getMessageTemplateId());
+        CreateMessageParamsDto createMessageParamsDto = new CreateMessageParamsDto();
 
-        basePo = apiBaseMessagePoService.preInsert(basePo,getLoginUser().getId());
-        BaseMessageDto r = apiBaseMessagePoService.insert(basePo);
+        createMessageParamsDto.setTitle(addFormDto.getTitle());
+        createMessageParamsDto.setProfile(addFormDto.getProfile());
+        createMessageParamsDto.setContent(addFormDto.getContent());
+        createMessageParamsDto.setMsgType(addFormDto.getMsgType());
+        createMessageParamsDto.setMsgLevel(addFormDto.getMsgLevel());
+        createMessageParamsDto.setMsgState(DictEnum.MessageState.to_be_sended.name());
+        createMessageParamsDto.setMessageTemplateId(addFormDto.getMessageTemplateId());
+        try {
+            createMessageParamsDto.setTemplateParams(getTemplateParams(addFormDto.getTemplateParams()));
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+            return returnBadRequest("templateParam","templateParam is invalid",resultData);
+        }
+        createMessageParamsDto.setCurrentUserId(getLoginUserId());
+        createMessageParamsDto.setCurrentRoleId(currentRoleId);
+        BaseMessagePo r = apiBaseMessagePoService.addMessage(createMessageParamsDto);
         if (r == null) {
             // 添加失败
             resultData.setCode(ResponseCode.E404_100001.getCode());
@@ -165,27 +173,26 @@ public class BaseMessageController extends SuperController {
             logger.info("更新消息结束，失败");
             return new ResponseEntity(resultData,HttpStatus.FORBIDDEN);
         }
-
+        CreateMessageParamsDto createMessageParamsDto = new CreateMessageParamsDto();
+        createMessageParamsDto.setMessageId(id);
+        createMessageParamsDto.setTitle(updateFormDto.getTitle());
+        createMessageParamsDto.setProfile(updateFormDto.getProfile());
+        createMessageParamsDto.setContent(updateFormDto.getContent());
+        createMessageParamsDto.setMsgType(updateFormDto.getMsgType());
+        createMessageParamsDto.setMsgLevel(updateFormDto.getMsgLevel());
+        createMessageParamsDto.setMsgState(updateFormDto.getMsgState());
+        createMessageParamsDto.setMessageTemplateId(updateFormDto.getMessageTemplateId());
+        createMessageParamsDto.setCurrentUserId(getLoginUserId());
+        createMessageParamsDto.setCurrentRoleId(((BaseRoleDto)getLoginUser().getRole()).getId());
+        try {
+            createMessageParamsDto.setTemplateParams(getTemplateParams(updateFormDto.getTemplateParams()));
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+            return returnBadRequest("templateParam","templateParam is invalid",resultData);
+        }
         // 表单值设置
-        BaseMessagePo basePo = new BaseMessagePo();
-        // id
-        basePo.setId(id);
-        basePo.setTitle(updateFormDto.getTitle());
-        basePo.setProfile(updateFormDto.getProfile());
-        basePo.setContent(updateFormDto.getContent());
-        basePo.setMsgType(updateFormDto.getMsgType());
-        basePo.setMsgState(updateFormDto.getMsgState());
-        basePo.setMsgLevel(updateFormDto.getMsgLevel());
-        basePo.setMessageTemplateId(updateFormDto.getMessageTemplateId());
-
-        // 用条件更新，乐观锁机制
-        BaseMessagePo basePoCondition = new BaseMessagePo();
-        basePoCondition.setId(id);
-        basePoCondition.setDelFlag(BasePo.YesNo.N.name());
-        basePoCondition.setUpdateAt(updateFormDto.getUpdateTime());
-        basePo = apiBaseMessagePoService.preUpdate(basePo,getLoginUser().getId());
-        int r = apiBaseMessagePoService.updateSelective(basePo,basePoCondition);
-        if (r <= 0) {
+        BaseMessagePo r = apiBaseMessagePoService.updateMessage(createMessageParamsDto);
+        if (r == null) {
             // 更新失败，资源不存在
             resultData.setCode(ResponseCode.E404_100001.getCode());
             resultData.setMsg(ResponseCode.E404_100001.getMsg());
@@ -237,7 +244,7 @@ public class BaseMessageController extends SuperController {
         dto.setCurrentRoleId(((BaseRoleDto)getLoginUser().getRole()).getId());
         PageResultDto<BaseMessageDto> list = apiBaseMessagePoService.searchBaseMessagesDsf(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(!CollectionUtils.isNullOrEmpty(list.getData())){
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);
@@ -332,6 +339,8 @@ public class BaseMessageController extends SuperController {
 
         basePo = apiBaseMessagePoService.preInsert(basePo,getLoginUser().getId());
         BaseMessageDto r = apiBaseMessagePoService.insert(basePo);
+        // 三方消息复制
+
         if (r == null) {
             // 复制失败
             resultData.setCode(ResponseCode.E404_100001.getCode());
@@ -340,6 +349,7 @@ public class BaseMessageController extends SuperController {
             logger.info("复制消息结束，失败");
             return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
         }else{
+            apiBaseMessageThirdPoService.copyByMessageId(id,r.getId(),getLoginUserId());
             // 复制成功，返回添加的数据
             resultData.setData(r);
             logger.info("复制消息id:{}",r.getId());
@@ -378,38 +388,7 @@ public class BaseMessageController extends SuperController {
             return new ResponseEntity(resultData,HttpStatus.FORBIDDEN);
         }
 
-
-        BaseMessageSendParamsDto baseMessageSendParamsDto = new BaseMessageSendParamsDto();
-        baseMessageSendParamsDto.setMessageId(id);
-        baseMessageSendParamsDto.setTargetType(formDto.getTargetType());
-        baseMessageSendParamsDto.setTargetValues(formDto.getTargetValues());
-        if (StringUtils.isNotEmpty(formDto.getTemplateParams())) {
-            try {
-                baseMessageSendParamsDto.setTemplateParam(JSONUtils.json2map(formDto.getTemplateParams(),String.class));
-            } catch (Exception e) {
-                logger.error(e.getMessage(),e);
-                return returnBadRequest("templateParam","templateParam is invalid",resultData);
-            }
-        }
-        List<String> clientIds = formDto.getClientIds();
-        if (clientIds != null && !clientIds.isEmpty()) {
-            baseMessageSendParamsDto.setClients(apiBaseLoginClientPoService.selectByPrimaryKeys(clientIds,false));
-        }
-        baseMessageSendParamsDto.setCurrentUserId(currentUserId);
-        baseMessageSendParamsDto.setCurrentRoleId(currentRoleId);
-
-        try {
-            apiMessageService.messageSend(baseMessageSendParamsDto,true);
-        }catch (Exception e){
-            resultData.setCode(ResponseCode.E404_100001.getCode());
-            resultData.setMsg(ResponseCode.E404_100001.getMsg());
-            logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
-            logger.info("发送消息结束，失败");
-            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
-        }
-        logger.info("发送消息id:{}",id);
-        logger.info("发送消息结束，成功");
-        return new ResponseEntity(resultData, HttpStatus.CREATED);
+        return sendMessage(resultData,id,formDto,currentUserId,currentRoleId);
 
     }
 
@@ -426,32 +405,60 @@ public class BaseMessageController extends SuperController {
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         String currentUserId = getLoginUser().getId();
         String currentRoleId = ((BaseRoleDto)getLoginUser().getRole()).getId();
-        ResponseJsonRender resultData=new ResponseJsonRender();
+        ResponseJsonRender resultData = new ResponseJsonRender();
 
 
         BaseMessageTemplateDto messageTemplateDto = apiBaseMessageTemplatePoService.selectByPrimaryKey(messageTemplateId);
-        BaseMessageSendParamsDto baseMessageSendParamsDto = new BaseMessageSendParamsDto();
-        baseMessageSendParamsDto.setMsgTemplateCode(messageTemplateDto.getCode());
-        baseMessageSendParamsDto.setTargetType(formDto.getTargetType());
-        baseMessageSendParamsDto.setTargetValues(formDto.getTargetValues());
-        if (StringUtils.isNotEmpty(formDto.getTemplateParams())) {
-            try {
-                Map<String,Object> params = JSONUtils.json2map(formDto.getTemplateParams());
-                if(params != null && !params.isEmpty()){
-                    Map<String,String> _params = new HashMap<>();
-                    for (String key : params.keySet()) {
-                        _params.put(key, (String) params.get(key));
-                    }
-                    baseMessageSendParamsDto.setTemplateParam(_params);
-                }
-            } catch (Exception e) {
-                logger.error(e.getMessage(),e);
-                return returnBadRequest("templateParam","templateParam is invalid",resultData);
-            }
+
+        CreateMessageParamsDto createMessageParamsDto = new CreateMessageParamsDto();
+        createMessageParamsDto.setTitle(messageTemplateDto.getTitle());
+        createMessageParamsDto.setProfile(messageTemplateDto.getProfile());
+        createMessageParamsDto.setContent(messageTemplateDto.getContent());
+        createMessageParamsDto.setMsgType(messageTemplateDto.getMsgType());
+        createMessageParamsDto.setMsgLevel(messageTemplateDto.getMsgLevel());
+        createMessageParamsDto.setMsgState(DictEnum.MessageState.to_be_sended.name());
+        createMessageParamsDto.setMessageTemplateId(messageTemplateId);
+        try {
+            createMessageParamsDto.setTemplateParams(getTemplateParams(formDto.getTemplateParams()));
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+            return returnBadRequest("templateParam","templateParam is invalid",resultData);
         }
+        createMessageParamsDto.setCurrentUserId(currentUserId);
+        createMessageParamsDto.setCurrentRoleId(currentRoleId);
+        BaseMessagePo r = apiBaseMessagePoService.addMessage(createMessageParamsDto);
+
+
+        return sendMessage(resultData,r.getId(),formDto,currentUserId,currentRoleId);
+
+    }
+    private ResponseEntity sendMessage(ResponseJsonRender resultData,String messageId,MessageSendFormDto formDto,String currentUserId,String currentRoleId){
+        // 发送参数
+        BaseMessageSendParamsDto baseMessageSendParamsDto = new BaseMessageSendParamsDto();
+        baseMessageSendParamsDto.setMessageId(messageId);
+        // 客户端发送参数
+        BaseMessageSendClientParamDto clientParamDto = new BaseMessageSendClientParamDto();
+        clientParamDto.setTargetType(formDto.getTargetType());
+        clientParamDto.setTargetValues(formDto.getTargetValues());
         List<String> clientIds = formDto.getClientIds();
         if (clientIds != null && !clientIds.isEmpty()) {
-            baseMessageSendParamsDto.setClients(apiBaseLoginClientPoService.selectByPrimaryKeys(clientIds,false));
+            clientParamDto.setClients(apiBaseLoginClientPoService.selectByPrimaryKeys(clientIds,false));
+        }
+        baseMessageSendParamsDto.setClientParamDto(clientParamDto);
+        // 虚拟客户端发送参数
+        List<MessageVSendFormDto> vSendFormDtos = formDto.getvSendFormDtos();
+        if (!CollectionUtils.isNullOrEmpty(vSendFormDtos)) {
+            // 虚拟客户端容器
+            List<BaseMessageSendVClientParamDto> vClientParamDtos = new ArrayList<>(vSendFormDtos.size());
+            BaseMessageSendVClientParamDto vClientParamDto = null;
+            for (MessageVSendFormDto vSendFormDto : vSendFormDtos) {
+                vClientParamDto = new BaseMessageSendVClientParamDto();
+                vClientParamDto.setVclient(apiBaseLoginClientPoService.selectByPrimaryKey(vSendFormDto.getClientId(),false));
+                vClientParamDto.setVtargetType(vSendFormDto.getvTargetType());
+                vClientParamDto.setVtargetValues(CollectionUtils.StringToList(vSendFormDto.getvTargetValues(),","));
+                vClientParamDtos.add(vClientParamDto);
+            }
+            baseMessageSendParamsDto.setvClientParamDtos(vClientParamDtos);
         }
         baseMessageSendParamsDto.setCurrentUserId(currentUserId);
         baseMessageSendParamsDto.setCurrentRoleId(currentRoleId);
@@ -465,9 +472,9 @@ public class BaseMessageController extends SuperController {
             logger.info("发送消息结束，失败");
             return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
         }
+        logger.info("发送消息id:{}",messageId);
         logger.info("发送消息结束，成功");
         return new ResponseEntity(resultData, HttpStatus.CREATED);
-
     }
     /**
      * 复数资源，查询当前用户的消息
@@ -488,7 +495,7 @@ public class BaseMessageController extends SuperController {
         dto.setUserId(getLoginUserId());
         PageResultDto<UserMessageDto> list = apiBaseMessagePoService.searchUserMessage(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(!CollectionUtils.isNullOrEmpty(list.getData())){
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);
@@ -524,5 +531,21 @@ public class BaseMessageController extends SuperController {
         logger.info("读取消息id:{}",id);
         logger.info("读取消息并标记为已读结束，成功");
         return new ResponseEntity(resultData, HttpStatus.OK);
+    }
+
+    private Map<String,String> getTemplateParams(String templateParam) throws Exception {
+        if (StringUtils.isNotEmpty(templateParam)) {
+
+            Map<String,Object> params = JSONUtils.json2map(templateParam);
+            if(params != null && !params.isEmpty()){
+                Map<String,String> _params = new HashMap<>();
+                for (String key : params.keySet()) {
+                    _params.put(key, (String) params.get(key));
+                }
+                return (_params);
+            }
+
+        }
+        return null;
     }
 }

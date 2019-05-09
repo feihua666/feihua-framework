@@ -1,6 +1,7 @@
 package com.feihua.wechat.publicplatform;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.feihua.exception.BaseException;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.jedis.utils.JedisUtils;
 import com.feihua.utils.digest.DigestUtils;
@@ -596,7 +597,7 @@ public class PublicUtils {
      * @param wxPublicTemplate 模板实体
      * @param which            公众号类型
      */
-    public static void sendWxPublicTemplateMsg(WxPublicTemplateParam wxPublicTemplate, String which) {
+    public static void sendWxPublicTemplateMsg(WxPublicTemplateParam wxPublicTemplate, String which) throws Exception {
         sedTemlateMsg(wxPublicTemplate, which, 0);
     }
 
@@ -607,8 +608,7 @@ public class PublicUtils {
      * @param which            公众号类型
      * @param maxRetries       最多重试三次
      */
-    private static void sedTemlateMsg(WxPublicTemplateParam wxPublicTemplate, String which, int maxRetries) {
-        try {
+    private static void sedTemlateMsg(WxPublicTemplateParam wxPublicTemplate, String which, int maxRetries) throws Exception {
             //获取请求路径
             String url = PublicConstants.SEND_TEMPLATE_MSG.replace(PublicConstants.PARAM_ACCESS_TOKEN, getAccessToken(which).getToken());
 
@@ -617,14 +617,16 @@ public class PublicUtils {
 
             logger.info("微信:{},sendWxPublicTemplateMsg 发送消息模板：{},返回：{}", which, jsonObject);
             //有可能会出现："errcode":40001/42001 access_token 失效情况，需要重新获取。最多重试3次
-            if (jsonObject != null && jsonObject.getInt("errcode") != 0 && maxRetries < 3) {
-                maxRetries++;
-                sedTemlateMsg(wxPublicTemplate, which, maxRetries);
-                logger.info("微信:{},sendWxPublicTemplateMsg 发送消息模板：{},maxRetries 重试：{} 次！", which, maxRetries);
+            if (jsonObject != null && jsonObject.getInt("errcode") != 0) {
+                if (maxRetries < 3) {
+                    maxRetries++;
+                    sedTemlateMsg(wxPublicTemplate, which, maxRetries);
+                    logger.info("微信:{},sendWxPublicTemplateMsg 发送消息模板,maxRetries 重试：{} 次！", which, maxRetries);
+                }else {
+                    throw new BaseException("sedTemlateMsg failed. which=" + which + ",origin error info = " + jsonObject.toString());
+                }
+
             }
-        } catch (Exception e) {
-            logger.error("ERROR: sendWxPublicTemplateMsg fail ：", e);
-        }
     }
 
 

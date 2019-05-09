@@ -47,8 +47,8 @@ public class ApiBaseAreaPoServiceImpl extends ApiBaseTreeServiceImpl<BaseAreaPo,
     public BaseAreaPo selectAreaByUserId(String userId) {
         BaseUserPo userPo = apiBaseUserPoService.selectByPrimaryKeySimple(userId,false);
         // 如果用户存在
-        if(userPo != null && StringUtils.isNotEmpty(userPo.getDataOfficeId())){
-            return this.selectByPrimaryKeySimple(userPo.getDataOfficeId(),false);
+        if(userPo != null && StringUtils.isNotEmpty(userPo.getDataAreaId())){
+            return this.selectByPrimaryKeySimple(userPo.getDataAreaId(),false);
         }
         return null;
     }
