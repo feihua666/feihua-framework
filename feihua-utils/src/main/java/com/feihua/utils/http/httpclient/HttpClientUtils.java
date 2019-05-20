@@ -1,5 +1,6 @@
 package com.feihua.utils.http.httpclient;
 
+import com.feihua.utils.io.StreamUtils;
 import com.feihua.utils.string.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
@@ -16,6 +17,7 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -132,5 +134,21 @@ public class HttpClientUtils {
      */
     public static String HttpResponseContentToString(HttpResponse res) throws IOException {
         return IOUtils.toString(res.getEntity().getContent(),charset);
+    }
+
+    /**
+     * 下载
+     * @param urlPath
+     * @return
+     * @throws IOException
+     */
+    public static byte[] download(String urlPath) throws IOException {
+        HttpClient client = HttpClientUtils.getClient();
+        HttpGet get = new HttpGet(urlPath);
+        HttpResponse httpResponse =  client.execute(get);
+        InputStream inputStream = httpResponse.getEntity().getContent();
+        byte[] bytes = StreamUtils.inputStreamToByteArray(inputStream);
+        get.releaseConnection();
+        return bytes;
     }
 }

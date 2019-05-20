@@ -87,15 +87,4 @@ public class WxPublicUtils {
         }
         return "";
     }
-
-    /**
-     * @param args
-     *
-     * @see
-     */
-    public static void main(String[] args) throws Exception {
-        ResponseImageMessage image = new ResponseImageMessage();
-        image.xmlFormatBean("ToUserName", "FromUserName", "MediaId");
-        System.out.println("\n" + bean2WxXML(image));
-    }
 }

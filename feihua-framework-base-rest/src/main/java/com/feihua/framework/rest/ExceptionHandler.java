@@ -36,7 +36,7 @@ public class ExceptionHandler {
     public ResponseEntity handleControllerException(Exception exception) {
         HttpServletRequest request = RequestUtils.getRequest();
         String reUrl = request.getRequestURI();
-        logger.error(request.getMethod() + ":" + reUrl);
+
         //异常消息内容
         String msg = "";
 

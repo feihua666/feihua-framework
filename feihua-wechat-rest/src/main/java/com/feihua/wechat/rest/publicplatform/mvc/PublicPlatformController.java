@@ -1,9 +1,13 @@
 package com.feihua.wechat.rest.publicplatform.mvc;
 
 
+import com.feihua.framework.base.modules.loginclient.api.ApiBaseLoginClientPoService;
+import com.feihua.framework.base.modules.loginclient.po.BaseLoginClientPo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.mvc.SuperController;
+import com.feihua.framework.shiro.pojo.ShiroUser;
+import com.feihua.framework.shiro.utils.ShiroUtils;
 import com.feihua.utils.calendar.CalendarUtils;
 import com.feihua.utils.properties.PropertiesUtils;
 import com.feihua.wechat.CommonConstants;
@@ -17,6 +21,7 @@ import com.feihua.wechat.publicplatform.api.ApiPublicPlatformService;
 import com.feihua.wechat.publicplatform.dto.AuthorizeAccessToken;
 import feihua.jdbc.api.pojo.BasePo;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -54,6 +59,8 @@ public class PublicPlatformController extends SuperController {
     private ApiWeixinUserPoService apiWeixinUserPoService;
     @Autowired
     ApiWeixinUserListener apiWeixinUserListener;
+    @Autowired
+    private ApiBaseLoginClientPoService apiBaseLoginClientPoService;
     /**
      * 微信平台对接接口
      * @param request
@@ -167,13 +174,34 @@ public class PublicPlatformController extends SuperController {
      * @param which
      * @return
      */
-    @RequestMapping(value = "getAuthUserInfo/{which}",method = RequestMethod.GET)
-    public String getAuthUserInfo(String code,String state,@PathVariable String which,String redirectUrl) {
+    @RequestMapping(value = "getAuthUserInfo/{which}/{client}",method = RequestMethod.GET)
+    public String getAuthUserInfo(String code,String state,@PathVariable String which,@PathVariable String client,String redirectUrl) {
+        wxuserInfo(code,state,which,client);
+
+        return "redirect:" + redirectUrl;
+    }
+    /**
+     * 用户授权后，获取用户信息
+     * @param code 得到的code
+     * @param state
+     * @param which
+     * @return
+     */
+    @RequestMapping(value = "authUserInfo/{which}/{client}",method = RequestMethod.POST)
+    public ResponseEntity authUserInfo(String code,String state,@PathVariable String which,@PathVariable String client) {
+
+        ResponseJsonRender resultData = new ResponseJsonRender("成功");
+        wxuserInfo(code,state,which,client);
+
+        return returnDto(SecurityUtils.getSubject().getSession().getAttribute("publickplatform_openid_" + which),resultData);
+    }
+
+    private void wxuserInfo(String code,String state, String which, String client){
         // 根据code获取accessToken
         AuthorizeAccessToken authorizeAccessToken = PublicUtils.getAuthorizeAccessToken(code,which);
 
         // 获取到后，把openid放到session里
-        SecurityUtils.getSubject().getSession().setAttribute("publickplatform_openid_"+which,authorizeAccessToken.getOpenid());
+        SecurityUtils.getSubject().getSession().setAttribute("publickplatform_openid_" + which,authorizeAccessToken.getOpenid());
 
         // 根据openid查询是否存在数据
         WeixinUserPo weixinUserPoCondition = new WeixinUserPo();
@@ -183,7 +211,11 @@ public class PublicPlatformController extends SuperController {
         weixinUserPoCondition.setDelFlag(BasePo.YesNo.N.name());
 
         WeixinUserPo weixinUserPoDb = apiWeixinUserPoService.selectOneSimple(weixinUserPoCondition);
-
+        BaseLoginClientPo loginClientPo = apiBaseLoginClientPoService.selectByClientCode(client);
+        String clientId = null;
+        if (loginClientPo != null) {
+            clientId = loginClientPo.getId();
+        }
         // 如果库里没有，插入
         if (weixinUserPoDb == null) {
 
@@ -192,8 +224,16 @@ public class PublicPlatformController extends SuperController {
             userPo = apiWeixinUserPoService.preInsert(userPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(userPo);
 
+
+
+            if(StringUtils.isEmpty(clientId)){
+                ShiroUser su = ShiroUtils.getCurrentUser();
+                if (su != null) {
+                    clientId = su.getLoginClientId();
+                }
+            }
             //调用监听
-            apiWeixinUserListener.onAddWexinUser(weixinUserDto);
+            apiWeixinUserListener.onAddWexinUser(weixinUserDto,clientId);
         }else {
             // 每天每个用户只更新一次信息
             if(Math.abs(CalendarUtils.getIntervalDays(new Date(), weixinUserPoDb.getUpdateAt())) > 0) {
@@ -208,14 +248,12 @@ public class PublicPlatformController extends SuperController {
                 weixinUserPoToBeUpdate.setProvince(userPo.getProvince());
                 weixinUserPoToBeUpdate.setCountry(userPo.getCountry());
                 weixinUserPoToBeUpdate.setHeadImageUrl(userPo.getHeadImageUrl());
+                weixinUserPoToBeUpdate.setUpdateAt(new Date());
 
                 apiWeixinUserPoService.updateByPrimaryKeySelective(weixinUserPoToBeUpdate);
-                apiWeixinUserListener.onUpdateWexinUser(apiWeixinUserPoService.selectByPrimaryKey(weixinUserPoDb.getId()));
+
             }
-
+            apiWeixinUserListener.onUpdateWexinUser(apiWeixinUserPoService.selectByPrimaryKey(weixinUserPoDb.getId()),clientId);
         }
-
-        return "redirect:" + redirectUrl;
     }
-
 }

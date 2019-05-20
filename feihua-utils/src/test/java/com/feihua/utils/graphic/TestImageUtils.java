@@ -4,13 +4,14 @@ import com.google.zxing.NotFoundException;
 import com.google.zxing.WriterException;
 import org.junit.Test;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 public class TestImageUtils {
 
-	@Test
+
 	public void simpleTest() throws IOException, WriterException, NotFoundException {
 		
 		//String intpuPath = "d:/oa/";
@@ -45,10 +46,35 @@ public class TestImageUtils {
 		//ImageUtils.outPutImage(image, "d://test.jpg");
 		ImageUtils.outPutImage(image,formatName, "d://test.jpg");
 
-
-
-
-
 	}
 
+	public void testQrCode() throws IOException, WriterException {
+
+		BufferedImage bg = ImageUtils.createImage("C:\\Users\\Lenovo\\Desktop\\111.jpg");
+		BufferedImage logo = ImageUtils.createImage("C:\\Users\\Lenovo\\Desktop\\logo.png");
+		logo = ImageUtils.zoomEqualRatioImageByWidth(logo,50);
+		BufferedImage qrcode = ImageUtils.createQrCodeWithLogo(150,
+				"http://api.51match.cn/uni-app/#/pages/detail/detail?wwdUserId=xxxxxxxx",
+				"gbk",1,
+				Color.white, Color.BLACK, logo);
+
+		int offset = 20;
+		qrcode = ImageUtils.cutImage(qrcode,offset,offset,qrcode.getWidth()-offset,qrcode.getHeight()-offset);
+		String formatName = "png";
+
+		int margin = 30;
+		BufferedImage r = ImageUtils.pressImage(bg,qrcode,bg.getWidth() - qrcode.getWidth() - margin,bg.getHeight() - qrcode.getHeight() - margin,1.0f);
+		ImageUtils.outPutImage(r,formatName, "d://test.png");
+
+		ImageUtils.outPutImage(qrcode,formatName, "d://qrcode.png");
+		ImageUtils.outPutImage(logo,formatName, "d://logo.png");
+	}
+	@Test
+	public void testZoom() throws IOException {
+		BufferedImage logo = ImageUtils.createImage("C:\\Users\\Lenovo\\Desktop\\logo.png");
+
+		logo = ImageUtils.zoomEqualRatioImageByWidth(logo,150);
+		String formatName = "png";
+		ImageUtils.outPutImage(logo,formatName, "d://logo.png");
+	}
 }

@@ -68,14 +68,7 @@ public abstract class ApiSourceImpl implements ApiSource {
             _prefix = "";
         }
         String oriPath = _prefix + urlPath;
-        HttpClient client = HttpClientUtils.getClient();
-        HttpGet get = new HttpGet(oriPath);
-
-        HttpResponse httpResponse =  client.execute(get);
-        InputStream inputStream = httpResponse.getEntity().getContent();
-        byte[] bytes = StreamUtils.inputStreamToByteArray(inputStream);
-        get.releaseConnection();
-        return bytes;
+        return HttpClientUtils.download(oriPath);
     }
 
 }

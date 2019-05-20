@@ -27,6 +27,7 @@
             </list>
         </property>
         <property name="startupDelay" value="20"/>
+        <property name="autoStartup" value="${scheduler.startup.auto}"/>
         <property name="quartzProperties">
             <props>
                 <prop key="org.quartz.scheduler.instanceId">AUTO</prop>

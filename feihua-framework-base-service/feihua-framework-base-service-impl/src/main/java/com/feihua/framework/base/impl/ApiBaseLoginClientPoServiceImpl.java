@@ -45,6 +45,17 @@ public class ApiBaseLoginClientPoServiceImpl extends ApiBaseServiceImpl<BaseLogi
     }
 
     @Override
+    public List<BaseLoginClientPo> selectByIsVirtual(BasePo.YesNo yesNo) {
+        if (yesNo != null) {
+            BaseLoginClientPo condition = new BaseLoginClientPo();
+            condition.setDelFlag(BasePo.YesNo.N.name());
+            condition.setIsVirtual(yesNo.name());
+            return selectListSimple(condition);
+        }
+        return null;
+    }
+
+    @Override
     public BaseLoginClientDto wrapDto(BaseLoginClientPo po) {
         if (po == null) { return null; }
         BaseLoginClientDto dto = new BaseLoginClientDto();

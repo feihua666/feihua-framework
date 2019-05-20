@@ -1,6 +1,8 @@
 package com.feihua.wechat.rest.miniprogram.mvc;
 
 
+import com.feihua.framework.base.modules.loginclient.api.ApiBaseLoginClientPoService;
+import com.feihua.framework.base.modules.loginclient.po.BaseLoginClientPo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -8,13 +10,11 @@ import com.feihua.framework.rest.mvc.SuperController;
 import com.feihua.utils.encode.EncodeUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.utils.json.JSONUtils;
-import com.feihua.utils.properties.PropertiesUtils;
 import com.feihua.wechat.ParamsDto;
 import com.feihua.wechat.common.api.ApiWeixinUserListener;
 import com.feihua.wechat.common.api.ApiWeixinUserPoService;
 import com.feihua.wechat.common.dto.WeixinUserDto;
 import com.feihua.wechat.common.po.WeixinUserPo;
-import com.feihua.wechat.miniprogram.MiniConstants;
 import com.feihua.wechat.miniprogram.MiniProgramUtils;
 import com.feihua.wechat.miniprogram.api.ApiMiniProgramService;
 import com.feihua.wechat.miniprogram.dto.LoginCredentialsDto;
@@ -62,7 +62,8 @@ public class MiniProgramController extends SuperController {
     private ApiWeixinUserPoService apiWeixinUserPoService;
     @Autowired
     ApiWeixinUserListener apiWeixinUserListener;
-
+    @Autowired
+    private ApiBaseLoginClientPoService apiBaseLoginClientPoService;
     /**
      * 小程序对接接口
      * @param request
@@ -154,13 +155,13 @@ public class MiniProgramController extends SuperController {
      */
     @RepeatFormValidator
     @RequestMapping(value = "/weixinuser/{which}",method = RequestMethod.POST)
-    public ResponseEntity saveWeixinUser(@PathVariable String which, WeixinUserForm weixinUserForm){
+    public ResponseEntity saveWeixinUser(@PathVariable String which,String fromClientCode, WeixinUserForm weixinUserForm){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
         // 获取登录凭证，可以借用里面的openid，如果为空，必须解密加密的数据才可以获得openid
         LoginCredentialsDto loginCredentialsDto = (LoginCredentialsDto) SecurityUtils.getSubject().getSession().getAttribute(loginCredentials_key);
         if (loginCredentialsDto != null) {
-            addWeixinUser(which,loginCredentialsDto.getOpenid(),loginCredentialsDto.getUnionid(),weixinUserForm);
+            addWeixinUser(which,loginCredentialsDto.getOpenid(),loginCredentialsDto.getUnionid(),weixinUserForm,fromClientCode);
 
             return new ResponseEntity(resultData, HttpStatus.OK);
         }
@@ -184,7 +185,7 @@ public class MiniProgramController extends SuperController {
      */
     @RepeatFormValidator
     @RequestMapping(value = "/weixinuser/{which}/decode",method = RequestMethod.POST)
-    public ResponseEntity saveWeixinUserDecode(@PathVariable String which, String rawData,String signature,String encryptedData,String iv,String language){
+    public ResponseEntity saveWeixinUserDecode(@PathVariable String which,String fromClientCode, String rawData,String signature,String encryptedData,String iv,String language){
 
         ResponseJsonRender resultData=new ResponseJsonRender();
 
@@ -208,7 +209,7 @@ public class MiniProgramController extends SuperController {
 
             String unionid = r.get("unionId") == null?null:r.get("unionId").toString();
 
-            addWeixinUser(which,r.get("openId").toString(),unionid,weixinUserForm);
+            addWeixinUser(which,r.get("openId").toString(),unionid,weixinUserForm, fromClientCode);
 
 
             return new ResponseEntity(resultData, HttpStatus.OK);
@@ -219,7 +220,7 @@ public class MiniProgramController extends SuperController {
         }
 
     }
-    private void addWeixinUser(String which,String openid,String unionid, WeixinUserForm weixinUserForm){
+    private void addWeixinUser(String which,String openid,String unionid, WeixinUserForm weixinUserForm,String fromClientCode){
         WeixinUserPo weiXinUserPo = new WeixinUserPo();
         weiXinUserPo.setOpenid(openid);
         weiXinUserPo.setUnionid(unionid);
@@ -247,8 +248,16 @@ public class MiniProgramController extends SuperController {
             weiXinUserPo = apiWeixinUserPoService.preInsert(weiXinUserPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(weiXinUserPo);
 
+            String clientId = null;
+            if (StringUtils.isNotEmpty(fromClientCode)) {
+                BaseLoginClientPo loginClientPo = apiBaseLoginClientPoService.selectByClientCode(fromClientCode);
+                if (loginClientPo != null) {
+                    clientId = loginClientPo.getId();
+                }
+
+            }
             //调用监听
-            apiWeixinUserListener.onAddWexinUser(weixinUserDto);
+            apiWeixinUserListener.onAddWexinUser(weixinUserDto,clientId);
         }
     }
     private String decode(String rawData,String signature,String encryptedData,String iv){

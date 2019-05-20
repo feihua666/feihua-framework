@@ -16,6 +16,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 /**
  * Created by yangwei
  * Created at 2018/7/20 11:42
@@ -27,8 +29,9 @@ import org.springframework.stereotype.Service;
 @Service("default_wx_public_event_subscribe")
 public class SubscribeMsgHandler implements MsgTypeHandler {
 
-    @Autowired
-    private ScanQuSceneMsgHandler scanQuSceneMsgHandler;
+    @Autowired(required = false)
+    private Map<String,MsgTypeHandler> msgHandlers;
+
     @Autowired
     private ApiWeixinUserPoService apiWeixinUserPoService;
 
@@ -57,7 +60,9 @@ public class SubscribeMsgHandler implements MsgTypeHandler {
             weixinUserPo = apiWeixinUserPoService.preInsert(weixinUserPo, BasePo.DEFAULT_USER_ID);
             WeixinUserDto weixinUserDto = apiWeixinUserPoService.insert(weixinUserPo);
             //调用监听
-            apiWeixinUserListener.onAddWexinUser(weixinUserDto);
+            // 这里fromClientId为空
+            // 也可以根据类型从客户端查询，不建议关注的生成用户信息，所以这里注释了
+            //apiWeixinUserListener.onAddWexinUser(weixinUserDto,null);
         } else {
             WeixinUserPo weixinUserPo = new WeixinUserPo();
             weixinUserPo.setId(weixinUserPoDb.getId());
@@ -67,10 +72,17 @@ public class SubscribeMsgHandler implements MsgTypeHandler {
         }
 
         if (StringUtils.isNotEmpty(eventKey)) {
-            String scanR = scanQuSceneMsgHandler.handleMsg(postXmlData, which);
-            if (StringUtils.isNotEmpty(scanR)) {
-                return scanR;
+            MsgTypeHandler msgTypeHandler = msgHandlers.get("wx_public_event_SCAN");
+            if (msgTypeHandler == null) {
+                msgTypeHandler = msgHandlers.get("default_wx_public_event_SCAN");
             }
+            if (msgTypeHandler != null) {
+                String scanR = msgTypeHandler.handleMsg(postXmlData, which);
+                if (StringUtils.isNotEmpty(scanR)) {
+                    return scanR;
+                }
+            }
+
         }
         String r = PublicUtils.getWxMessage(which);
         r = r != null ? r : "欢迎关注！";

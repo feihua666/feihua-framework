@@ -51,7 +51,7 @@ public class UserClientCountJob extends BaseQuartzJob {
         this.onlineNum(map);
 
         // 查询所有客户端
-        List<BaseLoginClientPo> clientPos = apiBaseClientPoService.selectAllSimple(false);
+        List<BaseLoginClientPo> clientPos = apiBaseClientPoService.selectByIsVirtual(BasePo.YesNo.N);
 
         // 历史待插入集合
         List<StatisticUserClientCountHistoryPo> historyToBeInsert = new ArrayList<>(clientPos.size());

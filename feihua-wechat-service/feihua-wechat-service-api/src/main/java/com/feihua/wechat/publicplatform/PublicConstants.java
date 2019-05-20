@@ -14,6 +14,8 @@ public class PublicConstants {
     public final static String PARAM_AUTHORIZE_SCOPE = "AUTHORIZE_SCOPE";
     public final static String PARAM_AUTHORIZE_STATE = "STATE";
     public final static String PARAM_AUTHORIZE_REFRESH_TOKEN = "REFRESH_TOKEN";
+    public final static String PARAM_TICKET = "TICKET";
+
 
     /**
      * 微信消息类型
@@ -100,6 +102,13 @@ public class PublicConstants {
      * }
      */
     public final static String ADD_MATERIAL = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=ACCESS_TOKEN&type=TYPE";
-
+    /**
+     * 生成带参数二维码
+     */
+    public final static String CREATE_QRCODE_PARAM = "https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=ACCESS_TOKEN";
+    /**
+     * 下载带参数二维码
+     */
+    public final static String SHOW_QRCODE_PARAM = "https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET";
 
 }

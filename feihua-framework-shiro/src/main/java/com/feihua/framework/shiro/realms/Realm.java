@@ -178,7 +178,6 @@ public class Realm extends AuthorizingRealm {
      */
     private boolean authorizationValidate(Permission permission){
         // 模块授权预留接口
-        System.out.print(permission);
         return ShiroUtils.getCurrentUser().isSuperAdmin();
 
     }

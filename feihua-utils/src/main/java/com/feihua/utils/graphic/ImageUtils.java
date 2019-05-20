@@ -1,22 +1,19 @@
 package com.feihua.utils.graphic;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.awt.image.ColorModel;
 import java.io.*;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
 import javax.imageio.*;
+import javax.swing.*;
 
 import com.feihua.utils.string.StringUtils;
 import com.google.zxing.*;
@@ -80,6 +77,10 @@ public class ImageUtils {
 		BufferedImage image = ImageIO.read(inputStream); // 读入流
 		return image;
 	}
+	public final static BufferedImage createImage(URL url) throws IOException{
+		BufferedImage image = ImageIO.read(url); // 读入流
+		return image;
+	}
 	/**
 	 * 缓冲图片对象转像对象
 	 * @param image
@@ -88,23 +89,71 @@ public class ImageUtils {
 	public final static Image BufferedImageToImage(BufferedImage image){
 		return image.getScaledInstance(image.getWidth(), image.getHeight(), Image.SCALE_DEFAULT);
 	}
+	public final static BufferedImage ImageToBufferedImage(Image image,boolean hasAlpha){
+		if (image instanceof BufferedImage) {
+			return (BufferedImage)image;
+		}
+		// This code ensures that all the pixels in the image are loaded
+		image = new ImageIcon(image).getImage();
+
+		// Determine if the image has transparent pixels; for this method's
+		// implementation, see e661 Determining If an Image Has Transparent Pixels
+		//boolean hasAlpha = hasAlpha(image);
+
+		// Create a buffered image with a format that's compatible with the screen
+		BufferedImage bimage = null;
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		try {
+			// Determine the type of transparency of the new buffered image
+			int transparency = Transparency.OPAQUE;
+            if (hasAlpha) {
+             transparency = Transparency.BITMASK;
+             }
+
+			// Create the buffered image
+			GraphicsDevice gs = ge.getDefaultScreenDevice();
+			GraphicsConfiguration gc = gs.getDefaultConfiguration();
+			bimage = gc.createCompatibleImage(
+					image.getWidth(null), image.getHeight(null), transparency);
+		} catch (HeadlessException e) {
+			// The system does not have a screen
+		}
+
+		if (bimage == null) {
+			// Create a buffered image using the default color model
+			int type = BufferedImage.TYPE_INT_RGB;
+			//int type = BufferedImage.TYPE_3BYTE_BGR;//by wang
+            if (hasAlpha) {
+             type = BufferedImage.TYPE_INT_ARGB;
+             }
+			bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
+		}
+		// Copy image to buffered image
+		Graphics g = bimage.createGraphics();
+		// Paint the image onto the buffered image
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return bimage;
+	}
 	/**
 	 * 按比例缩放
 	 * @param image 图像
 	 * @param scale 比例，如果缩小请用小数
 	 */
 	public final static BufferedImage zoomImage(BufferedImage image,double scale) {
-			int width = (int) (image.getWidth() * scale); // 得到源图宽
-			int height = (int) (image.getHeight() * scale); // 得到源图长
-			//缩放后的图像
-			Image scaleImage = image.getScaledInstance(width, height,
-					Image.SCALE_DEFAULT);
-			//创建一个新图像
-			BufferedImage resultImage = createImage(width, height);
-			Graphics g = resultImage.getGraphics();
-			g.drawImage(scaleImage, 0, 0, null); // 绘制缩放后的图
-			g.dispose();
-			return resultImage;
+		int width = (int) (image.getWidth() * scale); // 得到源图宽
+		int height = (int) (image.getHeight() * scale); // 得到源图长
+		//缩放后的图像
+		Image scaleImage = image.getScaledInstance(width, height,
+				Image.SCALE_SMOOTH);
+		//创建一个新图像
+
+		// 是否透明
+		boolean hasAlpha = false;
+		if(Transparency.TRANSLUCENT == image.getTransparency()){
+			hasAlpha = true;
+		}
+		return ImageToBufferedImage(scaleImage,hasAlpha);
 	}
 	/**
 	 * 按高度和宽度缩放
@@ -436,7 +485,6 @@ public class ImageUtils {
 			textColor = new Color(RandomUtils.nextInt(0,256), RandomUtils.nextInt(0,256), RandomUtils.nextInt(0,256));
 			int x = padding + i * width/text.length;
 			int y = RandomUtils.nextInt(padding,height-fontSize-padding);
-			System.out.println(y);
 			pressText(imag,text[i],"宋体",Font.BOLD,textColor,fontSize,x,y+fontSize,0.9f);
 		}
 
@@ -464,19 +512,31 @@ public class ImageUtils {
 			}
 		});
 	}
+	public static final BufferedImage createQrCodeWithLogo(int qrCodeSize, String content,String character_set,int margin, Color bgColor, final Color frontColor,BufferedImage logo) throws WriterException {
+		BufferedImage image = createQrCode(qrCodeSize, content,character_set,margin,ErrorCorrectionLevel.H,bgColor, new QrcodeColorGenerator() {
+			@Override
+			public Color generate(int i, int j) {
+				return frontColor;
+			}
+		});
+		image = pressImage(image,logo,image.getWidth()/2 - logo.getWidth()/2,image.getHeight()/2 - logo.getHeight()/2 ,1.0f);
+		return image;
+	}
 
-	/**
-	 * 生成二维码
-	 * @param qrCodeSize 大小像素单位
-	 * @param content 内容
-	 * @param character_set 编码 utf-8等
-	 * @param margin 白边边距
-	 * @param errorCorrectionLevel 容错率，越高点数越多
-	 * @param bgColor 背景色
-	 * @param qrcodeColorGenerator 前景色生成器
-	 * @return
-	 * @throws WriterException
-	 */
+
+
+		/**
+         * 生成二维码
+         * @param qrCodeSize 大小像素单位
+         * @param content 内容
+         * @param character_set 编码 utf-8等
+         * @param margin 白边边距
+         * @param errorCorrectionLevel 容错率，越高点数越多
+         * @param bgColor 背景色
+         * @param qrcodeColorGenerator 前景色生成器
+         * @return
+         * @throws WriterException
+         */
 	public static final BufferedImage createQrCode(int qrCodeSize,String content,String character_set,int margin,ErrorCorrectionLevel errorCorrectionLevel,Color bgColor,QrcodeColorGenerator qrcodeColorGenerator) throws WriterException {
 
 		//设置二维码纠错级别ＭＡＰ

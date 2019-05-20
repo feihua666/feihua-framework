@@ -2,9 +2,11 @@ package com.feihua.wechat.publicplatform;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.feihua.exception.BaseException;
+import com.feihua.exception.ParamInvalidException;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.jedis.utils.JedisUtils;
 import com.feihua.utils.digest.DigestUtils;
+import com.feihua.utils.graphic.ImageUtils;
 import com.feihua.utils.http.httpclient.HttpClientUtils;
 import com.feihua.utils.json.JSONUtils;
 import com.feihua.utils.properties.PropertiesUtils;
@@ -659,7 +661,7 @@ public class PublicUtils {
         if (weixinAccountDtos != null && weixinAccountDtos.size() > 0) {
             final WeixinAccountDto weixinAccountDto = weixinAccountDtos.get(0);
             //TODO 微信关注欢迎语暂时只支持文本类型
-            if (DictEnum.WxAccountType.weixin_publicplatform.name().equals(weixinAccountDto.getTemplateType()) && StringUtils.isNotBlank(weixinAccountDto.getTemplate())) {
+            if (DictEnum.WxAccountType.weixin_publicplatform.name().equals(weixinAccountDto.getType()) && StringUtils.isNotBlank(weixinAccountDto.getTemplate())) {
                 return weixinAccountDtos.get(0).getTemplate();
             } else {
                 return null;
@@ -713,5 +715,104 @@ public class PublicUtils {
             throw new RuntimeException(e.getMessage());
         }
         return wxTemplates;
+    }
+
+    /**
+     *
+     * @param expireSeconds 最大不超过2592000（即30天）
+     * @param sceneId 最大值为100000
+     */
+    public static QrCodeTicketDto createQrCode(Long expireSeconds,Integer sceneId,String which){
+        return createQrCode(expireSeconds,"QR_SCENE",sceneId,null,which);
+
+    }
+
+    /**
+     *
+     * @param expireSeconds
+     * @param sceneStr
+     */
+    public static QrCodeTicketDto createQrCode(Long expireSeconds,String sceneStr,String which){
+        return createQrCode(expireSeconds,"QR_STR_SCENE",null,sceneStr,which);
+
+    }
+
+    /**
+     * 永久二维码 最多生成10万
+     * @param sceneStr
+     */
+    public static QrCodeTicketDto createQrCodeLimit(String sceneStr,String which){
+
+        return createQrCode(null,"QR_LIMIT_STR_SCENE",null,sceneStr,which);
+
+    }
+
+    /**
+     * 永久二维码 最多生成10万
+     * @param sceneId
+     */
+    public static QrCodeTicketDto createQrCodeLimit(Integer sceneId,String which){
+
+        return createQrCode(null,"QR_LIMIT_SCENE",sceneId,null,which);
+    }
+    public static byte[] getQrCode(QrCodeTicketDto qrCodeTicketDto) {
+        String url = PublicConstants.SHOW_QRCODE_PARAM.replace(PublicConstants.PARAM_TICKET, qrCodeTicketDto.getTicket());
+
+        try {
+            return HttpClientUtils.download(url);
+        } catch (IOException e) {
+            logger.error(e.getMessage(),e);
+            throw new BaseException("getQrCode error for url = " + url);
+        }
+    }
+    private static QrCodeTicketDto createQrCode(Long expireSeconds,String actionName,Integer sceneId,String sceneStr,String which) {
+
+        Map<String,Object> postParam = new HashMap<>();
+        postParam.put("action_name",actionName);
+        Map<String,Object> actionInfo = new HashMap<>();
+        Map<String,Object> scene = new HashMap<>();
+
+        if (sceneId != null) {
+            scene.put("scene_id",sceneId);
+        }else if(StringUtils.isNotEmpty(sceneStr)){
+            scene.put("scene_str",sceneStr);
+        }else {
+            throw new ParamInvalidException("scene_id or scene_str can not both be null");
+        }
+
+        actionInfo.put("scene",scene);
+        postParam.put("action_info",actionInfo);
+        if (expireSeconds != null) {
+            postParam.put("expire_seconds",expireSeconds);
+        }
+
+        String url = PublicConstants.CREATE_QRCODE_PARAM.replace(PublicConstants.PARAM_ACCESS_TOKEN, PublicUtils.getAccessToken(which).getToken());
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(HttpClientUtils.httpPostJson(url,JSONUtils.obj2json(postParam)));
+        } catch (IOException e) {
+            logger.error(e.getMessage(),e);
+            throw new BaseException("request failed for url=" + url,e);
+        } catch (Exception e) {
+            logger.error(e.getMessage(),e);
+            throw new BaseException("obj2json error",e);
+        }
+        if (jsonObject != null && jsonObject.has("errcode")) {
+            Integer errCode = jsonObject.getInt("errcode");
+            logger.error("Error occurs when createQrCode, requestUrl:{},error:{}", url, jsonObject);
+            if (errCode != 0) {
+                throw new RuntimeException(jsonObject.toString());
+            }
+        }else {
+
+            QrCodeTicketDto qrCodeTicketDto = new QrCodeTicketDto();
+            qrCodeTicketDto.setTicket(jsonObject.getString("ticket"));
+            qrCodeTicketDto.setUrl(jsonObject.getString("url"));
+            if (jsonObject.has("expire_seconds")) {
+                qrCodeTicketDto.setExpireSeconds(jsonObject.getInt("expire_seconds"));
+            }
+            return  qrCodeTicketDto;
+        }
+        return null;
     }
 }

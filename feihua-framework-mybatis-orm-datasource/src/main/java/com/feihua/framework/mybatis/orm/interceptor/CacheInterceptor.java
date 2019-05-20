@@ -40,7 +40,6 @@ public  class CacheInterceptor implements Interceptor {
 	public Object intercept(Invocation invocation) throws Throwable {
 		String name = invocation.getMethod().getName();
 		Object result =null;
-		System.out.println(this);
 		if("query".equals(name))
 		{
 			result = this.processQuery(invocation);
