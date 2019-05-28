@@ -36,6 +36,7 @@
         <module>feihua-framework-log-rest</module>
         <module>feihua-framework-statistic-service</module>
         <module>feihua-framework-statistic-rest</module>
+        <module>feihua-ai-service</module>
     </modules>
     <packaging>pom</packaging>
 
