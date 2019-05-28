@@ -125,6 +125,7 @@ public class PublicPlatformController extends SuperController {
      */
     @RequestMapping(value = "getJsInterfaceConfig",method = RequestMethod.GET)
     public ResponseEntity getJsInterfaceConfig(String realUrl,String which) {
+		logger.info("====》getJsInterfaceConfig: realUrl：{},which：{}，userId：{}",realUrl,which,getLoginUserId());
         ResponseJsonRender resultData = new ResponseJsonRender("成功");
         resultData.setData(PublicUtils.getJsInterfaceConfig(PublicUtils.getJsapiTicket(which), realUrl, which));
 
