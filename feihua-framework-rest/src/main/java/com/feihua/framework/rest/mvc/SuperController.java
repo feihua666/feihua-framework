@@ -31,6 +31,10 @@ public class SuperController {
         ShiroUser su = getLoginUser();
         return su == null ? null: su.getId();
     }
+    public String getLoginUserNickname(){
+        ShiroUser su = getLoginUser();
+        return su == null ? null: su.getNickname();
+    }
     public PageAndOrderbyParamDto getPageAndOrderbyDto(){
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
 

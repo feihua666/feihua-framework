@@ -138,6 +138,7 @@ class IntroductionToPCA {
 
 public class IntroductionToPCADemo {
     public static void main(final String[] args) {
+        System.out.println(System.getProperty("java.library.path"));
         // Load the native OpenCV library
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 
