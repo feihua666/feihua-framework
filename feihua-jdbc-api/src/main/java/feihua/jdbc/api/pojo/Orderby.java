@@ -54,7 +54,10 @@ public class Orderby implements Serializable{
                 sb.append(statement.getName()).append(" ").append(statement.getType()).append(",");
             }
         }
-        return sb.substring(0,sb.length()-1);
+        if (sb.length()  > 0) {
+            return sb.substring(0,sb.length()-1);
+        }
+        return sb.toString();
     }
 
     public static class  Statement {
