@@ -162,7 +162,7 @@ public class StatisticRecordPageViewController extends SuperController {
         dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
         PageResultDto<StatisticRecordPageViewDto> list = apiStatisticRecordPageViewPoService.searchStatisticRecordPageViewsDsf(dto,pageAndOrderbyParamDto);
 
-
+        resultData.setPage(list.getPage());
         return returnList(list.getData(),resultData);
 
     }

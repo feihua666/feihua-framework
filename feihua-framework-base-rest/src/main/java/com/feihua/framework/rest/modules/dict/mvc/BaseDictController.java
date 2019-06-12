@@ -285,7 +285,7 @@ public class BaseDictController extends BaseController {
         dto.setCurrentRoleId(getLoginUserRoleId());
         PageResultDto<BaseDictDto> list = apiBaseDictPoService.searchDictsDsf(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(list.getData() != null && !list.getData().isEmpty()){
             //机构和区域、父级
             if (includeOffice || includeArea || includeParent) {
                 // 父级

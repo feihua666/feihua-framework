@@ -213,7 +213,7 @@ public class CmsContentCategoryController extends BaseController {
         dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
         PageResultDto<CmsContentCategoryDto> list = apiCmsContentCategoryPoService.searchCmsContentCategorysDsf(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(list.getData() != null && !list.getData().isEmpty()){
 
             if ( includeSite || includeChannel || includeParent) {
                 Map<String, CmsSiteDto> siteDtoMap = new HashMap<>();

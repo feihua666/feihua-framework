@@ -209,7 +209,7 @@ public class CmsChannelController extends BaseController {
         dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
         PageResultDto<CmsChannelDto> list = apiCmsChannelPoService.searchCmsChannelsDsf(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(list.getData() != null && !list.getData().isEmpty()){
             //父级
             if (includeParent || includeSite) {
                 Map<String,CmsChannelDto> parentDtoMap = new HashMap<>();

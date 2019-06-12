@@ -849,7 +849,7 @@ public class CmsContentController extends BaseController {
         dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
         PageResultDto<CmsContentDto> list = apiCmsContentPoService.searchCmsContentsDsf(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(list.getData() != null && !list.getData().isEmpty()){
 
             if (includeChannel || includeSite) {
                 Map<String,CmsChannelDto> channelDtoMap = new HashMap<>();

@@ -233,7 +233,7 @@ public class BaseOfficeController extends BaseController {
         dto.setCurrentRoleId(getLoginUserRoleId());
         PageResultDto<BaseOfficeDto> list = apiBaseOfficePoService.searchOfficesDsf(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(list.getData() != null && !list.getData().isEmpty()){
 
             //区域和父级
             if(includeArea || includeParent){

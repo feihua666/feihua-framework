@@ -246,7 +246,7 @@ public class BaseRoleController extends BaseController {
         ResponseJsonRender resultData = new ResponseJsonRender();
         PageResultDto<BaseRoleDto> pageResultDto = apiBaseRolePoService.searchRolesDsf(dto,new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal()));
 
-        if(CollectionUtils.isEmpty(pageResultDto.getData())){
+        if(pageResultDto.getData() == null || pageResultDto.getData().isEmpty()){
             resultData.setCode(ResponseCode.E404_100001.getCode());
             resultData.setMsg(ResponseCode.E404_100001.getMsg());
             return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);

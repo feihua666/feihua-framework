@@ -152,7 +152,7 @@ public class StatisticRecordPageShareController extends SuperController {
         dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
         PageResultDto<StatisticRecordPageShareDto> list = apiStatisticRecordPageSharePoService.searchStatisticRecordPageSharesDsf(dto,pageAndOrderbyParamDto);
 
-
+        resultData.setPage(list.getPage());
         return returnList(list.getData(),resultData);
 
     }
