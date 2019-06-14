@@ -8,6 +8,7 @@ import com.feihua.framework.base.modules.postjob.dto.BasePostJobDto;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
+import com.feihua.framework.rest.modules.common.mvc.BaseController;
 import com.feihua.framework.rest.mvc.SuperController;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.BasePo;
@@ -43,7 +44,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/base/postjob")
-public class BasePostController extends SuperController {
+public class BasePostController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(BasePostController.class);
 
@@ -75,6 +76,7 @@ public class BasePostController extends SuperController {
         basePo.setDisabled(dto.getDisabled());
         basePo.setParentId(dto.getParentId());
         basePo.setDataOfficeId(dto.getDataOfficeId());
+        basePo.setIsPublic(dto.getIsPublic());
 
         basePo = apiBasePostPoService.preInsert(basePo,getLoginUser().getId());
         BasePostDto r = apiBasePostPoService.insert(basePo);
@@ -150,6 +152,7 @@ public class BasePostController extends SuperController {
 
         basePo.setParentId(dto.getParentId());
         basePo.setDataOfficeId(dto.getDataOfficeId());
+        basePo.setIsPublic(dto.getIsPublic());
 
         // 用条件更新，乐观锁机制
         BasePostPo basePoCondition = new BasePostPo();
@@ -178,7 +181,6 @@ public class BasePostController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("base:postjob:post:getById")
     @RequestMapping(value = "/post/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -208,7 +210,8 @@ public class BasePostController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BasePostDto> pageResultDto = apiBasePostPoService.searchBasePostsDsf(dto,pageAndOrderbyParamDto);
         //机构和职务、父级
         if (pageResultDto.getData() != null && (includeOffice || includePostJob || includeParent)) {
@@ -228,7 +231,7 @@ public class BasePostController extends SuperController {
                 if(includePostJob && StringUtils.isNotEmpty(_postDto.getPostJobId())){
                     postJobDto = apiBasePostJobPoService.selectByPrimaryKey(_postDto.getPostJobId());
                     if (postJobDto != null) {
-                        postJobDtoMap.put(_postDto.getDataAreaId(),postJobDto);
+                        postJobDtoMap.put(_postDto.getPostJobId(),postJobDto);
                     }
                 }
 

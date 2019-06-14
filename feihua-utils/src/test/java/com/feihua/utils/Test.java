@@ -41,5 +41,7 @@ public class Test {
         System.out.println(ssss);
         System.out.println(BooleanUtils.toBoolean("true"));
 
+        System.out.println(com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ","ssss","saaasss"));
+
     }
 }

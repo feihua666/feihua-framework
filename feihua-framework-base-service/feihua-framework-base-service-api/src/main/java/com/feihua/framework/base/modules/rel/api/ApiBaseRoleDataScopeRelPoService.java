@@ -17,7 +17,7 @@ public interface ApiBaseRoleDataScopeRelPoService extends feihua.jdbc.api.servic
      * @param roleId
      * @return
      */
-    List<BaseRoleDataScopeRelDto> selectByRoleId(String roleId);
+    BaseRoleDataScopeRelDto selectByRoleId(String roleId);
 
     /**
      * 根据数据范围id查询

@@ -17,6 +17,11 @@ public class BaseConditionDto implements Serializable{
      * 当前使用的角色id
      */
     private String currentRoleId;
+    /**
+     * 当前使用的岗位id
+     */
+    private String currentPostId;
+
     public String getCurrentUserId() {
         return currentUserId;
     }
@@ -31,5 +36,13 @@ public class BaseConditionDto implements Serializable{
 
     public void setCurrentRoleId(String currentRoleId) {
         this.currentRoleId = currentRoleId;
+    }
+
+    public String getCurrentPostId() {
+        return currentPostId;
+    }
+
+    public void setCurrentPostId(String currentPostId) {
+        this.currentPostId = currentPostId;
     }
 }

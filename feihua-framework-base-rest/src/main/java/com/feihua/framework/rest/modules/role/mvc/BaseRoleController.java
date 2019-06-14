@@ -127,7 +127,7 @@ public class BaseRoleController extends BaseController {
 
         List<BaseRolePo> childrenAll = apiBaseRolePoService.getChildrenAll(id);
 
-        if(CollectionUtils.isNotEmpty(childrenAll)){
+        if(childrenAll != null && !childrenAll.isEmpty()){
             resultData.setMsg(ResponseCode.E403_100003.getMsg() + ",children nodes exist");
             resultData.setCode(ResponseCode.E403_100003.getCode());
             logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
@@ -244,6 +244,9 @@ public class BaseRoleController extends BaseController {
     @RequestMapping(value = "/roles",method = RequestMethod.GET)
     public ResponseEntity searchUsers(SearchRolesConditionDto dto, boolean includeParent, boolean includeOffice,boolean includeArea){
         ResponseJsonRender resultData = new ResponseJsonRender();
+        dto.setCurrentUserId(getLoginUserId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseRoleDto> pageResultDto = apiBaseRolePoService.searchRolesDsf(dto,new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal()));
 
         if(pageResultDto.getData() == null || pageResultDto.getData().isEmpty()){

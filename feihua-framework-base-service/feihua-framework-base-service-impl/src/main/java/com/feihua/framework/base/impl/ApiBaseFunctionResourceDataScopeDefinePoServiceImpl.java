@@ -2,6 +2,12 @@ package com.feihua.framework.base.impl;
 
 import com.feihua.exception.BaseException;
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
+import com.feihua.framework.base.modules.postjob.api.ApiBasePostPoService;
+import com.feihua.framework.base.modules.postjob.po.BasePostPo;
+import com.feihua.framework.base.modules.rel.api.ApiBasePostRoleRelPoService;
+import com.feihua.framework.base.modules.rel.dto.BasePostRoleRelDto;
+import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
+import com.feihua.framework.base.modules.role.po.BaseRolePo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.base.modules.function.api.ApiBaseFunctionResourceDataScopeDefinePoService;
 import com.feihua.framework.base.modules.function.api.ApiBaseFunctionResourceDataScopeDefineSelfPoService;
@@ -13,6 +19,7 @@ import com.feihua.framework.base.modules.rel.dto.BaseUserDataScopeRelDto;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -34,18 +41,24 @@ public class ApiBaseFunctionResourceDataScopeDefinePoServiceImpl extends ApiBase
 
     @Autowired
     private ApiBaseFunctionResourceDataScopeDefineSelfPoService apiBaseFunctionResourceDataScopeDefineSelfPoService;
+    @Autowired
+    private ApiBaseRolePoService apiBaseRolePoService;
+    @Autowired
+    private ApiBasePostPoService apiBasePostPoService;
+    @Autowired
+    private ApiBasePostRoleRelPoService apiBasePostRoleRelPoService;
 
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
     public BaseFunctionResourceDataScopeDefineDto selectByRoleId(String roleId) {
-        if (roleId == null) {
-            return null;
-        }
+        if(StringUtils.isEmpty(roleId)) return null;
         BaseFunctionResourceDataScopeDefinePo condition = new BaseFunctionResourceDataScopeDefinePo();
         condition.setRoleId(roleId);
         condition.setDelFlag(BasePo.YesNo.N.name());
         return this.selectOne(condition);
     }
+
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public BaseFunctionResourceDataScopeDefineDto setFunctionResourceDataScope(FunctionResourceDataScopeParamDto functionResourceDataScope) {
@@ -105,9 +118,22 @@ public class ApiBaseFunctionResourceDataScopeDefinePoServiceImpl extends ApiBase
     }
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
-    public BaseFunctionResourceDataScopeDefineDto selectDataScopeDefineByUserId(String userId, String roleId) {
+    public BaseFunctionResourceDataScopeDefineDto selectDataScopeDefineByUserId(String userId, String roleId,String postId) {
+        // 取角色设置的数据范围
+        BaseRolePo rolePo = apiBaseRolePoService.selectByPrimaryKeySimple(roleId,false);
+        if (rolePo != null && !BasePo.YesNo.Y.name().equals(rolePo.getDisabled())) {
+            return selectByRoleId(roleId);
+        }
 
-        return selectByRoleId(roleId);
+        // 取岗位绑定的角色设置的数据范围
+        BasePostPo postPo = apiBasePostPoService.selectByPrimaryKeySimple(postId,false);
+        if (postPo != null && !BasePo.YesNo.Y.name().equals(postPo.getDisabled())) {
+            BasePostRoleRelDto postRoleRelDto = apiBasePostRoleRelPoService.selectByPostId(postId);
+            if (postRoleRelDto != null) {
+                return selectByRoleId(postRoleRelDto.getRoleId());
+            }
+        }
+        return null;
     }
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
@@ -116,11 +142,6 @@ public class ApiBaseFunctionResourceDataScopeDefinePoServiceImpl extends ApiBase
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void checkConflict(List<String> dataScopeIds) throws BaseException {
-        // 没有冲突处理
     }
 
     @Override

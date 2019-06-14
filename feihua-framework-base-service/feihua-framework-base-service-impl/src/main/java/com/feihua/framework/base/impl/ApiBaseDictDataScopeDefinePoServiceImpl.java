@@ -3,6 +3,12 @@ package com.feihua.framework.base.impl;
 import com.feihua.exception.BaseException;
 import com.feihua.exception.DataConflictException;
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
+import com.feihua.framework.base.modules.postjob.api.ApiBasePostPoService;
+import com.feihua.framework.base.modules.postjob.po.BasePostPo;
+import com.feihua.framework.base.modules.rel.api.ApiBasePostRoleRelPoService;
+import com.feihua.framework.base.modules.rel.dto.BasePostRoleRelDto;
+import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
+import com.feihua.framework.base.modules.role.po.BaseRolePo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.base.modules.dict.api.ApiBaseDictDataScopeDefinePoService;
 import com.feihua.framework.base.modules.dict.dto.BaseDictDataScopeDefineDto;
@@ -39,8 +45,13 @@ public class ApiBaseDictDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
     private ApiBaseUserDataScopeRelPoService apiBaseUserDataScopeRelPoService;
     @Autowired
     private ApiBaseRoleDataScopeRelPoService apiBaseRoleDataScopeRelPoService;
+
     @Autowired
-    private DataScopeConflictService dataScopeConflictService;
+    private ApiBaseRolePoService apiBaseRolePoService;
+    @Autowired
+    private ApiBasePostPoService apiBasePostPoService;
+    @Autowired
+    private ApiBasePostRoleRelPoService apiBasePostRoleRelPoService;
 
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
@@ -77,7 +88,6 @@ public class ApiBaseDictDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
             // 这里没有考虑乐观锁
             int r = this.updateByPrimaryKey(dictDataScopeDefinePo);
             if(r == 1){
-                dataScopeConflictService.checkConflict(dictDataScopeDefinePo.getDataScopeId(),this);
                 result = this.wrapDto(dictDataScopeDefinePo);
                 return result;
             }else{
@@ -89,29 +99,32 @@ public class ApiBaseDictDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
     }
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
-    public BaseDictDataScopeDefineDto selectDataScopeDefineByUserId(String userId, String roleId) {
-        List<BaseUserDataScopeRelDto> userDataScopeRelDtos = apiBaseUserDataScopeRelPoService.selectByUserId(userId);
+    public BaseDictDataScopeDefineDto selectDataScopeDefineByUserId(String userId, String roleId,String postId) {
         // 用户设置了数据范围，以该数据范围优先
-        if(CollectionUtils.isNotEmpty(userDataScopeRelDtos)){
-            for (BaseUserDataScopeRelDto userDataScopeRelDto : userDataScopeRelDtos) {
-                BaseDictDataScopeDefineDto defineDto = this.selectByDataScopeId(userDataScopeRelDto.getDataScopeId());
-                // 如果一个用户设置了多个数据范围，以有权限的数据范围优先
-                if(defineDto != null && !DictEnum.DictDataScope.no.name().equals(defineDto.getType())){
-                    return defineDto;
-                }
-            }
-
+        BaseUserDataScopeRelDto userDataScopeRelDto = apiBaseUserDataScopeRelPoService.selectByUserId(userId);
+        if(userDataScopeRelDto != null){
+            BaseDictDataScopeDefineDto defineDto = this.selectByDataScopeId(userDataScopeRelDto.getDataScopeId());
+            return defineDto;
         }
         // 取角色设置的数据范围
-        else{
-            List<BaseRoleDataScopeRelDto> roleDataScopeRelDtos = apiBaseRoleDataScopeRelPoService.selectByRoleId(roleId);
-            if(CollectionUtils.isNotEmpty(roleDataScopeRelDtos)){
-                for (BaseRoleDataScopeRelDto roleDataScopeRelDto : roleDataScopeRelDtos) {
+        BaseRolePo rolePo = apiBaseRolePoService.selectByPrimaryKeySimple(roleId,false);
+        if (rolePo != null && !BasePo.YesNo.Y.name().equals(rolePo.getDisabled())) {
+            BaseRoleDataScopeRelDto roleDataScopeRelDto = apiBaseRoleDataScopeRelPoService.selectByRoleId(roleId);
+            if (roleDataScopeRelDto != null) {
+                BaseDictDataScopeDefineDto defineDto = this.selectByDataScopeId(roleDataScopeRelDto.getDataScopeId());
+
+                return defineDto;
+            }
+        }
+        // 取岗位绑定的角色设置的数据范围
+        BasePostPo postPo = apiBasePostPoService.selectByPrimaryKeySimple(postId,false);
+        if (postPo != null && !BasePo.YesNo.Y.name().equals(postPo.getDisabled())) {
+            BasePostRoleRelDto postRoleRelDto = apiBasePostRoleRelPoService.selectByPostId(postId);
+            if (postRoleRelDto != null) {
+                BaseRoleDataScopeRelDto roleDataScopeRelDto = apiBaseRoleDataScopeRelPoService.selectByRoleId(postRoleRelDto.getRoleId());
+                if(roleDataScopeRelDto != null){
                     BaseDictDataScopeDefineDto defineDto = this.selectByDataScopeId(roleDataScopeRelDto.getDataScopeId());
-                    // 如果一个角色设置了多个数据范围，以有权限的数据范围优先
-                    if(defineDto != null && !DictEnum.DictDataScope.no.name().equals(defineDto.getType())){
-                        return defineDto;
-                    }
+                    return defineDto;
                 }
             }
         }
@@ -121,22 +134,6 @@ public class ApiBaseDictDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
     @Override
     public boolean isAllData(BaseDictDataScopeDefineDto dataScopeDefine) {
         return false;
-    }
-    @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
-    @Override
-    public void checkConflict(List<String> dataScopeIds) throws BaseException {
-        if(CollectionUtils.isNotEmpty(dataScopeIds)){
-            List<BaseDictDataScopeDefineDto> list = new ArrayList<>();
-            for (String dataScopeId : dataScopeIds) {
-                BaseDictDataScopeDefineDto definePo = this.selectByDataScopeId(dataScopeId);
-                if(definePo != null && !DictEnum.RoleDataScope.no.name().equals(definePo.getType())){
-                    list.add(definePo);
-                }
-            }
-            if(CollectionUtils.isNotEmpty(list)){
-                throw new DataConflictException("dict dataScope conflict!",DictEnum.DataResource.user.name());
-            }
-        }
     }
 
     @Override

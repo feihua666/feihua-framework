@@ -47,7 +47,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/scheduler")
-public class SchedulerController extends SuperController {
+public class SchedulerController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(SchedulerController.class);
 
@@ -183,7 +183,6 @@ public class SchedulerController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("scheduler:getById")
     @RequestMapping(value = "/scheduler/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -205,7 +204,6 @@ public class SchedulerController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("scheduler:search")
     @RequestMapping(value = "/schedulers",method = RequestMethod.GET)
     public ResponseEntity search(SearchSchedulersConditionDto dto){
@@ -214,7 +212,8 @@ public class SchedulerController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<SchedulerDto> list = apiSchedulerPoService.searchSchedulersDsf(dto,pageAndOrderbyParamDto);
 
         List<SchedulerDto> data = list.getData();
@@ -258,7 +257,6 @@ public class SchedulerController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("scheduler:search:origin")
     @RequestMapping(value = "/origin/schedulers",method = RequestMethod.GET)
     public ResponseEntity origin(final SearchSchedulersOriginConditionDto dto){

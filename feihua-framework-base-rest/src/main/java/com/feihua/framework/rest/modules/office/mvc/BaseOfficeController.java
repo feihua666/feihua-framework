@@ -229,8 +229,9 @@ public class BaseOfficeController extends BaseController {
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
-        dto.setCurrentUserId(getLoginUser().getId());
+        dto.setCurrentUserId(getLoginUserId());
         dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseOfficeDto> list = apiBaseOfficePoService.searchOfficesDsf(dto,pageAndOrderbyParamDto);
 
         if(list.getData() != null && !list.getData().isEmpty()){

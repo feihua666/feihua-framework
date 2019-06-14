@@ -2357,11 +2357,17 @@
     <include refid="Base_Column_List" />
     from cms_content_category
     where del_flag = 'N'
+    <if test="id != null and id != ''">
+      and id = #{id}
+    </if>
     <if test="name != null and name != ''">
       and name like concat('%',#{name},'%')
     </if>
     <if test="siteId != null and siteId != ''">
       and site_id = #{siteId}
+    </if>
+    <if test="parentId != null and parentId != ''">
+      and parent_id = #{parentId}
     </if>
   </select>
 </mapper>

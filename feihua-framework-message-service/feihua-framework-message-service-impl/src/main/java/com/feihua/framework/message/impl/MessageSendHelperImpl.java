@@ -51,6 +51,7 @@ public class MessageSendHelperImpl implements MessageSendHelper {
 
         createMessageParamsDto.setCurrentUserId(paramsDto.getCurrentUserId());
         createMessageParamsDto.setCurrentRoleId(paramsDto.getCurrentRoleId());
+        createMessageParamsDto.setCurrentPostId(paramsDto.getCurrentPostId());
         BaseMessagePo r = apiBaseMessagePoService.addMessage(createMessageParamsDto);
 
         // 设置发送参数
@@ -72,6 +73,7 @@ public class MessageSendHelperImpl implements MessageSendHelper {
         baseMessageSendParamsDto.setClientParamDto(clientParamDto);
         baseMessageSendParamsDto.setCurrentUserId(paramsDto.getCurrentUserId());
         baseMessageSendParamsDto.setCurrentRoleId(paramsDto.getCurrentRoleId());
+        baseMessageSendParamsDto.setCurrentPostId(paramsDto.getCurrentPostId());
         apiMessageService.messageSend(baseMessageSendParamsDto,true);
     }
 }

@@ -14,6 +14,7 @@ import java.util.List;
 public interface ApiBaseUserRoleRelPoService extends feihua.jdbc.api.service.ApiBaseService<BaseUserRoleRelPo, BaseUserRoleRelDto, String> {
     /**
      * 根据用户id查询
+     * 一个用户可以有多个角色，切换角色
      * @param userId
      * @return
      */

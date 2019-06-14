@@ -6,6 +6,7 @@ import com.feihua.framework.base.modules.postjob.dto.BasePostDto;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
+import com.feihua.framework.rest.modules.common.mvc.BaseController;
 import com.feihua.framework.rest.mvc.SuperController;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.BasePo;
@@ -41,7 +42,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/base/postjob")
-public class BasePostJobController extends SuperController {
+public class BasePostJobController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(BasePostJobController.class);
 
@@ -169,7 +170,6 @@ public class BasePostJobController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("base:postjob:postjob:getById")
     @RequestMapping(value = "/postjob/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -199,7 +199,8 @@ public class BasePostJobController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BasePostJobDto> pageResultDto = apiBasePostJobPoService.searchBasePostJobsDsf(dto,pageAndOrderbyParamDto);
         //机构
         if (pageResultDto.getData() != null && includeOffice) {

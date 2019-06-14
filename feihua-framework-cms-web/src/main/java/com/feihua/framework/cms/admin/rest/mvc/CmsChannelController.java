@@ -206,7 +206,8 @@ public class CmsChannelController extends BaseController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<CmsChannelDto> list = apiCmsChannelPoService.searchCmsChannelsDsf(dto,pageAndOrderbyParamDto);
 
         if(list.getData() != null && !list.getData().isEmpty()){

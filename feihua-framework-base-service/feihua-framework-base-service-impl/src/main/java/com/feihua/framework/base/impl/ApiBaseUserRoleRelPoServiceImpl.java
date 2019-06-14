@@ -38,6 +38,9 @@ public class ApiBaseUserRoleRelPoServiceImpl extends ApiBaseServiceImpl<BaseUser
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
     public List<BaseUserRoleRelDto> selectByRoleId(String roleId) {
+        if (roleId == null) {
+            return null;
+        }
         BaseUserRoleRelPo baseUserRoleRelPoCondition = new BaseUserRoleRelPo();
         baseUserRoleRelPoCondition.setRoleId(roleId);
         baseUserRoleRelPoCondition.setDelFlag(BasePo.YesNo.N.name());
@@ -78,7 +81,7 @@ public class ApiBaseUserRoleRelPoServiceImpl extends ApiBaseServiceImpl<BaseUser
         int deleteR = this.deleteFlagByUserId(userBindRolesParamDto.getUserId(),userBindRolesParamDto.getCurrentUserId());
         List<String> roleIds = userBindRolesParamDto.getRoleIds();
         // 批量插入新关系
-        if(CollectionUtils.isNotEmpty(roleIds)){
+        if(roleIds != null && !roleIds.isEmpty()){
             BaseUserRoleRelPo userRoleRelPo = null;
             List<BaseUserRoleRelPo> addList = new ArrayList<>(roleIds.size());
             for (String roleId : roleIds) {
@@ -102,7 +105,7 @@ public class ApiBaseUserRoleRelPoServiceImpl extends ApiBaseServiceImpl<BaseUser
         int deleteR = this.deleteFlagByRoleId(roleBindUsersParamDto.getRoleId(),roleBindUsersParamDto.getCurrentUserId());
         List<String> userIds = roleBindUsersParamDto.getUserIds();
         // 批量插入新关系
-        if(CollectionUtils.isNotEmpty(userIds)){
+        if(userIds != null && !userIds.isEmpty()){
             BaseUserRoleRelPo userRoleRelPo = null;
             List<BaseUserRoleRelPo> addList = new ArrayList<>(userIds.size());
             for (String userId : userIds) {

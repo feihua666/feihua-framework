@@ -227,6 +227,7 @@ public class BaseUrlCollectController extends BaseController {
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
         dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseUrlCollectDto> list = apiBaseUrlCollectPoService.searchBaseUrlCollectsDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){
@@ -254,6 +255,7 @@ public class BaseUrlCollectController extends BaseController {
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
         dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         dto.setUserId(getLoginUser().getId());
         PageResultDto<BaseUrlCollectDto> list = apiBaseUrlCollectPoService.searchBaseUrlCollectsDsf(dto,pageAndOrderbyParamDto);
 

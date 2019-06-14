@@ -63,6 +63,8 @@ public class DictEnum {
         roleoffice,     // 角色所在机构
         all,            // 所有机构
         roleofficedown, // 角色所在机构及以下机构
+        postoffice,     // 岗位所在机构
+        postofficedown, // 岗位所在机构及以下机构
         self,           // 自定义
         no              // 无权限
     }
@@ -74,6 +76,8 @@ public class DictEnum {
         userofficedown, // 所在机构及以下机构用户
         roleoffice,     // 角色所在机构用户
         roleofficedown, // 角色所在机构及以下机构用户
+        postoffice,     // 岗位所在机构用户
+        postofficedown, // 岗位所在机构及以下机构用户
         officedata,     // 机构数据范围下用户
         rolebind,       // 角色绑定的用户
         all,            // 所有用户
@@ -91,6 +95,8 @@ public class DictEnum {
         userofficedown,  // 用户所在机构及以下机构角色
         roleofficedown,  // 角色所在机构及以下机构角色
         roleoffice,      // 角色所在机构下角色
+        postofficedown,  // 岗位所在机构及以下机构角色
+        postoffice,      // 岗位所在机构下角色
         office,          // 机构数据范围下的角色
         assign,          // 分配的角色
         assigndown,      // 分配的角色及以下角色
@@ -125,6 +131,8 @@ public class DictEnum {
         userofficedown,  // 用户所在机构及以下机构数据范围
         roleofficedown,  // 角色所在机构及以下机构数据范围
         roleoffice,      // 角色所在机构下数据范围
+        postofficedown,  // 岗位所在机构及以下机构数据范围
+        postoffice,      // 岗位所在机构下数据范围
         office,          // 机构数据范围下的数据范围
         all,             // 所有数据范围
         self,            // 自定义
@@ -136,13 +144,50 @@ public class DictEnum {
      */
     public enum DataScopeType {
         allData,          // 所有数据
-        defaultType,      // 默认类型
-        publicType        // 公共
+        defaultType      // 默认类型
     }
+
+    /**
+     * 字典数据范围
+     */
     public enum DictDataScope {
-        user,    //按用户
-        role,   //按角色
-        no     // 不设置
+        all,                                // 所有
+        publics ,                           // 公共
+        publics_userofficecompany,          //公共 + 用户所在机构的公司
+        userofficecompany,                  // 用户所在机构的公司
+        publics_userroleofficecompany,      //公共 + 用户角色所在机构的公司
+        userroleofficecompany,              // 用户角色所在机构的公司
+        publics_userpostofficecompany,      //公共 + 用户岗位所在机构的公司
+        userpostofficecompany,              // 用户岗位所在机构的公司
+        no     // 无权限
+    }
+    /**
+     * 岗位职务数据范围
+     */
+    public enum PostJobDataScope {
+        all,                                // 所有
+        publics ,                           // 公共
+        publics_useroffice,          //公共 + 用户所在机构
+        useroffice,                  // 用户所在机构
+        publics_userroleoffice,      //公共 + 用户角色所在机构
+        userroleoffice,              // 用户角色所在机构
+        publics_userpostoffice,      //公共 + 用户岗位所在机构
+        userpostoffice,              // 用户岗位所在机构
+        no     // 无权限
+    }
+    /**
+     * 岗位数据范围
+     */
+    public enum PostDataScope {
+        all,                                // 所有
+        publics ,                           // 公共
+        publics_useroffice,          //公共 + 用户所在机构
+        useroffice,                  // 用户所在机构
+        publics_userroleoffice,      //公共 + 用户角色所在机构
+        userroleoffice,              // 用户角色所在机构
+        publics_userpostoffice,      //公共 + 用户岗位所在机构
+        userpostoffice,              // 用户岗位所在机构
+        no     // 无权限
     }
     public enum RoleType {
         superadmin,    //超级管理员
@@ -151,7 +196,10 @@ public class DictEnum {
         companymanager, // 公司负责人
         hr// 人事
     }
-
+    public enum OfficeType {
+        company,    //公司
+        department   //部门
+    }
     /**
      * 文件上传与导出分类
      */

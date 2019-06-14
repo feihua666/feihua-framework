@@ -4,7 +4,7 @@ package com.feihua.utils.http.httpServletResponse;
  * Created by yangwei
  * Created at 2017/12/26 10:55
  */
-public   enum ResponseCode {
+public enum ResponseCode {
     // 0
     success("0","success"),
 

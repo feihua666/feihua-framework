@@ -12,9 +12,13 @@ import java.util.Map;
 public class ShiroUser implements Serializable{
     private static final long serialVersionUID = 1L;
 
-    private static final String role_key = "role";
-    private static final String office_key = "office";
-    private static final String area_key = "area";
+    private Object role;
+    private Object roles;
+    private Object office;
+    private Object area;
+    private Object post;
+    private Object posts;
+
 
     public ShiroUser(){}
 
@@ -98,24 +102,54 @@ public class ShiroUser implements Serializable{
      */
     private Map<String,Object> additionalAttr = new HashMap<>();
 
-    public void setRole(Object role){
-        additionalAttr.put(role_key,role);
+    public Object getRole() {
+        return role;
     }
-    public Object getRole(){
-        return additionalAttr.get(role_key);
+
+    public void setRole(Object role) {
+        this.role = role;
     }
-    public void setOffice(Object office){
-        additionalAttr.put(office_key,office);
+
+    public Object getRoles() {
+        return roles;
     }
-    public Object getOffice(){
-        return additionalAttr.get(office_key);
+
+    public void setRoles(Object roles) {
+        this.roles = roles;
     }
-    public void setArea(Object area){
-        additionalAttr.put(area_key,area);
+
+    public Object getOffice() {
+        return office;
     }
-    public Object getArea(){
-        return additionalAttr.get(area_key);
+
+    public void setOffice(Object office) {
+        this.office = office;
     }
+
+    public Object getArea() {
+        return area;
+    }
+
+    public void setArea(Object area) {
+        this.area = area;
+    }
+
+    public Object getPost() {
+        return post;
+    }
+
+    public void setPost(Object post) {
+        this.post = post;
+    }
+
+    public Object getPosts() {
+        return posts;
+    }
+
+    public void setPosts(Object posts) {
+        this.posts = posts;
+    }
+
     public String getId() {
         return id;
     }

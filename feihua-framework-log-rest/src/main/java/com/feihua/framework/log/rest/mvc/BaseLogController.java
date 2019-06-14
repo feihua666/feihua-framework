@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/base")
-public class BaseLogController extends SuperController {
+public class BaseLogController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(BaseLogController.class);
 
@@ -102,7 +102,8 @@ public class BaseLogController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseLogDto> list = apiBaseLogPoService.searchBaseLogsDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){

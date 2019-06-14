@@ -29,6 +29,8 @@ public class SearchDictsConditionDto extends BaseConditionDto {
      */
     private String parentId;
 
+    private String isPublic;
+
     public String getValue() {
         return value;
     }
@@ -67,5 +69,13 @@ public class SearchDictsConditionDto extends BaseConditionDto {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(String isPublic) {
+        this.isPublic = isPublic;
     }
 }

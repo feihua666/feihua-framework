@@ -69,7 +69,7 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
     @Override
     public PageResultDto<BaseUserDto> searchBaseUsersDsf(SearchBaseUsersConditionDto dto,PageAndOrderbyParamDto pageAndOrderbyParamDto) {
 
-        BaseUserDataScopeDefineDto userDataScopeDefineDto = apiBaseUserDataScopeService.selectDataScopeDefineByUserId(dto.getCurrentUserId(),dto.getCurrentRoleId());
+        BaseUserDataScopeDefineDto userDataScopeDefineDto = apiBaseUserDataScopeService.selectDataScopeDefineByUserId(dto.getCurrentUserId(),dto.getCurrentRoleId(),dto.getCurrentPostId());
         // 如果没有定义，或定义是无权限
         if (userDataScopeDefineDto == null || StringUtils.isEmpty(userDataScopeDefineDto.getType()) || DictEnum.UserDataScope.no.name().equals(userDataScopeDefineDto.getType())) {
             return new PageResultDto();
@@ -136,9 +136,53 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
             List<BaseUserPo> list = BaseUserPoMapper.searchBaseUsers(searchUsersConditionDsfDto);
             return new PageResultDto(this.wrapDtos(list), this.wrapPage(p));
         }
+        // 如果岗位所在机构下的用户
+        if (DictEnum.UserDataScope.postoffice.name().equals(userDataScopeDefineDto.getType())) {
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByPostId(dto.getCurrentPostId(),false);
+            // 如果所在机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto();
+            }
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            searchUsersConditionDsfDto.setDataOfficeId(officeDto.getId());
+            List<BaseUserPo> list = BaseUserPoMapper.searchBaseUsers(searchUsersConditionDsfDto);
+            return new PageResultDto(this.wrapDtos(list), this.wrapPage(p));
+        }
+        // 如果岗位机构及以下机构的用户
+        if (DictEnum.UserDataScope.postofficedown.name().equals(userDataScopeDefineDto.getType())) {
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByPostId(dto.getCurrentPostId(),false);
+            // 如果所在机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto();
+            }
+            // 查询机构
+            List<BaseOfficePo> officePoList = new ArrayList<>();
+            officePoList.add(apiBaseOfficePoService.selectByPrimaryKeySimple(officeDto.getId(),false));
+
+            // 查询子机构
+            List<BaseOfficePo> officePos = apiBaseOfficePoService.getChildrenAll(officeDto.getId());
+            if(officePos != null && !officePos.isEmpty()){
+                officePoList.addAll(officePos);
+            }
+            if(officePoList.isEmpty()){
+                return new PageResultDto();
+            }
+            // 机构查询完，根据机构id查询用户
+
+            StringBuffer sb = new StringBuffer("and (1!=1 ");
+            for (BaseOfficePo officePo : officePoList) {
+                sb.append(" or data_office_id = '").append(officePo.getId()).append("'");
+            }
+            sb.append(")");
+
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            searchUsersConditionDsfDto.setSelfCondition(sb.toString());
+            List<BaseUserPo> list = BaseUserPoMapper.searchBaseUsers(searchUsersConditionDsfDto);
+            return new PageResultDto(this.wrapDtos(list), this.wrapPage(p));
+        }
         // 角色所在机构的用户
         if (DictEnum.UserDataScope.roleoffice.name().equals(userDataScopeDefineDto.getType())) {
-            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(dto.getCurrentRoleId());
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(dto.getCurrentRoleId(),false);
             // 如果所在机构不存在，直接返回空
             if(officeDto == null){
                 return new PageResultDto();
@@ -150,7 +194,7 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
         }
         // 角色所在机构及以下机构用户
         if (DictEnum.UserDataScope.roleofficedown.name().equals(userDataScopeDefineDto.getType())) {
-            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(dto.getCurrentRoleId());
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(dto.getCurrentRoleId(),false);
             // 如果所在机构不存在，直接返回空
             if(officeDto == null){
                 return new PageResultDto();
@@ -184,7 +228,7 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
         if (DictEnum.UserDataScope.rolebind.name().equals(userDataScopeDefineDto.getType())) {
             // 判断是否设置的所有角色
 
-            boolean isAllData = apiBaseRoleDataScopeService.isAllData(apiBaseRoleDataScopeService.selectDataScopeDefineByUserId(dto.getCurrentUserId(),dto.getCurrentRoleId()));
+            boolean isAllData = apiBaseRoleDataScopeService.isAllData(apiBaseRoleDataScopeService.selectDataScopeDefineByUserId(dto.getCurrentUserId(),dto.getCurrentRoleId(),dto.getCurrentPostId()));
             if(isAllData){
                 Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
                 List<BaseUserPo> list = BaseUserPoMapper.searchBaseUsers(searchUsersConditionDsfDto);
@@ -220,7 +264,7 @@ public class ApiBaseUserPoServiceImpl extends ApiBaseServiceImpl<BaseUserPo, Bas
         // 机构数据范围下的用户
         if (DictEnum.UserDataScope.officedata.name().equals(userDataScopeDefineDto.getType())) {
             // 判断机构是否设置的所有数据
-            boolean isOfficeAllData = apiBaseOfficeDataScopeService.isAllData(apiBaseOfficeDataScopeService.selectDataScopeDefineByUserId(dto.getCurrentUserId(),dto.getCurrentRoleId()));
+            boolean isOfficeAllData = apiBaseOfficeDataScopeService.isAllData(apiBaseOfficeDataScopeService.selectDataScopeDefineByUserId(dto.getCurrentUserId(),dto.getCurrentRoleId(),dto.getCurrentPostId()));
             if (isOfficeAllData) {
                 Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
                 List<BaseUserPo> list = BaseUserPoMapper.searchBaseUsers(searchUsersConditionDsfDto);

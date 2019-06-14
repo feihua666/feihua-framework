@@ -1,5 +1,7 @@
 package com.feihua.framework.cms.admin.rest.mvc;
 
+import com.feihua.framework.base.modules.postjob.dto.BasePostDto;
+import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.cms.CmsConstants;
 import com.feihua.framework.cms.api.ApiCmsChannelPoService;
 import com.feihua.framework.cms.api.ApiCmsContentPoService;
@@ -9,6 +11,7 @@ import com.feihua.framework.cms.po.CmsChannelPo;
 import com.feihua.framework.cms.po.CmsContentPo;
 import com.feihua.framework.cms.po.CmsSitePo;
 import com.feihua.framework.rest.mvc.SuperController;
+import com.feihua.framework.shiro.pojo.ShiroUser;
 import com.feihua.utils.http.httpServletRequest.RequestUtils;
 import com.feihua.utils.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +33,35 @@ import java.util.List;
 public class BaseController extends SuperController {
     private static Logger logger = LoggerFactory.getLogger(BaseController.class);
 
+
+    public BaseRoleDto getLoginUserRole(){
+        ShiroUser su = super.getLoginUser();
+        if(su != null){
+            return (BaseRoleDto) su.getRole();
+        }
+        return null;
+    }
+    public BasePostDto getLoginUserPost(){
+        ShiroUser su = super.getLoginUser();
+        if(su != null){
+            return (BasePostDto) su.getPost();
+        }
+        return null;
+    }
+    public String getLoginUserRoleId(){
+        BaseRoleDto roleDto = getLoginUserRole();
+        if(roleDto != null){
+            return roleDto.getId();
+        }
+        return null;
+    }
+    public String getLoginUserPostId(){
+        BasePostDto postDto = getLoginUserPost();
+        if(postDto != null){
+            return postDto.getId();
+        }
+        return null;
+    }
 
     /**
      * 获取path路径下的文件夹名或文件名

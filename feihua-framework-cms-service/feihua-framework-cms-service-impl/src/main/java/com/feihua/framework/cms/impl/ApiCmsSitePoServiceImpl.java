@@ -35,10 +35,10 @@ public class ApiCmsSitePoServiceImpl extends ApiBaseServiceImpl<CmsSitePo, CmsSi
 
     @Override
     public CmsSitePo selecltMainSiteByDomain(String domain) {
-
+        if(StringUtils.isEmpty(domain)) return null;
         CmsSitePo cmsSitePo = new CmsSitePo();
         cmsSitePo.setDelFlag(BasePo.YesNo.N.name());
-        if(StringUtils.isEmpty(domain)) return null;
+
         cmsSitePo.setDomain(domain);
         cmsSitePo.setIsMain(BasePo.YesNo.Y.name());
         return this.selectOneSimple(cmsSitePo);
@@ -55,9 +55,10 @@ public class ApiCmsSitePoServiceImpl extends ApiBaseServiceImpl<CmsSitePo, CmsSi
 
     @Override
     public CmsSitePo selecltByPath(String contextPath) {
+        if(StringUtils.isEmpty(contextPath)) return null;
         CmsSitePo cmsSitePo = new CmsSitePo();
         cmsSitePo.setDelFlag(BasePo.YesNo.N.name());
-        if(StringUtils.isEmpty(contextPath)) return null;
+
         cmsSitePo.setPath(contextPath);
         return this.selectOneSimple(cmsSitePo);
     }

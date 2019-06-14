@@ -103,7 +103,7 @@ public class BaseAreaController extends BaseController {
 
         List<BaseAreaPo> children = apiBaseAreaPoService.getChildrenAll(id);
         // 如果存在子级，则不充许删除
-        if(CollectionUtils.isNotEmpty(children)){
+        if(children != null && !children.isEmpty()){
             resultData.setMsg(ResponseCode.E403_100003.getMsg() + ",children nodes exist");
             resultData.setCode(ResponseCode.E403_100003.getCode());
             logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
@@ -210,9 +210,10 @@ public class BaseAreaController extends BaseController {
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUserId());
         dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseAreaDto> list = apiBaseAreaPoService.searchAreasDsf(dto,pageAndOrderbyParamDto);
 
-        if(CollectionUtils.isNotEmpty(list.getData())){
+        if(list.getData() != null && !list.getData().isEmpty()){
             //父级
             if (includeParent) {
                 Map<String,BaseAreaDto> parentDtoMap = new HashMap<>();

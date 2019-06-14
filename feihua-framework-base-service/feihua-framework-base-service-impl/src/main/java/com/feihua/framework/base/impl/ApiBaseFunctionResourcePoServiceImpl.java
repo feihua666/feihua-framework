@@ -41,7 +41,7 @@ public class ApiBaseFunctionResourcePoServiceImpl extends ApiBaseTreeServiceImpl
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
     public PageResultDto<BaseFunctionResourceDto> searchFunctionResourcesDsf(SearchFunctionResourcesConditionDto dto, PageAndOrderbyParamDto pageAndOrderbyParamDto) {
-        BaseFunctionResourceDataScopeDefineDto functionResourceDataScopeDefineDto = apiBaseFunctionDataScopeService.selectDataScopeDefineByUserId(dto.getCurrentUserId(),dto.getCurrentRoleId());
+        BaseFunctionResourceDataScopeDefineDto functionResourceDataScopeDefineDto = apiBaseFunctionDataScopeService.selectDataScopeDefineByUserId(dto.getCurrentUserId(),dto.getCurrentRoleId(),dto.getCurrentPostId());
         if (functionResourceDataScopeDefineDto == null || StringUtils.isEmpty(functionResourceDataScopeDefineDto.getType()) || StringUtils.isEmpty(functionResourceDataScopeDefineDto.getType())) {
             return new PageResultDto();
         }

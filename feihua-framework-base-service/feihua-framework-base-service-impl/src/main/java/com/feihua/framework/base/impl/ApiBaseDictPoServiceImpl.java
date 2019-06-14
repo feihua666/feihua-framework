@@ -1,13 +1,11 @@
 package com.feihua.framework.base.impl;
 
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
+import com.feihua.framework.base.modules.dict.dto.*;
+import com.feihua.framework.base.modules.office.po.BaseOfficePo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.base.modules.dict.api.ApiBaseDictPoService;
-import com.feihua.framework.base.modules.dict.dto.BaseDictDataScopeDefineDto;
-import com.feihua.framework.base.modules.dict.dto.BaseDictDto;
-import com.feihua.framework.base.modules.dict.dto.SearchDictsConditionDto;
 import com.feihua.framework.base.mapper.BaseDictPoMapper;
-import com.feihua.framework.base.modules.dict.dto.SelectDictsConditionDto;
 import com.feihua.framework.base.modules.dict.po.BaseDictPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
@@ -49,9 +47,169 @@ public class ApiBaseDictPoServiceImpl extends ApiBaseTreeServiceImpl<BaseDictPo,
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
     public PageResultDto<BaseDictDto> searchDictsDsf(SearchDictsConditionDto conditionDto, PageAndOrderbyParamDto pageAndOrderbyParamDto) {
-        Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
-        List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(conditionDto));
-        return new PageResultDto(list, this.wrapPage(p));
+        BaseDictDataScopeDefineDto defineDto = apiBaseDictDataScopeService.selectDataScopeDefineByUserId(conditionDto.getCurrentUserId(),conditionDto.getCurrentRoleId(),conditionDto.getCurrentPostId());
+        // 如果未设置数据范围定义，没有数据
+        if (defineDto == null || StringUtils.isEmpty(defineDto.getType()) || DictEnum.DictDataScope.no.name().equals(defineDto.getType())) {
+            return new PageResultDto(null, null);
+        }
+        SearchDictsConditionDsfDto searchDictsConditionDsfDto = new SearchDictsConditionDsfDto();
+        searchDictsConditionDsfDto.setValue(conditionDto.getValue());
+        searchDictsConditionDsfDto.setName(conditionDto.getName());
+        searchDictsConditionDsfDto.setType(conditionDto.getType());
+        searchDictsConditionDsfDto.setIsSystem(conditionDto.getIsSystem());
+        searchDictsConditionDsfDto.setParentId(conditionDto.getParentId());
+        searchDictsConditionDsfDto.setIsPublic(conditionDto.getIsPublic());
+
+
+        // 所有数据
+        if(DictEnum.DictDataScope.all.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共数据
+        if(DictEnum.DictDataScope.publics.name().equals(defineDto.getType())){
+
+            String selfCondition = com.feihua.utils.string.StringUtils.messageFormat("and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            searchDictsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共 + 用户所在机构的公司
+        if(DictEnum.DictDataScope.publics_userofficecompany.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            BaseOfficeDto company = null;
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(conditionDto.getCurrentUserId());
+
+            // 查找公司
+            if(officeDto != null){
+                // 查找公司
+                company = apiBaseOfficePoService.selectParentCompany(officeDto.getId(),true);
+            }
+            String selfCondition = null;
+            if (company == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ",BasePo.YesNo.Y.name(),company.getId());
+            }
+
+            searchDictsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 用户所在机构的公司
+        if(DictEnum.DictDataScope.userofficecompany.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(conditionDto.getCurrentUserId());
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+            // 查找公司
+            BaseOfficeDto company = apiBaseOfficePoService.selectParentCompany(officeDto.getId(),true);
+
+            //没有找到公司
+            if (company == null) {
+                return new PageResultDto(null, null);
+
+            }
+            String selfCondition = com.feihua.utils.string.StringUtils.messageFormat("and data_office_id = ''{0}'' ",company.getId());
+
+            searchDictsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共 + 用户角色所在机构的公司
+        if(DictEnum.DictDataScope.publics_userroleofficecompany.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(conditionDto.getCurrentRoleId(),false);
+            BaseOfficeDto company = null;
+            // 查找公司
+            if(officeDto != null){
+                // 查找公司
+                company = apiBaseOfficePoService.selectParentCompany(officeDto.getId(),true);
+            }
+            String selfCondition = null;
+            if (company == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ",BasePo.YesNo.Y.name(),company.getId());
+            }
+            searchDictsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 用户角色所在机构的公司
+        if(DictEnum.DictDataScope.userroleofficecompany.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(conditionDto.getCurrentRoleId(),false);
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+            // 查找公司
+            BaseOfficeDto company = apiBaseOfficePoService.selectParentCompany(officeDto.getId(),true);
+
+            //没有找到公司
+            if (company == null) {
+                return new PageResultDto(null, null);
+
+            }
+            String selfCondition = com.feihua.utils.string.StringUtils.messageFormat("and data_office_id = ''{0}'' ",company.getId());
+
+            searchDictsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共 + 用户岗位所在机构的公司
+        if(DictEnum.DictDataScope.publics_userroleofficecompany.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByPostId(conditionDto.getCurrentPostId(),false);
+            BaseOfficeDto company = null;
+            // 查找公司
+            if(officeDto != null){
+                // 查找公司
+                company = apiBaseOfficePoService.selectParentCompany(officeDto.getId(),true);
+            }
+            String selfCondition = null;
+            if (company == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ",BasePo.YesNo.Y.name(),company.getId());
+            }
+            searchDictsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 用户岗位所在机构的公司
+        if(DictEnum.DictDataScope.userroleofficecompany.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByPostId(conditionDto.getCurrentPostId(),false);
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+            // 查找公司
+            BaseOfficeDto company = apiBaseOfficePoService.selectParentCompany(officeDto.getId(),true);
+
+            //没有找到公司
+            if (company == null) {
+                return new PageResultDto(null, null);
+
+            }
+            String selfCondition = com.feihua.utils.string.StringUtils.messageFormat("and data_office_id = ''{0}'' ",company.getId());
+
+            searchDictsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        return new PageResultDto(null, null);
     }
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
@@ -59,49 +217,16 @@ public class ApiBaseDictPoServiceImpl extends ApiBaseTreeServiceImpl<BaseDictPo,
         if(selectDictsConditionDto == null || StringUtils.isEmpty(selectDictsConditionDto.getType())){
             return null;
         }
-        List<BaseDictDto> result = null;
-        BaseDictPo dictPoCondition = new BaseDictPo();
-        dictPoCondition.setType(selectDictsConditionDto.getType());
-        dictPoCondition.setDelFlag(BasePo.YesNo.N.name());
-        super.orderbyStart(orderby);
-        List<BaseDictDto> parentList = this.selectList(dictPoCondition);
-        if(CollectionUtils.isNotEmpty(parentList)){
-            BaseDictDataScopeDefineDto defineDto = apiBaseDictDataScopeService.selectDataScopeDefineByUserId(selectDictsConditionDto.getCurrentUserId(),selectDictsConditionDto.getCurrentRoleId());
-            String officeId = null;
-            String areaId = null;
-            if(defineDto != null){
-                BaseOfficeDto  officeDto = null;
-                // 如果按用户走
-                if(DictEnum.DictDataScope.user.name().equals(defineDto.getType())){
-                    officeDto = apiBaseOfficePoService.selectOfficeByUserId(selectDictsConditionDto.getCurrentUserId());
-                }
-                // 按角色走
-                else if(DictEnum.DictDataScope.role.name().equals(defineDto.getType())){
-                    officeDto = apiBaseOfficePoService.selectOfficeByUserId(selectDictsConditionDto.getCurrentRoleId());
-                }
-                if (officeDto != null) {
-                    officeId = officeDto.getId();
-                    areaId = officeDto.getAreaId();
-                }
-            }
-            result = new ArrayList<>();
-            for (BaseDictDto baseDictDto : parentList) {
-                if(BasePo.YesNo.Y.name().equals(baseDictDto.getIsPublic())){
-                    result.add(baseDictDto);
-                    continue;
-                }
-                String itemOfficeId = baseDictDto.getDataOfficeId();
-                String itemAreaId = baseDictDto.getDataAreaId();
-                if(StringUtils.isNotEmpty(itemOfficeId) && itemOfficeId.equals(officeId)){
-                    result.add(baseDictDto);
-                    continue;
-                }else if(StringUtils.isNotEmpty(itemAreaId) && itemAreaId.equals(areaId)){
-                    result.add(baseDictDto);
-                    continue;
-                }
-            }
-        }
-        return result;
+        SearchDictsConditionDto searchDictsConditionDto = new SearchDictsConditionDto();
+        searchDictsConditionDto.setType(selectDictsConditionDto.getType());
+        searchDictsConditionDto.setCurrentPostId(selectDictsConditionDto.getCurrentPostId());
+        searchDictsConditionDto.setCurrentRoleId(selectDictsConditionDto.getCurrentRoleId());
+        searchDictsConditionDto.setCurrentUserId(selectDictsConditionDto.getCurrentUserId());
+        PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto();
+        pageAndOrderbyParamDto.setOrderby(orderby);
+        PageResultDto resultDto = this.searchDictsDsf(searchDictsConditionDto,pageAndOrderbyParamDto);
+
+        return resultDto.getData();
     }
 
     @Override

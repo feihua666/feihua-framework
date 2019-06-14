@@ -10,6 +10,9 @@ import com.feihua.framework.base.modules.loginclient.api.ApiBaseLoginClientPoSer
 import com.feihua.framework.base.modules.loginclient.po.BaseLoginClientPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
+import com.feihua.framework.base.modules.postjob.api.ApiBasePostPoService;
+import com.feihua.framework.base.modules.postjob.dto.BasePostDto;
+import com.feihua.framework.base.modules.rel.api.ApiBaseUserRolePostSwitchPoService;
 import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.base.modules.user.api.ApiBaseRecordUserLoginPoService;
@@ -19,6 +22,7 @@ import com.feihua.framework.base.modules.user.dto.BaseUserAuthDto;
 import com.feihua.framework.base.modules.user.dto.BaseUserDto;
 import com.feihua.framework.base.modules.user.po.BaseRecordUserLoginPo;
 import com.feihua.framework.base.modules.user.po.BaseUserAuthPo;
+import com.feihua.framework.base.modules.user.po.BaseUserRolePostSwitchPo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.rest.utils.Utils;
 import com.feihua.framework.shiro.pojo.AuthenticationInfo;
@@ -65,6 +69,10 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
     private ApiBaseRecordUserLoginPoService apiBaseRecordUserLoginPoService;
     @Autowired
     private ApiBaseLoginClientPoService apiBaseLoginClientPoService;
+    @Autowired
+    private ApiBasePostPoService apiBasePostPoService;
+    @Autowired
+    private ApiBaseUserRolePostSwitchPoService apiBaseUserRolePostSwitchPoService;
 
 
     @Override
@@ -178,6 +186,8 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         // 帐号信息
         if (userAuthAccountDto != null) {
             user.setAccount(userAuthAccountDto.getIdentifier());
+        }else {
+            user.setAccount(null);
         }
         user.setLocked(Utils.toBoolean(userDto.getLocked()));
         user.setPhoto(userDto.getPhoto());
@@ -185,32 +195,78 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         BaseUserAuthDto userAuthMobileDto = apiBaseUserAuthPoService.selectByUserIdAndType(userId,DictEnum.LoginType.MOBILE.name());
         if (userAuthMobileDto != null) {
             user.setMobile(userAuthMobileDto.getIdentifier());
+        }else{
+            user.setMobile(null);
         }
         user.setSerialNo(userDto.getSerialNo());
         user.setNickname(userDto.getNickname());
         user.setGender(userDto.getGender());
         user.setFromClientId(userDto.getFromClientId());
 
-        // 角色信息
-        BaseRoleDto roleDto = apiBaseRolePoService.selectByUserId(userId);
-        if(roleDto != null && BasePo.YesNo.N.name().equals(roleDto.getDisabled())){
-            user.setRole(roleDto);
+
+        BaseUserRolePostSwitchPo userRolePostSwitchPo = apiBaseUserRolePostSwitchPoService.selectByUserId(userId);
+        // 角色信息,默认使用上一次切换的
+        List<BaseRoleDto> roleDtos = apiBaseRolePoService.selectByUserId(userId,false);
+        if(roleDtos != null && !roleDtos.isEmpty()){
+            BaseRoleDto roleDto = null;
+            // 如果上一次没有切换，取第一个
+            if (roleDtos.size() == 1 || userRolePostSwitchPo == null || org.apache.commons.lang3.StringUtils.isEmpty(userRolePostSwitchPo.getRoleId())) {
+                roleDto = roleDtos.get(0);
+            }else {
+                for (BaseRoleDto role : roleDtos) {
+                    if(role.getId().equals(userRolePostSwitchPo.getRoleId())){
+                        roleDto = role;
+                        break;
+                    }
+                }
+            }
+
+            if (roleDto != null) {
+                user.setRole(roleDto);
+            }
+            user.setRoles(roleDtos);
+        }else{
+            user.setRole(null);
+            user.setRoles(null);
         }
+        // 岗位信息,默认使用上一次切换的
+        List<BasePostDto> postDtos = apiBasePostPoService.selectByUserId(userId,false);
+        if (postDtos != null && !postDtos.isEmpty()) {
+            BasePostDto postDto = null;
+            // 如果上一次没有切换，取第一个
+            if (postDtos.size() == 1 || userRolePostSwitchPo == null || org.apache.commons.lang3.StringUtils.isEmpty(userRolePostSwitchPo.getPostId())) {
+                postDto = postDtos.get(0);
+            }else {
+                for (BasePostDto post : postDtos) {
+                    if(post.getId().equals(userRolePostSwitchPo.getPostId())){
+                        postDto = post;
+                        break;
+                    }
+                }
+            }
+
+            if (postDto != null) {
+                user.setPost(postDto);
+            }
+            user.setPosts(postDtos);
+        }else {
+            user.setPost(null);
+            user.setPosts(null);
+        }
+
         //机构信息
         BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(userId);
-        if (officeDto != null) {
-            user.setOffice(officeDto);
-        }
+        user.setOffice(officeDto);
         // 区域信息
         BaseAreaDto areaDto = apiBaseAreaPoService.wrapDto( apiBaseAreaPoService.selectAreaByUserId(userId));
-        if (areaDto != null) {
-            user.setArea(areaDto);
-        }
+        user.setArea(areaDto);
 
         // 添加其它额外信息
         Map<String,Object> addtionalAttr = getAddtionalAttr(user);
         if (addtionalAttr != null) {
             user.getAdditionalAttr().putAll(addtionalAttr);
+        }else {
+            user.getAdditionalAttr().clear();
         }
 
         return user;
@@ -225,6 +281,11 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
     public Set<String> findStringPermissions(String userId) {
         SearchFunctionResourcesConditionDto searchFunctionResourcesConditionDto = new SearchFunctionResourcesConditionDto();
         searchFunctionResourcesConditionDto.setCurrentUserId(userId);
+        BasePostDto postDto = (BasePostDto) ShiroUtils.getCurrentUser().getPost();
+        if (postDto != null) {
+            searchFunctionResourcesConditionDto.setCurrentPostId(postDto.getId());
+
+        }
         BaseRoleDto roleDto = (BaseRoleDto) ShiroUtils.getCurrentUser().getRole();
         if (roleDto != null) {
             searchFunctionResourcesConditionDto.setCurrentRoleId(roleDto.getId());

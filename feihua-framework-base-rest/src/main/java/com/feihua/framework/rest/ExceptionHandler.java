@@ -84,7 +84,9 @@ public class ExceptionHandler {
             if(e.isHttpException()){
                 httpcode = e.getHttpStatus();
             }
-
+            if(ResponseCode.E403_100002.getCode().equals(code)){
+                logger.info(msg + " uri={}",reUrl);
+            }else
             logger.error(e.getMessage(), e);
         } catch (Exception e) {
             msg = ResponseCode.E500_100000.getMsg();

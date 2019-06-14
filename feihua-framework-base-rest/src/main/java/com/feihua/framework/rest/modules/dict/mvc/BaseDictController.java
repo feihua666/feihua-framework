@@ -11,18 +11,17 @@ import com.feihua.framework.base.modules.dict.po.BaseDictPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.framework.log.comm.annotation.OperationLog;
-import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
 import com.feihua.framework.rest.modules.common.mvc.BaseController;
 import com.feihua.framework.rest.modules.dict.dto.AddDictFormDto;
 import com.feihua.framework.rest.modules.dict.dto.UpdateDictFormDto;
+import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
@@ -121,7 +120,7 @@ public class BaseDictController extends BaseController {
 
         List<BaseDictPo> children = apiBaseDictPoService.getChildrenAll(id);
         // 如果存在子级，则不充许删除
-        if(CollectionUtils.isNotEmpty(children)){
+        if(children != null && !children.isEmpty()){
             resultData.setMsg(ResponseCode.E403_100003.getMsg() + ",children nodes exist");
             resultData.setCode(ResponseCode.E403_100003.getCode());
             logger.info("code:{},msg:{}",resultData.getCode(),resultData.getMsg());
@@ -235,9 +234,10 @@ public class BaseDictController extends BaseController {
         if(types.length == 1){
 
             SelectDictsConditionDto conditionDto = new SelectDictsConditionDto();
-            conditionDto.setType(type);
+            conditionDto.setType(types[0]);
             conditionDto.setCurrentUserId(getLoginUserId());
             conditionDto.setCurrentRoleId(getLoginUserRoleId());
+            conditionDto.setCurrentPostId(getLoginUserPostId());
             List<BaseDictDto> parentList = apiBaseDictPoService.selectByTypeDsf(conditionDto, OrderbyUtils.getOrderbyFromThreadLocal());
             if(parentList != null && !parentList.isEmpty()){
                 resultData.setData(parentList);
@@ -248,13 +248,14 @@ public class BaseDictController extends BaseController {
             return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
         }else{
             Map<String,Object> result = new HashMap<>();
+            SelectDictsConditionDto conditionDto = new SelectDictsConditionDto();
+            conditionDto.setCurrentUserId(getLoginUserId());
+            conditionDto.setCurrentRoleId(getLoginUserRoleId());
+            conditionDto.setCurrentPostId(getLoginUserPostId());
             for (String t : types) {
-                SelectDictsConditionDto conditionDto = new SelectDictsConditionDto();
                 conditionDto.setType(t);
-                conditionDto.setCurrentUserId(getLoginUserId());
-                conditionDto.setCurrentRoleId(getLoginUserRoleId());
                 List<BaseDictDto> parentList = apiBaseDictPoService.selectByTypeDsf(conditionDto, OrderbyUtils.getOrderbyFromThreadLocal());
-                if(CollectionUtils.isNotEmpty(parentList)){
+                if(parentList != null && !parentList.isEmpty()){
                     result.put(t,parentList);
                 }
             }
@@ -283,6 +284,8 @@ public class BaseDictController extends BaseController {
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
         dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
+
         PageResultDto<BaseDictDto> list = apiBaseDictPoService.searchDictsDsf(dto,pageAndOrderbyParamDto);
 
         if(list.getData() != null && !list.getData().isEmpty()){

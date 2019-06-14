@@ -85,8 +85,8 @@ public class BaseRoleDataScopeRelController extends BaseController {
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         ResponseJsonRender resultData=new ResponseJsonRender();
 
-        List<BaseRoleDataScopeRelDto> data = apiBaseRoleDataScopeRelPoService.selectByRoleId(roleId);
-        if(CollectionUtils.isEmpty(data)){
+        BaseRoleDataScopeRelDto data = apiBaseRoleDataScopeRelPoService.selectByRoleId(roleId);
+        if(data == null){
             resultData.setCode(ResponseCode.E404_100001.getCode());
             resultData.setMsg(ResponseCode.E404_100001.getMsg());
             return new ResponseEntity(resultData, HttpStatus.NOT_FOUND);

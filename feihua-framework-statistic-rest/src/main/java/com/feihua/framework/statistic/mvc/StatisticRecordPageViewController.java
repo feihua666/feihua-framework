@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/statistic/page")
-public class StatisticRecordPageViewController extends SuperController {
+public class StatisticRecordPageViewController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(StatisticRecordPageViewController.class);
 
@@ -128,7 +128,6 @@ public class StatisticRecordPageViewController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("statistic:page:viewgetById")
     @RequestMapping(value = "/view/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -159,7 +158,8 @@ public class StatisticRecordPageViewController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<StatisticRecordPageViewDto> list = apiStatisticRecordPageViewPoService.searchStatisticRecordPageViewsDsf(dto,pageAndOrderbyParamDto);
 
         resultData.setPage(list.getPage());

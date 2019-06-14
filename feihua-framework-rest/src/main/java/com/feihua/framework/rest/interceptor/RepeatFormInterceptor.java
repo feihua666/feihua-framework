@@ -2,6 +2,7 @@ package com.feihua.framework.rest.interceptor;
 
 import com.feihua.exception.BaseException;
 import com.feihua.utils.digest.DigestUtils;
+import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.utils.json.JSONUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
@@ -41,9 +42,9 @@ public class RepeatFormInterceptor extends HandlerInterceptorAdapter {
             HttpMethod httpMethod = HttpMethod.resolve(request.getMethod());
             RepeatFormValidator annotation = method.getAnnotation(RepeatFormValidator.class);
             if (annotation != null && RepeatFormValidatorLogic.VALIDATE == annotation.value() && repeatDataValidator(request)) {
-                throw new BaseException("repeated request in a short time","E403_100002",HttpServletResponse.SC_FORBIDDEN);
+                throw new BaseException("repeated request in a short time", ResponseCode.E403_100002.getCode(),HttpServletResponse.SC_FORBIDDEN);
             }else if (annotation == null && ( httpMethod == HttpMethod.POST  || httpMethod == HttpMethod.PUT || httpMethod == HttpMethod.DELETE ) && repeatDataValidator(request) ) {
-                throw new BaseException("repeated request in a short time","E403_100002",HttpServletResponse.SC_FORBIDDEN);
+                throw new BaseException("repeated request in a short time",ResponseCode.E403_100002.getCode(),HttpServletResponse.SC_FORBIDDEN);
             }
         }
         return super.preHandle(request, response, handler);

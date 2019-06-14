@@ -254,8 +254,9 @@ public class BaseFunctionResouceController extends BaseController {
         ResponseJsonRender resultData=new ResponseJsonRender();
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
-        dto.setCurrentUserId(getLoginUser().getId());
+        dto.setCurrentUserId(getLoginUserId());
         dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseFunctionResourceDto> list = apiBaseFunctionResourcePoService.searchFunctionResourcesDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){

@@ -5,10 +5,14 @@ import com.feihua.framework.base.modules.area.po.BaseAreaPo;
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopePoService;
 import com.feihua.framework.base.modules.datascope.dto.BaseDataScopeDto;
 import com.feihua.framework.base.modules.loginclient.api.ApiBaseLoginClientPoService;
+import com.feihua.framework.base.modules.loginclient.dto.BaseLoginClientDto;
 import com.feihua.framework.base.modules.loginclient.po.BaseLoginClientPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
+import com.feihua.framework.base.modules.postjob.api.ApiBasePostPoService;
+import com.feihua.framework.base.modules.postjob.dto.BasePostDto;
 import com.feihua.framework.base.modules.rel.api.ApiBaseUserDataScopeRelPoService;
+import com.feihua.framework.base.modules.rel.api.ApiBaseUserRolePostSwitchPoService;
 import com.feihua.framework.base.modules.rel.api.ApiBaseUserRoleRelPoService;
 import com.feihua.framework.base.modules.rel.dto.BaseUserDataScopeRelDto;
 import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
@@ -21,6 +25,7 @@ import com.feihua.framework.base.modules.user.dto.BaseUserDto;
 import com.feihua.framework.base.modules.user.dto.SearchBaseUsersConditionDto;
 import com.feihua.framework.base.modules.user.po.BaseUserAuthPo;
 import com.feihua.framework.base.modules.user.po.BaseUserPo;
+import com.feihua.framework.base.modules.user.po.BaseUserRolePostSwitchPo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.log.comm.annotation.OperationLog;
 import com.feihua.framework.jedis.utils.JedisUtils;
@@ -82,7 +87,7 @@ public class BaseUserController extends BaseController {
     @Autowired
     private ApiBaseOfficePoService apiBaseOfficePoService;
     @Autowired
-    private ApiBaseUserRoleRelPoService apiBaseUserRoleRelPoService;
+    private ApiBasePostPoService apiBasePostPoService;
     @Autowired
     private ApiBaseRolePoService apiBaseRolePoService;
     @Autowired
@@ -93,6 +98,8 @@ public class BaseUserController extends BaseController {
     private ApiBaseAreaPoService apiBaseAreaPoService;
     @Autowired
     private ApiBaseLoginClientPoService apiBaseLoginClientPoService;
+    @Autowired
+    private ApiBaseUserRolePostSwitchPoService apiBaseUserRolePostSwitchPoService;
 
 
     /**
@@ -464,22 +471,18 @@ public class BaseUserController extends BaseController {
             }
             resultData.setData(vo);
             // 用户角色
-            BaseRoleDto role = apiBaseRolePoService.selectByUserId(id);
-            List<BaseRoleDto> roles = new ArrayList<>();
-            if(role != null){
-                roles.add(role);
-            }
+            List<BaseRoleDto> roles = apiBaseRolePoService.selectByUserId(id,true);
+
             resultData.addData("roles",roles);
 
+            // 用户岗位
+            List<BasePostDto> postDtos = apiBasePostPoService.selectByUserId(id,true);
+            resultData.addData("posts",postDtos);
             // 个人数据权限
-            List<BaseUserDataScopeRelDto> userDataScopeRelDtos = apiBaseUserDataScopeRelPoService.selectByUserId(id);
-            if (userDataScopeRelDtos != null) {
-                List<String> dataScopeIds = new ArrayList<>(userDataScopeRelDtos.size());
-                for (BaseUserDataScopeRelDto userDataScopeRelDto : userDataScopeRelDtos) {
-                    dataScopeIds.add(userDataScopeRelDto.getDataScopeId());
-                }
-                List<BaseDataScopeDto> dataScopeDtos = apiBaseDataScopePoService.selectByPrimaryKeys(dataScopeIds,false);
-                resultData.addData("personalDataScopes",dataScopeDtos);
+            BaseUserDataScopeRelDto userDataScopeRelDto = apiBaseUserDataScopeRelPoService.selectByUserId(id);
+            if (userDataScopeRelDto != null) {
+                BaseDataScopeDto dataScopeDto = apiBaseDataScopePoService.selectByPrimaryKey(userDataScopeRelDto.getDataScopeId(),false);
+                resultData.addData("personalDataScope",dataScopeDto);
             }
 
             // 登录情况
@@ -489,7 +492,14 @@ public class BaseUserController extends BaseController {
                 for (org.apache.shiro.session.Session session : sessions) {
                     Map<String,Object> item = new HashMap<>();
                     item.put("loginType",ShiroUtils.getLoginType(session));
-                    item.put("loginClient",ShiroUtils.getLoginClientId(session));
+                    String loginClientId = ShiroUtils.getLoginClientId(session);
+                    item.put("loginClientId",loginClientId);
+                    if (StringUtils.isNotEmpty(loginClientId)) {
+                        BaseLoginClientDto loginClientDto = apiBaseLoginClientPoService.selectByPrimaryKey(loginClientId);
+                        if (loginClientDto != null) {
+                            item.put("loginClientName",loginClientDto.getName());
+                        }
+                    }
                     item.put("loginTime",ShiroUtils.getLoginTime(session));
                     item.put("lastAccessTime",ShiroUtils.getLastAccessTime(session));
                     item.put("host",ShiroUtils.getHost(session));
@@ -523,9 +533,10 @@ public class BaseUserController extends BaseController {
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
         dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseUserDto> pageResultDto = apiBaseUserPoService.searchBaseUsersDsf(dto, pageAndOrderbyParamDto);
 
-        if (CollectionUtils.isNotEmpty(pageResultDto.getData())) {
+        if (pageResultDto.getData() != null && !pageResultDto.getData().isEmpty()) {
             // 添加帐号
             List<BaseUserVo> result = new ArrayList<>(pageResultDto.getData().size());
             for (BaseUserDto userDto : pageResultDto.getData()) {
@@ -898,6 +909,119 @@ public class BaseUserController extends BaseController {
         }else{
             // 更新成功，已被成功创建
             logger.info("忘记密码修改密码结束，成功");
+            return new ResponseEntity(resultData, HttpStatus.CREATED);
+        }
+    }
+
+
+    /**
+     * 用户切换角色
+     * @param roleId
+     * @return
+     */
+    @RepeatFormValidator
+    @RequiresPermissions("user")
+    @RequestMapping(value = "/user/role/switch",method = RequestMethod.POST)
+    public ResponseEntity roleSwitch(String roleId) {
+        logger.info("用户切换角色开始");
+        logger.info("当前登录用户id:{}", getLoginUser().getId());
+        ResponseJsonRender resultData = new ResponseJsonRender();
+
+        if(StringUtils.isEmpty(roleId)) {
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{},roleId:{}",resultData.getCode(),resultData.getMsg(),roleId);
+            logger.info("用户切换角色结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+        List<BaseRoleDto> roles = (List<BaseRoleDto>)ShiroUtils.getCurrentUser().getRoles();
+        boolean exist = false;
+        if (roles != null) {
+            for (BaseRoleDto role : roles) {
+                if(role.getId().equals(roleId)){
+                    exist = true;
+                }
+            }
+        }
+        if (!exist) {
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{},roleId:{}",resultData.getCode(),resultData.getMsg(),roleId);
+            logger.info("用户切换角色结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }else{
+            BaseUserRolePostSwitchPo userRolePostSwitchPo = apiBaseUserRolePostSwitchPoService.selectByUserId(getLoginUserId());
+            if(userRolePostSwitchPo == null){
+                userRolePostSwitchPo = new BaseUserRolePostSwitchPo();
+                userRolePostSwitchPo.setUserId(getLoginUserId());
+                userRolePostSwitchPo.setRoleId(roleId);
+                userRolePostSwitchPo = apiBaseUserRolePostSwitchPoService.preInsert(userRolePostSwitchPo,getLoginUserId());
+                apiBaseUserRolePostSwitchPoService.insert(userRolePostSwitchPo);
+            }else {
+                userRolePostSwitchPo.setRoleId(roleId);
+                userRolePostSwitchPo = apiBaseUserRolePostSwitchPoService.preUpdate(userRolePostSwitchPo,getLoginUserId());
+                apiBaseUserRolePostSwitchPoService.updateByPrimaryKeySelective(userRolePostSwitchPo);
+            }
+            ShiroUtils.refreshShiroUserInfoImidiately();
+            ShiroUtils.clearCachedAuthorizationInfo();
+            // 更新成功，已被成功创建
+            logger.info("用户切换角色结束，成功");
+            return new ResponseEntity(resultData, HttpStatus.CREATED);
+        }
+    }
+
+    /**
+     * 用户切换岗位
+     * @param postId
+     * @return
+     */
+    @RepeatFormValidator
+    @RequiresPermissions("user")
+    @RequestMapping(value = "/user/post/switch",method = RequestMethod.POST)
+    public ResponseEntity postSwith(String postId) {
+        logger.info("用户切换岗位开始");
+        logger.info("当前登录用户id:{}", getLoginUser().getId());
+        ResponseJsonRender resultData = new ResponseJsonRender();
+
+        if(StringUtils.isEmpty(postId)) {
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{},postId:{}",resultData.getCode(),resultData.getMsg(),postId);
+            logger.info("用户切换岗位结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }
+        List<BasePostDto> posts = (List<BasePostDto>)ShiroUtils.getCurrentUser().getPosts();
+        boolean exist = false;
+        if (posts != null) {
+            for (BasePostDto post : posts) {
+                if(post.getId().equals(postId)){
+                    exist = true;
+                }
+            }
+        }
+        if (!exist) {
+            resultData.setCode(ResponseCode.E404_100001.getCode());
+            resultData.setMsg(ResponseCode.E404_100001.getMsg());
+            logger.info("code:{},msg:{},postId:{}",resultData.getCode(),resultData.getMsg(),postId);
+            logger.info("用户切换岗位结束，失败");
+            return new ResponseEntity(resultData,HttpStatus.NOT_FOUND);
+        }else{
+            BaseUserRolePostSwitchPo userRolePostSwitchPo = apiBaseUserRolePostSwitchPoService.selectByUserId(getLoginUserId());
+            if(userRolePostSwitchPo == null){
+                userRolePostSwitchPo = new BaseUserRolePostSwitchPo();
+                userRolePostSwitchPo.setUserId(getLoginUserId());
+                userRolePostSwitchPo.setPostId(postId);
+                userRolePostSwitchPo = apiBaseUserRolePostSwitchPoService.preInsert(userRolePostSwitchPo,getLoginUserId());
+                apiBaseUserRolePostSwitchPoService.insert(userRolePostSwitchPo);
+            }else {
+                userRolePostSwitchPo.setPostId(postId);
+                userRolePostSwitchPo = apiBaseUserRolePostSwitchPoService.preUpdate(userRolePostSwitchPo,getLoginUserId());
+                apiBaseUserRolePostSwitchPoService.updateByPrimaryKeySelective(userRolePostSwitchPo);
+            }
+            ShiroUtils.refreshShiroUserInfoImidiately();
+            ShiroUtils.clearCachedAuthorizationInfo();
+            // 更新成功，已被成功创建
+            logger.info("用户切换岗位结束，成功");
             return new ResponseEntity(resultData, HttpStatus.CREATED);
         }
     }

@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/scheduler")
-public class SchedulerRecordExcutionController extends SuperController {
+public class SchedulerRecordExcutionController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(SchedulerRecordExcutionController.class);
 
@@ -41,7 +41,6 @@ public class SchedulerRecordExcutionController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("scheduler:excuteRecord")
     @RequestMapping(value = "/scheduler/{schedulerId}/excuteRecords",method = RequestMethod.GET)
     public ResponseEntity search(@PathVariable String schedulerId, SearchSchedulerRecordExcutionsConditionDto dto){
@@ -51,7 +50,8 @@ public class SchedulerRecordExcutionController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<SchedulerRecordExcutionDto> list = apiSchedulerRecordExcutionPoService.searchSchedulerRecordExcutionsDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){

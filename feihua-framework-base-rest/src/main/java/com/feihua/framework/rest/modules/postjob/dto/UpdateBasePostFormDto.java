@@ -25,6 +25,8 @@ public class UpdateBasePostFormDto extends UpdateFormDto {
 
     private String dataOfficeId;
 
+    private String isPublic;
+
     public String getName() {
         return name;
     }
@@ -79,5 +81,13 @@ public class UpdateBasePostFormDto extends UpdateFormDto {
 
     public void setDataOfficeId(String dataOfficeId) {
         this.dataOfficeId = dataOfficeId;
+    }
+
+    public String getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(String isPublic) {
+        this.isPublic = isPublic;
     }
 }

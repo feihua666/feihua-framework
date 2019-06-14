@@ -46,7 +46,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/base")
-public class BaseMessageController extends SuperController {
+public class BaseMessageController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(BaseMessageController.class);
 
@@ -77,7 +77,6 @@ public class BaseMessageController extends SuperController {
     public ResponseEntity add(AddBaseMessageFormDto addFormDto){
         logger.info("添加消息开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
-        String currentRoleId = ((BaseRoleDto)getLoginUser().getRole()).getId();
         ResponseJsonRender resultData=new ResponseJsonRender();
         // 表单值设置
         CreateMessageParamsDto createMessageParamsDto = new CreateMessageParamsDto();
@@ -96,7 +95,8 @@ public class BaseMessageController extends SuperController {
             return returnBadRequest("templateParam","templateParam is invalid",resultData);
         }
         createMessageParamsDto.setCurrentUserId(getLoginUserId());
-        createMessageParamsDto.setCurrentRoleId(currentRoleId);
+        createMessageParamsDto.setCurrentRoleId(getLoginUserRoleId());
+        createMessageParamsDto.setCurrentPostId(getLoginUserPostId());
         BaseMessagePo r = apiBaseMessagePoService.addMessage(createMessageParamsDto);
         if (r == null) {
             // 添加失败
@@ -183,7 +183,8 @@ public class BaseMessageController extends SuperController {
         createMessageParamsDto.setMsgState(updateFormDto.getMsgState());
         createMessageParamsDto.setMessageTemplateId(updateFormDto.getMessageTemplateId());
         createMessageParamsDto.setCurrentUserId(getLoginUserId());
-        createMessageParamsDto.setCurrentRoleId(((BaseRoleDto)getLoginUser().getRole()).getId());
+        createMessageParamsDto.setCurrentRoleId(getLoginUserRoleId());
+        createMessageParamsDto.setCurrentPostId(getLoginUserPostId());
         try {
             createMessageParamsDto.setTemplateParams(getTemplateParams(updateFormDto.getTemplateParams()));
         } catch (Exception e) {
@@ -241,7 +242,8 @@ public class BaseMessageController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto)getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseMessageDto> list = apiBaseMessagePoService.searchBaseMessagesDsf(dto,pageAndOrderbyParamDto);
 
         if(!CollectionUtils.isNullOrEmpty(list.getData())){
@@ -370,7 +372,6 @@ public class BaseMessageController extends SuperController {
         logger.info("发送消息开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         String currentUserId = getLoginUser().getId();
-        String currentRoleId = ((BaseRoleDto)getLoginUser().getRole()).getId();
         ResponseJsonRender resultData=new ResponseJsonRender();
 
         //检查
@@ -388,7 +389,7 @@ public class BaseMessageController extends SuperController {
             return new ResponseEntity(resultData,HttpStatus.FORBIDDEN);
         }
 
-        return sendMessage(resultData,id,formDto,currentUserId,currentRoleId);
+        return sendMessage(resultData,id,formDto,currentUserId,getLoginUserRoleId(),getLoginUserPostId());
 
     }
 
@@ -404,7 +405,6 @@ public class BaseMessageController extends SuperController {
         logger.info("发送消息开始");
         logger.info("当前登录用户id:{}",getLoginUser().getId());
         String currentUserId = getLoginUser().getId();
-        String currentRoleId = ((BaseRoleDto)getLoginUser().getRole()).getId();
         ResponseJsonRender resultData = new ResponseJsonRender();
 
 
@@ -425,14 +425,15 @@ public class BaseMessageController extends SuperController {
             return returnBadRequest("templateParam","templateParam is invalid",resultData);
         }
         createMessageParamsDto.setCurrentUserId(currentUserId);
-        createMessageParamsDto.setCurrentRoleId(currentRoleId);
+        createMessageParamsDto.setCurrentRoleId(getLoginUserRoleId());
+        createMessageParamsDto.setCurrentPostId(getLoginUserPostId());
         BaseMessagePo r = apiBaseMessagePoService.addMessage(createMessageParamsDto);
 
 
-        return sendMessage(resultData,r.getId(),formDto,currentUserId,currentRoleId);
+        return sendMessage(resultData,r.getId(),formDto,currentUserId,getLoginUserRoleId(),getLoginUserPostId());
 
     }
-    private ResponseEntity sendMessage(ResponseJsonRender resultData,String messageId,MessageSendFormDto formDto,String currentUserId,String currentRoleId){
+    private ResponseEntity sendMessage(ResponseJsonRender resultData,String messageId,MessageSendFormDto formDto,String currentUserId,String currentRoleId,String currentPostId){
         // 发送参数
         BaseMessageSendParamsDto baseMessageSendParamsDto = new BaseMessageSendParamsDto();
         baseMessageSendParamsDto.setMessageId(messageId);
@@ -462,6 +463,7 @@ public class BaseMessageController extends SuperController {
         }
         baseMessageSendParamsDto.setCurrentUserId(currentUserId);
         baseMessageSendParamsDto.setCurrentRoleId(currentRoleId);
+        baseMessageSendParamsDto.setCurrentPostId(currentPostId);
 
         try {
             apiMessageService.messageSend(baseMessageSendParamsDto,true);
@@ -489,7 +491,8 @@ public class BaseMessageController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto)getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         dto.setClientId(getLoginUser().getLoginClientId());
 
         dto.setUserId(getLoginUserId());

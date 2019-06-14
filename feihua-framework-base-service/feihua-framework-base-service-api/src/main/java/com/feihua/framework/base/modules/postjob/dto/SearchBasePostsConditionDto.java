@@ -21,6 +21,8 @@ public class SearchBasePostsConditionDto extends BaseConditionDto {
 
     private String disabled;
 
+    private String isPublic;
+
     private String parentId;
 
     private String dataOfficeId;
@@ -79,5 +81,13 @@ public class SearchBasePostsConditionDto extends BaseConditionDto {
 
     public void setDataOfficeId(String dataOfficeId) {
         this.dataOfficeId = dataOfficeId;
+    }
+
+    public String getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(String isPublic) {
+        this.isPublic = isPublic;
     }
 }

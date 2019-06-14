@@ -2069,5 +2069,11 @@
     <if test="parentId != null and parentId != ''">
       and parent_id = #{parentId,jdbcType=VARCHAR}
     </if>
+    <if test="isPublic != null and isPublic != ''">
+      and is_public = #{isPublic,jdbcType=VARCHAR}
+    </if>
+    <if test="selfCondition != null and selfCondition != ''">
+      ${selfCondition}
+    </if>
   </select>
 </mapper>

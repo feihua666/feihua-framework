@@ -15,7 +15,7 @@ public interface ApiBaseUserDataScopeRelPoService extends feihua.jdbc.api.servic
      * @param userId
      * @return
      */
-    List<BaseUserDataScopeRelDto> selectByUserId(String userId);
+    BaseUserDataScopeRelDto selectByUserId(String userId);
 
     /**
      * 根据数据范围id查询

@@ -1,5 +1,6 @@
 package com.feihua.framework.rest.modules.common.mvc;
 
+import com.feihua.framework.base.modules.postjob.dto.BasePostDto;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.mvc.SuperController;
@@ -34,10 +35,24 @@ public class BaseController extends SuperController{
         }
         return null;
     }
+    public BasePostDto getLoginUserPost(){
+        ShiroUser su = super.getLoginUser();
+        if(su != null){
+            return (BasePostDto) su.getPost();
+        }
+        return null;
+    }
     public String getLoginUserRoleId(){
         BaseRoleDto roleDto = getLoginUserRole();
         if(roleDto != null){
             return roleDto.getId();
+        }
+        return null;
+    }
+    public String getLoginUserPostId(){
+        BasePostDto postDto = getLoginUserPost();
+        if(postDto != null){
+            return postDto.getId();
         }
         return null;
     }

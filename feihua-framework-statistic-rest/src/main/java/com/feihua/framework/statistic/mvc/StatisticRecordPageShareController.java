@@ -32,7 +32,7 @@ import com.feihua.framework.statistic.po.StatisticRecordPageSharePo;
  */
 @RestController
 @RequestMapping("/statistic/page")
-public class StatisticRecordPageShareController extends SuperController {
+public class StatisticRecordPageShareController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(StatisticRecordPageShareController.class);
 
@@ -118,7 +118,6 @@ public class StatisticRecordPageShareController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("statistic:page:sharegetById")
     @RequestMapping(value = "/share/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -140,7 +139,6 @@ public class StatisticRecordPageShareController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("statistic:page:sharesearch")
     @RequestMapping(value = "/shares",method = RequestMethod.GET)
     public ResponseEntity search(SearchStatisticRecordPageSharesConditionDto dto){
@@ -149,7 +147,8 @@ public class StatisticRecordPageShareController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<StatisticRecordPageShareDto> list = apiStatisticRecordPageSharePoService.searchStatisticRecordPageSharesDsf(dto,pageAndOrderbyParamDto);
 
         resultData.setPage(list.getPage());

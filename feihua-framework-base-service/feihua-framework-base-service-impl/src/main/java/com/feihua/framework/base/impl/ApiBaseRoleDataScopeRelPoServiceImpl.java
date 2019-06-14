@@ -27,16 +27,17 @@ public class ApiBaseRoleDataScopeRelPoServiceImpl extends ApiBaseServiceImpl<Bas
         super(BaseRoleDataScopeRelDto.class);
     }
 
-    @Autowired
-    private DataScopeConflictService dataScopeConflictService;
 
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
-    public List<BaseRoleDataScopeRelDto> selectByRoleId(String roleId) {
+    public BaseRoleDataScopeRelDto selectByRoleId(String roleId) {
+        if (roleId == null) {
+            return null;
+        }
         BaseRoleDataScopeRelPo baseRoleDataScopeRelPo = new BaseRoleDataScopeRelPo();
         baseRoleDataScopeRelPo.setRoleId(roleId);
         baseRoleDataScopeRelPo.setDelFlag(BasePo.YesNo.N.name());
-        return this.selectList(baseRoleDataScopeRelPo);
+        return this.selectOne(baseRoleDataScopeRelPo);
     }
 
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
@@ -71,8 +72,7 @@ public class ApiBaseRoleDataScopeRelPoServiceImpl extends ApiBaseServiceImpl<Bas
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int roleBindDataScopes(RoleBindDataScopesParamDto roleBindDataScopesParamDto) {
-        // 检查冲突
-        dataScopeConflictService.checkConflict(roleBindDataScopesParamDto.getDataScopeIds());
+
         // 先根据角色id删除关系
         int deleteR = this.deleteFlagByRoleId(roleBindDataScopesParamDto.getRoleId(),roleBindDataScopesParamDto.getCurrentUserId());
         // 再插入新的关系

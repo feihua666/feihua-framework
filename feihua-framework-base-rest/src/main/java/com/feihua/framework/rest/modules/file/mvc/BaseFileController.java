@@ -255,9 +255,10 @@ public class BaseFileController extends BaseController {
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
         dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseFileDto> list = apiBaseFilePoService.searchBaseFilesDsf(dto, pageAndOrderbyParamDto);
 
-        if (CollectionUtils.isNotEmpty(list.getData())) {
+        if (list.getData() != null && !list.getData().isEmpty()) {
             resultData.setData(list.getData());
             resultData.setPage(list.getPage());
             return new ResponseEntity(resultData, HttpStatus.OK);

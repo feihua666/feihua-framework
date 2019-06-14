@@ -38,7 +38,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/weixinaccount")
-public class WeixinAccountController extends SuperController {
+public class WeixinAccountController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(WeixinAccountController.class);
 
@@ -186,8 +186,8 @@ public class WeixinAccountController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        BaseRoleDto roleDto = (BaseRoleDto) getLoginUser().getRole();
-        dto.setCurrentRoleId(roleDto.getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<WeixinAccountDto> list = apiWeixinAccountPoService.searchWeixinAccountsDsf(dto, pageAndOrderbyParamDto);
 
         if (CollectionUtils.isNotEmpty(list.getData())) {

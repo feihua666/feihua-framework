@@ -40,7 +40,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/base")
-public class BaseMessageTemplateController extends SuperController {
+public class BaseMessageTemplateController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(BaseMessageTemplateController.class);
 
@@ -232,7 +232,8 @@ public class BaseMessageTemplateController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseMessageTemplateDto> list = apiBaseMessageTemplatePoService.searchBaseMessageTemplatesDsf(dto,pageAndOrderbyParamDto);
 
         if(!CollectionUtils.isNullOrEmpty(list.getData())){

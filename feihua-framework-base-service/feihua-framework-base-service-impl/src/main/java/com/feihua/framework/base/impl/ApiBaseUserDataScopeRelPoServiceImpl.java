@@ -29,16 +29,14 @@ public class ApiBaseUserDataScopeRelPoServiceImpl extends ApiBaseServiceImpl<Bas
         super(BaseUserDataScopeRelDto.class);
     }
 
-    @Autowired
-    private DataScopeConflictService dataScopeConflictService;
 
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
-    public List<BaseUserDataScopeRelDto> selectByUserId(String userId) {
+    public BaseUserDataScopeRelDto selectByUserId(String userId) {
         BaseUserDataScopeRelPo baseUserDataScopeRelPo = new BaseUserDataScopeRelPo();
         baseUserDataScopeRelPo.setUserId(userId);
         baseUserDataScopeRelPo.setDelFlag(BasePo.YesNo.N.name());
-        return this.selectList(baseUserDataScopeRelPo);    }
+        return this.selectOne(baseUserDataScopeRelPo);    }
 
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
@@ -70,8 +68,6 @@ public class ApiBaseUserDataScopeRelPoServiceImpl extends ApiBaseServiceImpl<Bas
     @Override
     public int userBindDataScopes(UserBindDataScopesParamDto userBindDataScopesParamDto) {
 
-        // 检查冲突
-        dataScopeConflictService.checkConflict(userBindDataScopesParamDto.getDataScopeIds());
         // 先根据用户id删除关系
         int deleteR = this.deleteFlagByUserId(userBindDataScopesParamDto.getUserId(),userBindDataScopesParamDto.getCurrentUserId());
         // 再插入新的关系

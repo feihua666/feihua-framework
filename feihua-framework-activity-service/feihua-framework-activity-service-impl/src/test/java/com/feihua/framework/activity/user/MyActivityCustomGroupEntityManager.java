@@ -59,18 +59,23 @@ public class MyActivityCustomGroupEntityManager extends DefaultActivityCustomGro
 
     @Override
     public List<Group> findGroupsByUser(String userId) {
-        BaseRoleDto role = apiBaseRolePoService.selectByUserId(userId);
+        List<BaseRoleDto> roles = apiBaseRolePoService.selectByUserId(userId,false);
 
-        if (role == null){
+        if (roles == null){
             return null;
         }
-        GroupEntity groupEntity = new GroupEntity();
-        groupEntity.setId(role.getId());
-        groupEntity.setName(role.getName());
-        groupEntity.setType(role.getType());
-        groupEntity.setRevision(1);
-        List<Group> list = new ArrayList<>();
-        list.add(groupEntity);
+        List<Group> list = new ArrayList<>(roles.size());
+        GroupEntity groupEntity = null;
+        for (BaseRoleDto role : roles) {
+            groupEntity = new GroupEntity();
+            groupEntity.setId(role.getId());
+            groupEntity.setName(role.getName());
+            groupEntity.setType(role.getType());
+            groupEntity.setRevision(1);
+
+            list.add(groupEntity);
+        }
+
         return list;
     }
 

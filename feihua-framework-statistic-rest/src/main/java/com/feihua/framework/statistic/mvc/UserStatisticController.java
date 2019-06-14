@@ -38,7 +38,6 @@ public class UserStatisticController extends SuperController {
     @Autowired
     private ApiStatisticUserClientCountPoService apiStatisticUserClientCountPoService;
 
-    @RepeatFormValidator
     @RequiresPermissions("statistic:user:count")
     @RequestMapping(value = "/user/count",method = RequestMethod.GET)
     public ResponseEntity userCount(){
@@ -46,7 +45,6 @@ public class UserStatisticController extends SuperController {
         List<StatisticUserCountDto> userCountDtos = apiStatisticUserCountPoService.selectAll(false);
         return returnList(userCountDtos,resultData);
     }
-    @RepeatFormValidator
     @RequiresPermissions("statistic:user:area:count")
     @RequestMapping(value = "/user/area/count",method = RequestMethod.GET)
     public ResponseEntity userAreaCount(){
@@ -54,7 +52,6 @@ public class UserStatisticController extends SuperController {
         List<StatisticUserAreaCountDto> userAreaCountDtos = apiStatisticUserAreaCountPoService.selectAll(false);
         return returnList(userAreaCountDtos,resultData);
     }
-    @RepeatFormValidator
     @RequiresPermissions("statistic:user:client:count")
     @RequestMapping(value = "/user/client/count",method = RequestMethod.GET)
     public ResponseEntity userClientCount(){

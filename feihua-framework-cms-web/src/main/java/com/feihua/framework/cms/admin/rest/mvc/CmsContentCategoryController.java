@@ -179,7 +179,6 @@ public class CmsContentCategoryController extends BaseController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("contentCategory:getById")
     @RequestMapping(value = "/content/category/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -201,7 +200,6 @@ public class CmsContentCategoryController extends BaseController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("contentCategory:search")
     @RequestMapping(value = "/content/categorys",method = RequestMethod.GET)
     public ResponseEntity search(SearchCmsContentCategorysConditionDto dto,boolean includeSite,boolean includeChannel,boolean includeParent){
@@ -210,7 +208,8 @@ public class CmsContentCategoryController extends BaseController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<CmsContentCategoryDto> list = apiCmsContentCategoryPoService.searchCmsContentCategorysDsf(dto,pageAndOrderbyParamDto);
 
         if(list.getData() != null && !list.getData().isEmpty()){

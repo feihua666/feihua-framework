@@ -25,8 +25,21 @@ public interface ApiBaseOfficePoService extends feihua.jdbc.api.service.ApiBaseT
      * @param roleId
      * @return
      */
-    public BaseOfficeDto selectOfficeByRoleId(String roleId);
+    public BaseOfficeDto selectOfficeByRoleId(String roleId,boolean includeDisabledRole);
+    /**
+     * 根据岗位的id查询角色所在的机构
+     * @param postId
+     * @param includeDisabledPost true=包含禁用的岗位，false=不包含禁用的岗位
+     * @return
+     */
+    public BaseOfficeDto selectOfficeByPostId(String postId,boolean includeDisabledPost);
 
+    /**
+     * 查找所在公司
+     * @param officeId
+     * @return 返回 officeId 最近的公司
+     */
+    public BaseOfficeDto selectParentCompany(String officeId,boolean includeSelf);
     /**
      * 模糊查询机构信息
      * @param dto

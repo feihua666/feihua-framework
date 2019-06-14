@@ -1,5 +1,6 @@
 package com.feihua.framework.base.mapper;
 
+import com.feihua.framework.base.modules.dict.dto.SearchDictsConditionDsfDto;
 import com.feihua.framework.base.modules.dict.dto.SearchDictsConditionDto;
 import com.feihua.framework.base.modules.dict.po.BaseDictPo;
 
@@ -11,5 +12,5 @@ import java.util.List;
  */
 public interface BaseDictPoMapper extends feihua.jdbc.api.dao.CrudDao<BaseDictPo, String> {
 
-    public List<BaseDictPo> searchDicts(SearchDictsConditionDto conditionDto);
+    public List<BaseDictPo> searchDicts(SearchDictsConditionDsfDto conditionDto);
 }

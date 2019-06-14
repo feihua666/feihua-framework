@@ -8,6 +8,7 @@ import com.feihua.framework.shiro.utils.ShiroUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.wechat.publicplatform.PublicUtils;
 import com.feihua.wechat.publicplatform.dto.*;
+import com.feihua.wechat.rest.common.mvc.BaseController;
 import feihua.jdbc.api.pojo.*;
 import feihua.jdbc.api.utils.OrderbyUtils;
 import feihua.jdbc.api.utils.PageUtils;
@@ -38,7 +39,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/weixinmenu")
-public class WeixinMenuController extends SuperController {
+public class WeixinMenuController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(WeixinMenuController.class);
 
@@ -203,8 +204,8 @@ public class WeixinMenuController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        BaseRoleDto roleDto = (BaseRoleDto) getLoginUser().getRole();
-        dto.setCurrentRoleId(roleDto.getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<WeixinMenuDto> list = apiWeixinMenuPoService.searchWeixinMenusDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){

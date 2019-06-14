@@ -1,14 +1,30 @@
 package com.feihua.framework.base.impl;
 
+import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
+import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
+import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
 import com.feihua.framework.base.modules.postjob.api.ApiBasePostPoService;
+import com.feihua.framework.base.modules.postjob.dto.BasePostDataScopeDefineDto;
 import com.feihua.framework.base.modules.postjob.dto.BasePostDto;
+import com.feihua.framework.base.modules.postjob.dto.SearchBasePostsConditionDto;
+import com.feihua.framework.base.modules.postjob.dto.SearchPostsConditionDsfDto;
 import com.feihua.framework.base.modules.postjob.po.BasePostPo;
+import com.feihua.framework.base.modules.rel.api.ApiBasePostRoleRelPoService;
+import com.feihua.framework.base.modules.rel.api.ApiBaseUserPostRelPoService;
+import com.feihua.framework.base.modules.rel.dto.BaseUserPostRelDto;
+import com.feihua.framework.constants.DictEnum;
 import com.github.pagehelper.Page;
+import feihua.jdbc.api.pojo.BasePo;
+import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import feihua.jdbc.api.service.impl.ApiBaseTreeServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,17 +35,171 @@ import org.springframework.stereotype.Service;
 @Service
 public class ApiBasePostPoServiceImpl extends ApiBaseTreeServiceImpl<BasePostPo, BasePostDto, String> implements ApiBasePostPoService {
     @Autowired
-    com.feihua.framework.base.mapper.BasePostPoMapper BasePostPoMapper;
+    com.feihua.framework.base.mapper.BasePostPoMapper basePostPoMapper;
+
+    @Autowired
+    private ApiBaseDataScopeService<BasePostDataScopeDefineDto> apiBasePostDataScopeService;
+    @Autowired
+    private ApiBaseUserPostRelPoService apiBaseUserPostRelPoService;
+    @Autowired
+    private ApiBaseOfficePoService apiBaseOfficePoService;
+
 
     public ApiBasePostPoServiceImpl() {
         super(BasePostDto.class);
     }
 
     @Override
-    public PageResultDto<BasePostDto> searchBasePostsDsf(com.feihua.framework.base.modules.postjob.dto.SearchBasePostsConditionDto dto, feihua.jdbc.api.pojo.PageAndOrderbyParamDto pageAndOrderbyParamDto) {
-        Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
-        List<com.feihua.framework.base.modules.postjob.dto.BasePostDto> list = this.wrapDtos(BasePostPoMapper.searchBasePosts(dto));
-        return new PageResultDto(list, this.wrapPage(p));
+    public PageResultDto<BasePostDto> searchBasePostsDsf(SearchBasePostsConditionDto conditionDto, PageAndOrderbyParamDto pageAndOrderbyParamDto) {
+
+        BasePostDataScopeDefineDto defineDto = apiBasePostDataScopeService.selectDataScopeDefineByUserId(conditionDto.getCurrentUserId(),conditionDto.getCurrentRoleId(),conditionDto.getCurrentPostId());
+        // 如果未设置数据范围定义，没有数据
+        if (defineDto == null || StringUtils.isEmpty(defineDto.getType()) || DictEnum.PostDataScope.no.name().equals(defineDto.getType())) {
+            return new PageResultDto(null, null);
+        }
+        SearchPostsConditionDsfDto searchPostsConditionDsfDto = new SearchPostsConditionDsfDto();
+        searchPostsConditionDsfDto.setCode(conditionDto.getCode());
+        searchPostsConditionDsfDto.setName(conditionDto.getName());
+        searchPostsConditionDsfDto.setType(conditionDto.getType());
+        searchPostsConditionDsfDto.setPostJobId(conditionDto.getPostJobId());
+        searchPostsConditionDsfDto.setParentId(conditionDto.getParentId());
+        searchPostsConditionDsfDto.setIsPublic(conditionDto.getIsPublic());
+        searchPostsConditionDsfDto.setDisabled(conditionDto.getDisabled());
+        searchPostsConditionDsfDto.setDataOfficeId(conditionDto.getDataOfficeId());
+
+
+        // 所有数据
+        if(DictEnum.PostDataScope.all.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共数据
+        if(DictEnum.PostDataScope.publics.name().equals(defineDto.getType())){
+
+            String selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共 + 用户所在机构
+        if(DictEnum.PostDataScope.publics_useroffice.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(conditionDto.getCurrentUserId());
+
+            String selfCondition = null;
+            if (officeDto == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ",BasePo.YesNo.Y.name(),officeDto.getId());
+            }
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 用户所在机构
+        if(DictEnum.PostDataScope.useroffice.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(conditionDto.getCurrentUserId());
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+            String selfCondition = com.feihua.utils.string.StringUtils.messageFormat("and data_office_id = ''{0}'' ",officeDto.getId());
+
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共 + 用户角色所在机构
+        if(DictEnum.PostDataScope.publics_userroleoffice.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(conditionDto.getCurrentRoleId(),false);
+            String selfCondition = null;
+            if (officeDto == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ",BasePo.YesNo.Y.name(),officeDto.getId());
+            }
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 用户角色所在机构
+        if(DictEnum.PostDataScope.userroleoffice.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(conditionDto.getCurrentRoleId(),false);
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+
+            String selfCondition = com.feihua.utils.string.StringUtils.messageFormat("and data_office_id = ''{0}'' ",officeDto.getId());
+
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共 + 用户岗位所在机构
+        if(DictEnum.PostDataScope.publics_userroleoffice.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByPostId(conditionDto.getCurrentPostId(),false);
+            String selfCondition = null;
+            if (officeDto == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ",BasePo.YesNo.Y.name(),officeDto.getId());
+            }
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 用户岗位所在机构
+        if(DictEnum.PostDataScope.userroleoffice.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByPostId(conditionDto.getCurrentPostId(),false);
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+            String selfCondition = com.feihua.utils.string.StringUtils.messageFormat("and data_office_id = ''{0}'' ",officeDto.getId());
+
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        return new PageResultDto(null, null);
+
+    }
+
+    @Override
+    public List<BasePostDto> selectByUserId(String userId,boolean includeDisabled) {
+        // 角色信息,目前一个用户只有一个角色
+        List<BaseUserPostRelDto> userPostRelDtos =  apiBaseUserPostRelPoService.selectByUserId(userId);
+        if(userPostRelDtos != null && !userPostRelDtos.isEmpty()) {
+            List<String> postIds = new ArrayList<>(userPostRelDtos.size());
+            for (BaseUserPostRelDto userPostRelDto : userPostRelDtos) {
+                postIds.add(userPostRelDto.getPostId());
+            }
+            List<BasePostDto> postDtos = this.selectByPrimaryKeys(postIds, false);
+            Iterator<BasePostDto> iterator = postDtos.iterator();
+            while (iterator.hasNext()){
+                BasePostDto postDto = iterator.next();
+                if(BasePo.YesNo.Y.name().equals(postDto.getDisabled())){
+                    iterator.remove();
+                }
+            }
+            return postDtos;
+        }
+        return null;
     }
 
     @Override
@@ -49,6 +219,7 @@ public class ApiBasePostPoServiceImpl extends ApiBaseTreeServiceImpl<BasePostPo,
         dto.setDataType(po.getDataType());
         dto.setDataAreaId(po.getDataAreaId());
         dto.setUpdateAt(po.getUpdateAt());
+        dto.setIsPublic(po.getIsPublic());
         return dto;
     }
 }

@@ -19,6 +19,7 @@ import com.feihua.wechat.publicplatform.PublicConstants;
 import com.feihua.wechat.publicplatform.PublicUtils;
 import com.feihua.wechat.publicplatform.api.ApiPublicPlatformService;
 import com.feihua.wechat.publicplatform.dto.AuthorizeAccessToken;
+import com.feihua.wechat.rest.common.mvc.BaseController;
 import feihua.jdbc.api.pojo.BasePo;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -47,7 +48,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/publicplatform")
-public class PublicPlatformController extends SuperController {
+public class PublicPlatformController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(PublicPlatformController.class);
 

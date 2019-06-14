@@ -33,7 +33,7 @@ import com.feihua.framework.spider.po.SpiderConfigSourcePo;
  */
 @RestController
 @RequestMapping("/spider")
-public class SpiderConfigSourceController extends SuperController {
+public class SpiderConfigSourceController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(SpiderConfigSourceController.class);
 
@@ -188,7 +188,8 @@ public class SpiderConfigSourceController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<SpiderConfigSourceDto> list = apiSpiderConfigSourceService.searchSpiderConfigSourcesDsf(dto,pageAndOrderbyParamDto);
 
         if(CollectionUtils.isNotEmpty(list.getData())){

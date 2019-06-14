@@ -18,6 +18,7 @@ import com.feihua.wechat.common.po.WeixinUserPo;
 import com.feihua.wechat.miniprogram.MiniProgramUtils;
 import com.feihua.wechat.miniprogram.api.ApiMiniProgramService;
 import com.feihua.wechat.miniprogram.dto.LoginCredentialsDto;
+import com.feihua.wechat.rest.common.mvc.BaseController;
 import com.feihua.wechat.rest.miniprogram.dto.WeixinUserForm;
 import feihua.jdbc.api.pojo.BasePo;
 import org.apache.commons.io.IOUtils;
@@ -50,7 +51,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/miniprogram")
-public class MiniProgramController extends SuperController {
+public class MiniProgramController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(MiniProgramController.class);
 

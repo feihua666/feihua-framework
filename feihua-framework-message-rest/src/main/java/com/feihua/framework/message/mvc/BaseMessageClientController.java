@@ -38,7 +38,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/base")
-public class BaseMessageClientController extends SuperController {
+public class BaseMessageClientController extends BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(BaseMessageClientController.class);
 
@@ -164,7 +164,6 @@ public class BaseMessageClientController extends SuperController {
      * @param id
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("message:client:getById")
     @RequestMapping(value = "/message/client/{id}",method = RequestMethod.GET)
     public ResponseEntity getById(@PathVariable String id){
@@ -186,7 +185,6 @@ public class BaseMessageClientController extends SuperController {
      * @param dto
      * @return
      */
-    @RepeatFormValidator
     @RequiresPermissions("message:client:search")
     @RequestMapping(value = "/message/clients",method = RequestMethod.GET)
     public ResponseEntity search(SearchBaseMessageClientsConditionDto dto){
@@ -195,7 +193,8 @@ public class BaseMessageClientController extends SuperController {
         PageAndOrderbyParamDto pageAndOrderbyParamDto = new PageAndOrderbyParamDto(PageUtils.getPageFromThreadLocal(), OrderbyUtils.getOrderbyFromThreadLocal());
         // 设置当前登录用户id
         dto.setCurrentUserId(getLoginUser().getId());
-        dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
+        dto.setCurrentRoleId(getLoginUserRoleId());
+        dto.setCurrentPostId(getLoginUserPostId());
         PageResultDto<BaseMessageClientDto> list = apiBaseMessageClientPoService.searchBaseMessageClientsDsf(dto,pageAndOrderbyParamDto);
 
         if (!CollectionUtils.isNullOrEmpty(list.getData())) {

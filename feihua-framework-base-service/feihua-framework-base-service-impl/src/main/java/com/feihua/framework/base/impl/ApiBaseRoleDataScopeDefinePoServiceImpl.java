@@ -3,6 +3,12 @@ package com.feihua.framework.base.impl;
 import com.feihua.exception.BaseException;
 import com.feihua.exception.DataConflictException;
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
+import com.feihua.framework.base.modules.postjob.api.ApiBasePostPoService;
+import com.feihua.framework.base.modules.postjob.po.BasePostPo;
+import com.feihua.framework.base.modules.rel.api.ApiBasePostRoleRelPoService;
+import com.feihua.framework.base.modules.rel.dto.BasePostRoleRelDto;
+import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
+import com.feihua.framework.base.modules.role.po.BaseRolePo;
 import com.feihua.framework.constants.DictEnum;
 import com.feihua.framework.base.modules.rel.api.ApiBaseRoleDataScopeRelPoService;
 import com.feihua.framework.base.modules.rel.api.ApiBaseUserDataScopeRelPoService;
@@ -16,6 +22,7 @@ import com.feihua.framework.base.modules.role.po.BaseRoleDataScopeDefinePo;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -43,11 +50,18 @@ public class ApiBaseRoleDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
     @Autowired
     private ApiBaseRoleDataScopeRelPoService apiBaseRoleDataScopeRelPoService;
     @Autowired
-    private DataScopeConflictService dataScopeConflictService;
+    private ApiBaseRolePoService apiBaseRolePoService;
+    @Autowired
+    private ApiBasePostPoService apiBasePostPoService;
+    @Autowired
+    private ApiBasePostRoleRelPoService apiBasePostRoleRelPoService;
+
+
 
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
     public BaseRoleDataScopeDefineDto selectByDataScopeId(String dataScopeId) {
+        if(StringUtils.isEmpty(dataScopeId)) return null;
         BaseRoleDataScopeDefinePo condition = new BaseRoleDataScopeDefinePo();
         condition.setDataScopeId(dataScopeId);
         condition.setDelFlag(BasePo.YesNo.N.name());
@@ -107,39 +121,41 @@ public class ApiBaseRoleDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
                 }
             }
 
-            // 检测冲突
-            dataScopeConflictService.checkConflict(dbRoleDataScopeDefinePo.getDataScopeId(),this);
             return this.wrapDto(dbRoleDataScopeDefinePo);
         }
     }
 
     @Override
-    public BaseRoleDataScopeDefineDto selectDataScopeDefineByUserId(String userId, String roleId) {
-        List<BaseUserDataScopeRelDto> userDataScopeRelDtos = apiBaseUserDataScopeRelPoService.selectByUserId(userId);
+    public BaseRoleDataScopeDefineDto selectDataScopeDefineByUserId(String userId, String roleId,String postId) {
+        BaseUserDataScopeRelDto userDataScopeRelDto = apiBaseUserDataScopeRelPoService.selectByUserId(userId);
         // 用户设置了数据范围，以该数据范围优先
-        if(CollectionUtils.isNotEmpty(userDataScopeRelDtos)){
-            for (BaseUserDataScopeRelDto userDataScopeRelDto : userDataScopeRelDtos) {
-                BaseRoleDataScopeDefineDto defineDto = this.selectByDataScopeId(userDataScopeRelDto.getDataScopeId());
-                // 如果一个用户设置了多个数据范围，以有权限的数据范围优先
-                if(defineDto != null && !DictEnum.RoleDataScope.no.name().equals(defineDto.getType())){
+        if(userDataScopeRelDto != null){
+            BaseRoleDataScopeDefineDto defineDto = this.selectByDataScopeId(userDataScopeRelDto.getDataScopeId());
+
+            return defineDto;
+        }
+        // 取角色设置的数据范围
+        BaseRolePo rolePo = apiBaseRolePoService.selectByPrimaryKeySimple(roleId,false);
+        if (rolePo != null && !BasePo.YesNo.Y.name().equals(rolePo.getDisabled())) {
+            BaseRoleDataScopeRelDto roleDataScopeRelDto = apiBaseRoleDataScopeRelPoService.selectByRoleId(roleId);
+            if (roleDataScopeRelDto != null) {
+                BaseRoleDataScopeDefineDto defineDto = this.selectByDataScopeId(roleDataScopeRelDto.getDataScopeId());
+                return defineDto;
+            }
+        }
+        // 取岗位绑定的角色设置的数据范围
+        BasePostPo postPo = apiBasePostPoService.selectByPrimaryKeySimple(postId,false);
+        if (postPo != null && !BasePo.YesNo.Y.name().equals(postPo.getDisabled())) {
+            BasePostRoleRelDto postRoleRelDto = apiBasePostRoleRelPoService.selectByPostId(postId);
+            if (postRoleRelDto != null) {
+                BaseRoleDataScopeRelDto roleDataScopeRelDto = apiBaseRoleDataScopeRelPoService.selectByRoleId(postRoleRelDto.getRoleId());
+                if(roleDataScopeRelDto != null){
+                    BaseRoleDataScopeDefineDto defineDto = this.selectByDataScopeId(roleDataScopeRelDto.getDataScopeId());
                     return defineDto;
                 }
             }
+        }
 
-        }
-        // 取角色设置的数据范围
-        else{
-            List<BaseRoleDataScopeRelDto> roleDataScopeRelDtos = apiBaseRoleDataScopeRelPoService.selectByRoleId(roleId);
-            if(CollectionUtils.isNotEmpty(roleDataScopeRelDtos)){
-                for (BaseRoleDataScopeRelDto roleDataScopeRelDto : roleDataScopeRelDtos) {
-                    BaseRoleDataScopeDefineDto defineDto = this.selectByDataScopeId(roleDataScopeRelDto.getDataScopeId());
-                    // 如果一个角色设置了多个数据范围，以有权限的数据范围优先
-                    if(defineDto != null && !DictEnum.RoleDataScope.no.name().equals(defineDto.getType())){
-                        return defineDto;
-                    }
-                }
-            }
-        }
         return null;
     }
 
@@ -149,22 +165,6 @@ public class ApiBaseRoleDataScopeDefinePoServiceImpl extends ApiBaseServiceImpl<
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void checkConflict(List<String> dataScopeIds) throws BaseException {
-        if(CollectionUtils.isNotEmpty(dataScopeIds)){
-            List<BaseRoleDataScopeDefineDto> list = new ArrayList<>();
-            for (String dataScopeId : dataScopeIds) {
-                BaseRoleDataScopeDefineDto definePo = this.selectByDataScopeId(dataScopeId);
-                if(definePo != null && !DictEnum.RoleDataScope.no.name().equals(definePo.getType())){
-                    list.add(definePo);
-                }
-            }
-            if(CollectionUtils.isNotEmpty(list)){
-                throw new DataConflictException("role dataScope conflict!",DictEnum.DataResource.role.name());
-            }
-        }
     }
 
     @Override
