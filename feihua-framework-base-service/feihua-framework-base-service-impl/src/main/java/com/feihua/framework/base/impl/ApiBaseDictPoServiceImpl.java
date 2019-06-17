@@ -1,28 +1,25 @@
 package com.feihua.framework.base.impl;
 
-import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
-import com.feihua.framework.base.modules.dict.dto.*;
-import com.feihua.framework.base.modules.office.po.BaseOfficePo;
-import com.feihua.framework.constants.DictEnum;
-import com.feihua.framework.base.modules.dict.api.ApiBaseDictPoService;
 import com.feihua.framework.base.mapper.BaseDictPoMapper;
+import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
+import com.feihua.framework.base.modules.dict.api.ApiBaseDictPoService;
+import com.feihua.framework.base.modules.dict.dto.*;
 import com.feihua.framework.base.modules.dict.po.BaseDictPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
+import com.feihua.framework.constants.DictEnum;
 import com.github.pagehelper.Page;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.Orderby;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseTreeServiceImpl;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -217,6 +214,20 @@ public class ApiBaseDictPoServiceImpl extends ApiBaseTreeServiceImpl<BaseDictPo,
         if(selectDictsConditionDto == null || StringUtils.isEmpty(selectDictsConditionDto.getType())){
             return null;
         }
+        // 如果没有当前登录用户，返回公共的字典，考虑到不需要登录的情况
+        if (StringUtils.isEmpty(selectDictsConditionDto.getCurrentUserId())) {
+            SearchDictsConditionDsfDto searchDictsConditionDsfDto = new SearchDictsConditionDsfDto();
+            searchDictsConditionDsfDto.setType(selectDictsConditionDto.getType());
+            searchDictsConditionDsfDto.setIsPublic(BasePo.YesNo.Y.name());
+
+            this.orderbyStart(orderby);
+            List<BaseDictDto> list = this.wrapDtos(baseDictPoMapper.searchDicts(searchDictsConditionDsfDto));
+            return list;
+        }
+
+
+
+
         SearchDictsConditionDto searchDictsConditionDto = new SearchDictsConditionDto();
         searchDictsConditionDto.setType(selectDictsConditionDto.getType());
         searchDictsConditionDto.setCurrentPostId(selectDictsConditionDto.getCurrentPostId());
