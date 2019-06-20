@@ -8,6 +8,9 @@ import feihua.jdbc.api.pojo.BaseConditionDto;
  */
 public class SearchFunctionResourcesConditionDto extends BaseConditionDto {
     private String name;
+
+    private String code;
+
     private String isShow;
     private String type;
     private String parentId;
@@ -44,5 +47,13 @@ public class SearchFunctionResourcesConditionDto extends BaseConditionDto {
 
     public void setParentId(String parentId) {
         this.parentId = parentId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

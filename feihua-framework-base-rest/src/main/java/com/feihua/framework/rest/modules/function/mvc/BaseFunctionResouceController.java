@@ -72,6 +72,7 @@ public class BaseFunctionResouceController extends BaseController {
         baseFunctionResourcePo.setType(addFunctionResourceFormDto.getType());
         baseFunctionResourcePo.setSequence(addFunctionResourceFormDto.getSequence());
         baseFunctionResourcePo.setParentId(addFunctionResourceFormDto.getParentId());
+        baseFunctionResourcePo.setCode(addFunctionResourceFormDto.getCode());
 
         baseFunctionResourcePo = apiBaseFunctionResourcePoService.preInsert(baseFunctionResourcePo,getLoginUser().getId());
         BaseFunctionResourceDto r = apiBaseFunctionResourcePoService.insert(baseFunctionResourcePo);
@@ -196,6 +197,7 @@ public class BaseFunctionResouceController extends BaseController {
         baseFunctionResourcePo.setType(updateFunctionResourceFormDto.getType());
         baseFunctionResourcePo.setSequence(updateFunctionResourceFormDto.getSequence());
         baseFunctionResourcePo.setParentId(updateFunctionResourceFormDto.getParentId());
+        baseFunctionResourcePo.setCode(updateFunctionResourceFormDto.getCode());
 
         // 用条件更新，乐观锁机制
         BaseFunctionResourcePo baseFunctionResourcePoCondition = new BaseFunctionResourcePo();

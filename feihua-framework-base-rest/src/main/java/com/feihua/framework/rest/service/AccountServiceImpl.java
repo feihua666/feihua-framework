@@ -7,6 +7,7 @@ import com.feihua.framework.base.modules.function.api.ApiBaseFunctionResourcePoS
 import com.feihua.framework.base.modules.function.dto.BaseFunctionResourceDto;
 import com.feihua.framework.base.modules.function.dto.SearchFunctionResourcesConditionDto;
 import com.feihua.framework.base.modules.loginclient.api.ApiBaseLoginClientPoService;
+import com.feihua.framework.base.modules.loginclient.dto.BaseLoginClientDto;
 import com.feihua.framework.base.modules.loginclient.po.BaseLoginClientPo;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
@@ -15,6 +16,7 @@ import com.feihua.framework.base.modules.postjob.dto.BasePostDto;
 import com.feihua.framework.base.modules.rel.api.ApiBaseUserRolePostSwitchPoService;
 import com.feihua.framework.base.modules.role.api.ApiBaseRolePoService;
 import com.feihua.framework.base.modules.role.dto.BaseRoleDto;
+import com.feihua.framework.base.modules.role.dto.SearchRolesConditionDto;
 import com.feihua.framework.base.modules.user.api.ApiBaseRecordUserLoginPoService;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserAuthPoService;
 import com.feihua.framework.base.modules.user.api.ApiBaseUserPoService;
@@ -127,6 +129,16 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
     }
 
     @Override
+    public String getClientNameByClientCode(String clientCode) {
+        BaseLoginClientPo condition = apiBaseLoginClientPoService.selectByClientCode(clientCode);
+        if (condition != null) {
+            return condition.getName();
+        }
+
+        return null;
+    }
+
+    @Override
     public boolean validatePasswordWhenLogin(AuthenticationToken authenticationToken) {
         return ((authenticationToken instanceof AccountPasswordToken) || (authenticationToken instanceof MobilePasswordToken) || (authenticationToken instanceof EmailPasswordToken));
     }
@@ -202,6 +214,15 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         user.setNickname(userDto.getNickname());
         user.setGender(userDto.getGender());
         user.setFromClientId(userDto.getFromClientId());
+        //
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(userDto.getFromClientId())) {
+            BaseLoginClientDto loginClientDto = apiBaseLoginClientPoService.selectByPrimaryKey(userDto.getFromClientId());
+            if (loginClientDto != null) {
+                user.setFromClientCode(loginClientDto.getCode());
+                user.setFromClientName(loginClientDto.getName());
+            }
+
+        }
 
 
         BaseUserRolePostSwitchPo userRolePostSwitchPo = apiBaseUserRolePostSwitchPoService.selectByUserId(userId);
@@ -296,7 +317,7 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
         List<BaseFunctionResourceDto> functionResourceDtos = functionResourceDtoPageResultDto.getData();
         Set<String> permissions = new HashSet<>();
         permissions.add("user");
-        if(CollectionUtils.isNotEmpty(functionResourceDtos)){
+        if(functionResourceDtos != null && !functionResourceDtos.isEmpty()){
             for (BaseFunctionResourceDto functionResourceDto : functionResourceDtos) {
                 if(!StringUtils.isEmpty(functionResourceDto.getPermissions())){
                     // 支持逗号分隔，添加多个
@@ -314,9 +335,23 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
     public Set<String> findStringRoles(String userId) {
         Set<String> roles = new HashSet<>();
         // 角色信息
-        BaseRoleDto roleDto = apiBaseRolePoService.selectByPrimaryKey(userId);
-        if(roleDto != null && !StringUtils.isEmpty(roleDto.getCode())){
-            roles.add(roleDto.getCode());
+        SearchRolesConditionDto searchRolesConditionDto = new SearchRolesConditionDto();
+        searchRolesConditionDto.setCurrentUserId(userId);
+        BasePostDto postDto = (BasePostDto) ShiroUtils.getCurrentUser().getPost();
+        if (postDto != null) {
+            searchRolesConditionDto.setCurrentPostId(postDto.getId());
+
+        }
+        BaseRoleDto roleDto = (BaseRoleDto) ShiroUtils.getCurrentUser().getRole();
+        if (roleDto != null) {
+            searchRolesConditionDto.setCurrentRoleId(roleDto.getId());
+        }
+        PageResultDto<BaseRoleDto> roleDtoPageResultDto = apiBaseRolePoService.searchRolesDsf(searchRolesConditionDto,null);
+        List<BaseRoleDto> roleDtos = roleDtoPageResultDto.getData();
+        if(roleDtos != null && !roleDtos.isEmpty()){
+            for (BaseRoleDto dto : roleDtos) {
+                roles.add(dto.getCode());
+            }
         }
         return roles;
     }

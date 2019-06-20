@@ -44,6 +44,8 @@ public interface AccountService {
      * @return
      */
     public String getClientIdByClientCode(String clientCode);
+
+    public String getClientNameByClientCode(String clientCode);
     /**
      * 提取用户登录的客户端编码
      * @param request

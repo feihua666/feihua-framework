@@ -6,6 +6,7 @@ import com.feihua.framework.base.modules.rel.dto.BaseUserRoleRelDto;
 import com.feihua.framework.base.modules.rel.dto.RoleBindUsersParamDto;
 import com.feihua.framework.base.modules.rel.dto.UserBindRolesParamDto;
 import com.feihua.framework.log.comm.annotation.OperationLog;
+import com.feihua.framework.shiro.utils.ShiroUtils;
 import com.feihua.utils.http.httpServletResponse.ResponseCode;
 import com.feihua.framework.rest.ResponseJsonRender;
 import com.feihua.framework.rest.interceptor.RepeatFormValidator;
@@ -59,6 +60,9 @@ public class BaseUserRoleRelController extends BaseController {
         userBindRolesParamDto.setCurrentUserId(getLoginUser().getId());
 
         int r = apiBaseUserRoleRelPoService.userBindRoles(userBindRolesParamDto);
+        //角色设置完成刷新用户信息和权限信息
+        ShiroUtils.refreshShiroUserInfoByUserId(userId);
+        ShiroUtils.refreshAuthorizationInfoByUserId(userId);
 
         logger.info("绑定用户id:{}",userId);
         logger.info("用户绑定角色结束，成功");

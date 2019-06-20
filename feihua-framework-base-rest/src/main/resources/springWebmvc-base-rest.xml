@@ -45,6 +45,10 @@
             <mvc:mapping path="/**"/>
             <bean class="com.feihua.framework.rest.interceptor.PageHandlerInterceptor"/>
         </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.feihua.framework.rest.interceptor.UserAccessInterceptor"/>
+        </mvc:interceptor>
     </mvc:interceptors>
     <!-- 容器默认的DefaultServletHandler处理 所有静态内容和无匹配RequestMapping处理的URL-->
     <mvc:default-servlet-handler/>

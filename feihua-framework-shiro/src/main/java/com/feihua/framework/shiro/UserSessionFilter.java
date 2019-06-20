@@ -82,13 +82,15 @@ public class UserSessionFilter extends AccessControlFilter {
             return false;
         }
 
-        if("true".equals(session.getAttribute(REFRESH_AUTHORIZATION_INFO_FLAG_KEY))){
-            session.removeAttribute(REFRESH_AUTHORIZATION_INFO_FLAG_KEY);
-            ShiroUtils.clearCachedAuthorizationInfo();
-        }
+        // 注意下面两个顺序不能颠倒，也就是说先刷新用户信息，再刷新用户权限信息，以保证授权信息的正确
         if("true".equals(session.getAttribute(REFRESH_SHIROUSER_INFO_FLAG_KEY))){
             session.removeAttribute(REFRESH_SHIROUSER_INFO_FLAG_KEY);
             ShiroUtils.initCurrentUserToSession();
+        }
+
+        if("true".equals(session.getAttribute(REFRESH_AUTHORIZATION_INFO_FLAG_KEY))){
+            session.removeAttribute(REFRESH_AUTHORIZATION_INFO_FLAG_KEY);
+            ShiroUtils.clearCachedAuthorizationInfo();
         }
         // 这里添加刷新用户权限
         return true;

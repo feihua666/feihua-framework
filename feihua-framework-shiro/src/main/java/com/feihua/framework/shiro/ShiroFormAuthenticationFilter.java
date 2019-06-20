@@ -275,6 +275,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
         String loginType = accountService.resolveLoginType(request);
         String loginClientCode = this.resolveLoginClient(request);
         String  loginClientId = accountService.getClientIdByClientCode(loginClientCode);
+        String  loginClientName = accountService.getClientNameByClientCode(loginClientCode);
 
         String principal = request.getParameter(param_principal_key);
 
@@ -295,6 +296,7 @@ public class ShiroFormAuthenticationFilter extends FormAuthenticationFilter {
         SecurityUtils.getSubject().getSession().setAttribute(ShiroUtils.SHIRO_USER_LOGIN_TYPE_KEY,loginType);
         SecurityUtils.getSubject().getSession().setAttribute(ShiroUtils.SHIRO_USER_LOGIN_CLIENT_CODE_KEY,loginClientCode);
         SecurityUtils.getSubject().getSession().setAttribute(ShiroUtils.SHIRO_USER_LOGIN_CLIENT_ID_KEY,loginClientId);
+        SecurityUtils.getSubject().getSession().setAttribute(ShiroUtils.SHIRO_USER_LOGIN_CLIENT_NAME_KEY,loginClientName);
         // 把当前登录用户放session中
         ShiroUtils.initCurrentUserToSession();
 

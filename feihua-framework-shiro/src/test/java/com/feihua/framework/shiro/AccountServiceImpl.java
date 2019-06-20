@@ -42,6 +42,11 @@ public class AccountServiceImpl extends AbstractAccountServiceImpl {
     }
 
     @Override
+    public String getClientNameByClientCode(String clientCode) {
+        return null;
+    }
+
+    @Override
     public boolean validatePasswordWhenLogin(AuthenticationToken authcToken) {
         return true;
     }

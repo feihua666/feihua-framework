@@ -70,6 +70,8 @@ public class ShiroUser implements Serializable{
      * 用户的来源,客户端id
      */
     private String fromClientId;
+    private String fromClientCode;
+    private String fromClientName;
 
 
     /**
@@ -89,6 +91,10 @@ public class ShiroUser implements Serializable{
      * 用户登录的客户端id
      */
     private String loginClientId;
+
+    private String loginClientCode;
+
+    private String loginClientName;
 
 
 
@@ -278,5 +284,35 @@ public class ShiroUser implements Serializable{
         this.fromClientId = fromClientId;
     }
 
+    public String getFromClientCode() {
+        return fromClientCode;
+    }
 
+    public void setFromClientCode(String fromClientCode) {
+        this.fromClientCode = fromClientCode;
+    }
+
+    public String getFromClientName() {
+        return fromClientName;
+    }
+
+    public void setFromClientName(String fromClientName) {
+        this.fromClientName = fromClientName;
+    }
+
+    public String getLoginClientCode() {
+        return loginClientCode;
+    }
+
+    public void setLoginClientCode(String loginClientCode) {
+        this.loginClientCode = loginClientCode;
+    }
+
+    public String getLoginClientName() {
+        return loginClientName;
+    }
+
+    public void setLoginClientName(String loginClientName) {
+        this.loginClientName = loginClientName;
+    }
 }

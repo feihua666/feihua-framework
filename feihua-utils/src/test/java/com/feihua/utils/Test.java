@@ -1,5 +1,6 @@
 package com.feihua.utils;
 
+import com.feihua.utils.calendar.CalendarUtils;
 import com.feihua.utils.json.JSONUtils;
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -32,16 +33,15 @@ public class Test {
         String rr = HttpClientUtils.httpGet("http://master.com/api/base/user/current");
         System.out.println(rr);*/
 
-        String aa = "{\n" +
-                "\"content\":\"ccccccccc\",\n" +
-                "\"title\":\"ttttttttt\",\n" +
-                "\"profile\":\"pppppppp\"\n" +
-                "}";
-        Map ssss = JSONUtils.json2map(aa,String.class);
-        System.out.println(ssss);
-        System.out.println(BooleanUtils.toBoolean("true"));
 
-        System.out.println(com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ","ssss","saaasss"));
+        System.out.println(CalendarUtils.showTime(CalendarUtils.getCurrentDate(),CalendarUtils.getCurrentDate()));;
+        System.out.println(CalendarUtils.showTime(CalendarUtils.stringToDate("2019-06-18 09:06:00"),CalendarUtils.getCurrentDate()));;
+        System.out.println(CalendarUtils.showTime(CalendarUtils.stringToDate("2019-06-18"),CalendarUtils.getCurrentDate()));;
+        System.out.println(CalendarUtils.showTime(CalendarUtils.stringToDate("2019-06-16"),CalendarUtils.getCurrentDate()));;
+        System.out.println(CalendarUtils.showTime(CalendarUtils.stringToDate("2019-05-16"),CalendarUtils.getCurrentDate()));;
+        System.out.println(CalendarUtils.showTime(CalendarUtils.stringToDate("2018-06-16"),CalendarUtils.getCurrentDate()));;
 
+
+        System.out.println(((Long) System.currentTimeMillis()));
     }
 }

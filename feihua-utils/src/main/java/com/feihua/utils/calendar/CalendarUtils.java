@@ -23,6 +23,8 @@ public class CalendarUtils {
     private static final Object object = new Object();
     private static final String time_zero = "00:00:00";
     private static final String time_last = "23:59:59";
+
+
     /**
      * 日期格式化 日期格式为：yyyy-MM-dd
      * @param date  日期
@@ -1143,5 +1145,40 @@ public class CalendarUtils {
         //设置一周的第一天是星期几
         calendar.setFirstDayOfWeek(Calendar.MONDAY);
         return calendar.get(Calendar.WEEK_OF_YEAR);
+    }
+
+    public static String showTime(Date date,Date now){
+        long time = date.getTime();
+        long nowTime = now.getTime();
+        long temp =  Math.abs(nowTime - time) ;
+        long tempSecond = (temp)/1000;
+
+        String r = "";
+
+        // 1分钟内
+        if(tempSecond < 60){
+            r = "刚刚";
+        }
+        // 1小时内
+        else if(tempSecond < 60 * 60){
+            r = tempSecond / 60 + "分钟前";
+        }
+        // 一天内
+        else if(tempSecond < 60 * 60 * 24 ){
+            r = tempSecond / 60 / 60 + "小时前";
+        }
+        // 一月内
+        else if(tempSecond < 60 * 60 * 24 * 30 ){
+            r = tempSecond / 60 / 60 / 24  + "天前";
+        }
+        // 一年内
+        else if(tempSecond < 60 * 60 * 24 * 365 ){
+            r = tempSecond / 60 / 60 / 24 / 30 + "月前";
+        }
+        // 一年外
+        else {
+            r = tempSecond / 60 / 60 / 24 / 365 + "年前";
+        }
+        return r;
     }
 }

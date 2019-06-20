@@ -52,6 +52,7 @@ public class ApiBaseFunctionResourcePoServiceImpl extends ApiBaseTreeServiceImpl
         searchFunctionResourcesConditionDsfDto.setIsShow(dto.getIsShow());
         searchFunctionResourcesConditionDsfDto.setType(dto.getType());
         searchFunctionResourcesConditionDsfDto.setParentId(dto.getParentId());
+        searchFunctionResourcesConditionDsfDto.setCode(dto.getCode());
         // 如果是所有数据
         if(DictEnum.FunctionResourceDataScope.all.name().equals(type)){
             Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
@@ -100,6 +101,7 @@ public class ApiBaseFunctionResourcePoServiceImpl extends ApiBaseTreeServiceImpl
         baseFunctionResourceDto.setUrl(po.getUrl());
         baseFunctionResourceDto.setParentId(po.getParentId());
         baseFunctionResourceDto.setId(po.getId());
+        baseFunctionResourceDto.setCode(po.getCode());
         return baseFunctionResourceDto;
     }
 }

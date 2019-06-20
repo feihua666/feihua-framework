@@ -35,6 +35,7 @@ public class ShiroUtils {
     private static String SHIRO_USER_SESSION_KEY = "shiro_user_session_key";
     public static String SHIRO_USER_LOGIN_TYPE_KEY = "shiro_user_login_type_key";
     public static String SHIRO_USER_LOGIN_CLIENT_ID_KEY = "SHIRO_USER_LOGIN_CLIENT_ID_KEY";
+    public static String SHIRO_USER_LOGIN_CLIENT_NAME_KEY = "SHIRO_USER_LOGIN_CLIENT_NAME_KEY";
     public static String SHIRO_USER_LOGIN_CLIENT_CODE_KEY = "SHIRO_USER_LOGIN_CLIENT_CODE_KEY";
 
 
@@ -83,10 +84,27 @@ public class ShiroUtils {
     public static String getKickout(Session session){
         return (String) session.getAttribute(USER_KICKOUT_KEY);
     }
+
     public static List<Session> getSessionsByUserId(final String userId){
         final SessionDAO sessionDAO = SpringContextHolder.getBean(DefaultSessionManager.class).getSessionDAO();
         List<Session> sessions  = ((ShiroJedisSessionDAO)sessionDAO).getSessionsByUserId(userId);
         return sessions;
+    }
+    public static Session getSessionsByUserId(final String userId,final String clientId){
+        if (StringUtils.isAnyEmpty(userId,clientId)) {
+            return null;
+        }
+
+        final SessionDAO sessionDAO = SpringContextHolder.getBean(DefaultSessionManager.class).getSessionDAO();
+        List<Session> sessions  = ((ShiroJedisSessionDAO)sessionDAO).getSessionsByUserId(userId);
+        if (sessions != null) {
+            for (Session session : sessions) {
+                if (clientId.equals(getLoginClientId(session))) {
+                    return session;
+                }
+            }
+        }
+        return null;
     }
     /**
      * 把当前登录用户信息放到session
@@ -103,12 +121,18 @@ public class ShiroUtils {
                 if (sessionSu != null){
                     su.setLoginType(sessionSu.getLoginType());
                     su.setHost(sessionSu.getHost());
+                    su.setLoginClientCode(sessionSu.getLoginClientCode());
                     su.setLoginClientId(sessionSu.getLoginClientId());
+                    su.setLoginClientName(sessionSu.getLoginClientName());
                 }else {
                     su.setLoginType((String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_TYPE_KEY));
                     su.setHost(SecurityUtils.getSubject().getSession().getHost());
+                    String clientCode = (String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_CODE_KEY);
+                    su.setLoginClientCode(clientCode);
                     String clientId = (String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_ID_KEY);
                     su.setLoginClientId(clientId);
+                    String clientName = (String) SecurityUtils.getSubject().getSession().getAttribute(SHIRO_USER_LOGIN_CLIENT_NAME_KEY);
+                    su.setLoginClientName(clientName);
                 }
                 SecurityUtils.getSubject().getSession().setAttribute(SHIRO_USER_SESSION_KEY,su);
                 SecurityUtils.getSubject().getSession().touch();
