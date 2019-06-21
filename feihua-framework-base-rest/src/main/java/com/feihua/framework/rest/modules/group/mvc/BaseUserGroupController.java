@@ -202,27 +202,29 @@ public class BaseUserGroupController extends SuperController {
         dto.setCurrentUserId(getLoginUser().getId());
         dto.setCurrentRoleId(((BaseRoleDto) getLoginUser().getRole()).getId());
         PageResultDto<BaseUserGroupDto> list = apiBaseUserGroupPoService.searchBaseUserGroupsDsf(dto,pageAndOrderbyParamDto);
-
-        //机构
-        if (includeOffice) {
-
+        if (list.getData() != null && !list.getData().isEmpty()) {
             //机构
-            Map<String, BaseOfficeDto> officeDtoMap = new HashMap<>();
-            BaseOfficeDto officeDto = null;
-            for (BaseUserGroupDto userGroupDto : list.getData()) {
+            if (includeOffice) {
 
-                if(includeOffice && StringUtils.isNotEmpty(userGroupDto.getDataOfficeId())){
-                    officeDto = apiBaseOfficePoService.selectByPrimaryKey(userGroupDto.getDataOfficeId());
-                    if (officeDto != null) {
-                        officeDtoMap.put(userGroupDto.getDataOfficeId(),officeDto);
+                //机构
+                Map<String, BaseOfficeDto> officeDtoMap = new HashMap<>();
+                BaseOfficeDto officeDto = null;
+                for (BaseUserGroupDto userGroupDto : list.getData()) {
+
+                    if(includeOffice && StringUtils.isNotEmpty(userGroupDto.getDataOfficeId())){
+                        officeDto = apiBaseOfficePoService.selectByPrimaryKey(userGroupDto.getDataOfficeId());
+                        if (officeDto != null) {
+                            officeDtoMap.put(userGroupDto.getDataOfficeId(),officeDto);
+                        }
                     }
                 }
-            }
-            if (!officeDtoMap.isEmpty()) {
-                resultData.addData("office",officeDtoMap);
-            }
+                if (!officeDtoMap.isEmpty()) {
+                    resultData.addData("office",officeDtoMap);
+                }
 
+            }
         }
+
         resultData.setPage(list.getPage());
         return returnList(list.getData(),resultData);
 

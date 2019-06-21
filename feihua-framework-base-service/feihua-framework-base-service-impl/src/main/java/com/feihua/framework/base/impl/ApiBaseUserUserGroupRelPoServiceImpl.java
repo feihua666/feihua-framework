@@ -9,6 +9,7 @@ import com.feihua.framework.base.modules.rel.po.BaseUserUserGroupRelPo;
 import com.feihua.framework.base.modules.rel.po.BaseUserUserGroupRelPo;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -53,6 +54,9 @@ public class ApiBaseUserUserGroupRelPoServiceImpl extends ApiBaseServiceImpl<Bas
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
     @Override
     public BaseUserUserGroupRelDto selectByUserIdAndUserGroupId(String userId, String userGroupId) {
+        if (StringUtils.isAnyEmpty(userGroupId,userId)) {
+            return null;
+        }
         BaseUserUserGroupRelPo baseUserUserGroupRelPoCondition = new BaseUserUserGroupRelPo();
         baseUserUserGroupRelPoCondition.setUserGroupId(userGroupId);
         baseUserUserGroupRelPoCondition.setUserId(userId);
