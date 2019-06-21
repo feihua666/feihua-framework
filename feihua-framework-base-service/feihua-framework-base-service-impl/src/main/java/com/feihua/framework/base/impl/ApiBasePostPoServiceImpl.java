@@ -3,6 +3,7 @@ package com.feihua.framework.base.impl;
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
 import com.feihua.framework.base.modules.office.api.ApiBaseOfficePoService;
 import com.feihua.framework.base.modules.office.dto.BaseOfficeDto;
+import com.feihua.framework.base.modules.office.po.BaseOfficePo;
 import com.feihua.framework.base.modules.postjob.api.ApiBasePostPoService;
 import com.feihua.framework.base.modules.postjob.dto.BasePostDataScopeDefineDto;
 import com.feihua.framework.base.modules.postjob.dto.BasePostDto;
@@ -14,16 +15,16 @@ import com.feihua.framework.base.modules.rel.api.ApiBaseUserPostRelPoService;
 import com.feihua.framework.base.modules.rel.dto.BaseUserPostRelDto;
 import com.feihua.framework.constants.DictEnum;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import feihua.jdbc.api.pojo.BasePo;
 import feihua.jdbc.api.pojo.PageAndOrderbyParamDto;
 import feihua.jdbc.api.pojo.PageResultDto;
 import feihua.jdbc.api.service.impl.ApiBaseServiceImpl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import feihua.jdbc.api.service.impl.ApiBaseTreeServiceImpl;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -100,6 +101,41 @@ public class ApiBasePostPoServiceImpl extends ApiBaseTreeServiceImpl<BasePostPo,
             List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
             return new PageResultDto(list, this.wrapPage(p));
         }
+        // 公共 + 用户所在机构及以下机构
+        if(DictEnum.PostDataScope.publics_userofficedown.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(conditionDto.getCurrentUserId());
+
+            String selfCondition = null;
+            if (officeDto == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+
+                List<BaseOfficePo> officePoList = new ArrayList<>();
+                // 查询子机构
+
+                List<BaseOfficePo> officePos = apiBaseOfficePoService.getChildrenAll(officeDto.getId());
+                if(CollectionUtils.isNotEmpty(officePos)){
+                    officePoList.addAll(officePos);
+                }
+                if(CollectionUtils.isEmpty(officePoList)){
+                    return new PageResultDto();
+                }
+                // 机构查询完，根据机构id查询
+
+                StringBuffer sb = new StringBuffer("and (is_public = '"+ BasePo.YesNo.Y.name() +"' or data_office_id ='"+ officeDto.getId() +"' ");
+                for (BaseOfficePo officePo : officePoList) {
+                    sb.append(" or data_office_id = '").append(officePo.getId()).append("'");
+                }
+                sb.append(")");
+
+                selfCondition = sb.toString();
+            }
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
         // 用户所在机构
         if(DictEnum.PostDataScope.useroffice.name().equals(defineDto.getType())){
             Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
@@ -115,6 +151,39 @@ public class ApiBasePostPoServiceImpl extends ApiBaseTreeServiceImpl<BasePostPo,
             List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
             return new PageResultDto(list, this.wrapPage(p));
         }
+        // 用户所在机构及以下机构
+        if(DictEnum.PostDataScope.userofficedown.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByUserId(conditionDto.getCurrentUserId());
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+
+            List<BaseOfficePo> officePoList = new ArrayList<>();
+            // 查询子机构
+
+            List<BaseOfficePo> officePos = apiBaseOfficePoService.getChildrenAll(officeDto.getId());
+            if(CollectionUtils.isNotEmpty(officePos)){
+                officePoList.addAll(officePos);
+            }
+            if(CollectionUtils.isEmpty(officePoList)){
+                return new PageResultDto();
+            }
+            // 机构查询完，根据机构id查询
+
+            StringBuffer sb = new StringBuffer("and (data_office_id ='"+ officeDto.getId() +"' ");
+            for (BaseOfficePo officePo : officePoList) {
+                sb.append(" or data_office_id = '").append(officePo.getId()).append("'");
+            }
+            sb.append(")");
+            String selfCondition = sb.toString();
+
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
         // 公共 + 用户角色所在机构
         if(DictEnum.PostDataScope.publics_userroleoffice.name().equals(defineDto.getType())){
             Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
@@ -125,6 +194,40 @@ public class ApiBasePostPoServiceImpl extends ApiBaseTreeServiceImpl<BasePostPo,
                 selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
             }else {
                 selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ",BasePo.YesNo.Y.name(),officeDto.getId());
+            }
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共 + 用户角色所在机构及以下机构
+        if(DictEnum.PostDataScope.publics_userroleofficedown.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(conditionDto.getCurrentRoleId(),false);
+            String selfCondition = null;
+            if (officeDto == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+
+                List<BaseOfficePo> officePoList = new ArrayList<>();
+                // 查询子机构
+
+                List<BaseOfficePo> officePos = apiBaseOfficePoService.getChildrenAll(officeDto.getId());
+                if(CollectionUtils.isNotEmpty(officePos)){
+                    officePoList.addAll(officePos);
+                }
+                if(CollectionUtils.isEmpty(officePoList)){
+                    return new PageResultDto();
+                }
+                // 机构查询完，根据机构id查询
+
+                StringBuffer sb = new StringBuffer("and (is_public = '"+ BasePo.YesNo.Y.name() +"' or data_office_id ='"+ officeDto.getId() +"' ");
+                for (BaseOfficePo officePo : officePoList) {
+                    sb.append(" or data_office_id = '").append(officePo.getId()).append("'");
+                }
+                sb.append(")");
+
+                selfCondition = sb.toString();
             }
             searchPostsConditionDsfDto.setSelfCondition(selfCondition);
             List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
@@ -146,6 +249,40 @@ public class ApiBasePostPoServiceImpl extends ApiBaseTreeServiceImpl<BasePostPo,
             List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
             return new PageResultDto(list, this.wrapPage(p));
         }
+        // 用户角色所在机构及以下机构
+        if(DictEnum.PostDataScope.userroleofficedown.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByRoleId(conditionDto.getCurrentRoleId(),false);
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+
+
+            List<BaseOfficePo> officePoList = new ArrayList<>();
+            // 查询子机构
+
+            List<BaseOfficePo> officePos = apiBaseOfficePoService.getChildrenAll(officeDto.getId());
+            if(CollectionUtils.isNotEmpty(officePos)){
+                officePoList.addAll(officePos);
+            }
+            if(CollectionUtils.isEmpty(officePoList)){
+                return new PageResultDto();
+            }
+            // 机构查询完，根据机构id查询
+
+            StringBuffer sb = new StringBuffer("and (data_office_id ='"+ officeDto.getId() +"' ");
+            for (BaseOfficePo officePo : officePoList) {
+                sb.append(" or data_office_id = '").append(officePo.getId()).append("'");
+            }
+            sb.append(")");
+            String selfCondition = sb.toString();
+
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
         // 公共 + 用户岗位所在机构
         if(DictEnum.PostDataScope.publics_userroleoffice.name().equals(defineDto.getType())){
             Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
@@ -156,6 +293,41 @@ public class ApiBasePostPoServiceImpl extends ApiBaseTreeServiceImpl<BasePostPo,
                 selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
             }else {
                 selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and (is_public = ''{0}'' or data_office_id = ''{1}'') ",BasePo.YesNo.Y.name(),officeDto.getId());
+            }
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 公共 + 用户岗位所在机构及以下机构
+        if(DictEnum.PostDataScope.publics_userroleofficedown.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByPostId(conditionDto.getCurrentPostId(),false);
+            String selfCondition = null;
+            if (officeDto == null) {
+                selfCondition = com.feihua.utils.string.StringUtils.messageFormat(" and is_public = ''{0}'' ",BasePo.YesNo.Y.name());
+            }else {
+
+
+                List<BaseOfficePo> officePoList = new ArrayList<>();
+                // 查询子机构
+
+                List<BaseOfficePo> officePos = apiBaseOfficePoService.getChildrenAll(officeDto.getId());
+                if(CollectionUtils.isNotEmpty(officePos)){
+                    officePoList.addAll(officePos);
+                }
+                if(CollectionUtils.isEmpty(officePoList)){
+                    return new PageResultDto();
+                }
+                // 机构查询完，根据机构id查询
+
+                StringBuffer sb = new StringBuffer("and (is_public = '"+ BasePo.YesNo.Y.name() +"' or data_office_id ='"+ officeDto.getId() +"' ");
+                for (BaseOfficePo officePo : officePoList) {
+                    sb.append(" or data_office_id = '").append(officePo.getId()).append("'");
+                }
+                sb.append(")");
+
+                selfCondition = sb.toString();
             }
             searchPostsConditionDsfDto.setSelfCondition(selfCondition);
             List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
@@ -176,6 +348,98 @@ public class ApiBasePostPoServiceImpl extends ApiBaseTreeServiceImpl<BasePostPo,
             List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
             return new PageResultDto(list, this.wrapPage(p));
         }
+        // 用户岗位所在机构及以下机构
+        if(DictEnum.PostDataScope.userroleoffice.name().equals(defineDto.getType())){
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+
+            BaseOfficeDto officeDto = apiBaseOfficePoService.selectOfficeByPostId(conditionDto.getCurrentPostId(),false);
+            // 如果机构不存在，直接返回空
+            if(officeDto == null){
+                return new PageResultDto(null, null);
+            }
+
+            List<BaseOfficePo> officePoList = new ArrayList<>();
+            // 查询子机构
+
+            List<BaseOfficePo> officePos = apiBaseOfficePoService.getChildrenAll(officeDto.getId());
+            if(CollectionUtils.isNotEmpty(officePos)){
+                officePoList.addAll(officePos);
+            }
+            if(CollectionUtils.isEmpty(officePoList)){
+                return new PageResultDto();
+            }
+            // 机构查询完，根据机构id查询
+
+            StringBuffer sb = new StringBuffer("and (data_office_id ='"+ officeDto.getId() +"' ");
+            for (BaseOfficePo officePo : officePoList) {
+                sb.append(" or data_office_id = '").append(officePo.getId()).append("'");
+            }
+            sb.append(")");
+            String selfCondition = sb.toString();
+
+            searchPostsConditionDsfDto.setSelfCondition(selfCondition);
+            List<BasePostDto> list = this.wrapDtos(basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto));
+            return new PageResultDto(list, this.wrapPage(p));
+        }
+        // 分配的岗位
+        if(DictEnum.PostDataScope.assign.name().equals(defineDto.getType())){
+            Set<String> postIds = new HashSet<>();
+            // 查询当前用户分配的岗位
+            List<BaseUserPostRelDto> userPostRelDtos = apiBaseUserPostRelPoService.selectByUserId(conditionDto.getCurrentUserId());
+            if(CollectionUtils.isNotEmpty(userPostRelDtos)){
+                for (BaseUserPostRelDto baseUserPostRelDto : userPostRelDtos) {
+                    postIds.add(baseUserPostRelDto.getPostId());
+                }
+            }
+
+            if (postIds.isEmpty()) {
+                return new PageResultDto();
+            }
+
+            StringBuffer sb = new StringBuffer("and (1!=1 ");
+            for (String postId : postIds) {
+                sb.append(" or id = '").append(postId).append("'");
+            }
+            sb.append(")");
+
+            Page p = super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            searchPostsConditionDsfDto.setSelfCondition(sb.toString());
+            List<BasePostPo> list = basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto);
+            return new PageResultDto(this.wrapDtos(list), this.wrapPage(p));
+        }
+        // 分配的岗位及以下岗位
+        if(DictEnum.PostDataScope.assigndown.name().equals(defineDto.getType())){
+
+            Set<String> postIds = new HashSet<>();
+            // 查询当前用户分配的岗位
+            List<BaseUserPostRelDto> userPostRelDtos = apiBaseUserPostRelPoService.selectByUserId(conditionDto.getCurrentUserId());
+            if(CollectionUtils.isEmpty(userPostRelDtos)){
+            }else {
+                for (BaseUserPostRelDto baseUserPostRelDto : userPostRelDtos) {
+                    postIds.add(baseUserPostRelDto.getPostId());
+                }
+            }
+            if (postIds.isEmpty()) {
+                return new PageResultDto();
+            }
+            // 子岗位
+            BasePostDto basePostDto = null;
+            StringBuffer sb = new StringBuffer("and (1!=1 ");
+            for (String postId : postIds) {
+                basePostDto = this.selectByPrimaryKey(postId,false);
+                sb.append(" or id = '").append(postId).append("'");
+                sb.append(" or parent_id").append(basePostDto.getLevel()).append(" = '").append(postId).append("'");
+            }
+            sb.append(")");
+
+            super.pageAndOrderbyStart(pageAndOrderbyParamDto);
+            Page p = PageHelper.getLocalPage();
+            searchPostsConditionDsfDto.setSelfCondition(sb.toString());
+            List<BasePostPo> list = basePostPoMapper.searchBasePosts(searchPostsConditionDsfDto);
+            return new PageResultDto(this.wrapDtos(list), this.wrapPage(p));
+
+        }
+
         return new PageResultDto(null, null);
 
     }

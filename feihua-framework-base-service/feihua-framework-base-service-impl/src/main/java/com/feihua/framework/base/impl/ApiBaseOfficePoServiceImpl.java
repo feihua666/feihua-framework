@@ -2,6 +2,8 @@ package com.feihua.framework.base.impl;
 
 import com.feihua.framework.base.mapper.BaseOfficePoMapper;
 import com.feihua.framework.base.modules.datascope.api.ApiBaseDataScopeService;
+import com.feihua.framework.base.modules.group.api.ApiBaseUserGroupPoService;
+import com.feihua.framework.base.modules.group.po.BaseUserGroupPo;
 import com.feihua.framework.base.modules.postjob.api.ApiBasePostPoService;
 import com.feihua.framework.base.modules.postjob.po.BasePostPo;
 import com.feihua.framework.constants.DictEnum;
@@ -53,6 +55,8 @@ public class ApiBaseOfficePoServiceImpl extends ApiBaseTreeServiceImpl<BaseOffic
     @Autowired
     private ApiBasePostPoService apiBasePostPoService;
     @Autowired
+    private ApiBaseUserGroupPoService apiBaseUserGroupPoService;
+    @Autowired
     private ApiBaseOfficeDataScopeDefineSelfPoService apiBaseOfficeDataScopeDefineSelfPoService;
 
     @Transactional( propagation = Propagation.SUPPORTS, readOnly = true )
@@ -90,6 +94,21 @@ public class ApiBaseOfficePoServiceImpl extends ApiBaseTreeServiceImpl<BaseOffic
             }
             if (StringUtils.isNotEmpty(postPo.getDataOfficeId())){
                 return this.selectByPrimaryKey(postPo.getDataOfficeId());
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public BaseOfficeDto selectOfficeByUserGroupId(String userGroupId, boolean includeDisabledUserGroup) {
+        BaseUserGroupPo userGroupPo = apiBaseUserGroupPoService.selectByPrimaryKeySimple(userGroupId,false);
+
+        if (userGroupPo != null) {
+            if (!includeDisabledUserGroup && BaseRolePo.YesNo.Y.name().equals(userGroupPo.getDisabled())) {
+                return null;
+            }
+            if (StringUtils.isNotEmpty(userGroupPo.getDataOfficeId())){
+                return this.selectByPrimaryKey(userGroupPo.getDataOfficeId());
             }
         }
         return null;

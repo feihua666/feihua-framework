@@ -27,12 +27,19 @@ public interface ApiBaseOfficePoService extends feihua.jdbc.api.service.ApiBaseT
      */
     public BaseOfficeDto selectOfficeByRoleId(String roleId,boolean includeDisabledRole);
     /**
-     * 根据岗位的id查询角色所在的机构
+     * 根据岗位的id查询岗位所在的机构
      * @param postId
      * @param includeDisabledPost true=包含禁用的岗位，false=不包含禁用的岗位
      * @return
      */
     public BaseOfficeDto selectOfficeByPostId(String postId,boolean includeDisabledPost);
+    /**
+     * 根据用户分组的id查询用户分组所在的机构
+     * @param userGroupId
+     * @param includeDisabledUserGroup true=包含禁用的岗位，false=不包含禁用的岗位
+     * @return
+     */
+    public BaseOfficeDto selectOfficeByUserGroupId(String userGroupId,boolean includeDisabledUserGroup);
 
     /**
      * 查找所在公司

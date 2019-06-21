@@ -1,5 +1,6 @@
 package com.feihua.framework.base.mapper;
 
+import com.feihua.framework.base.modules.postjob.dto.SearchPostJobsConditionDsfDto;
 import com.feihua.framework.base.modules.postjob.po.BasePostJobPo;
 import feihua.jdbc.api.dao.CrudDao;
 
@@ -8,5 +9,5 @@ import feihua.jdbc.api.dao.CrudDao;
  * @author yangwei 2019-06-06 14:16:20
  */
 public interface BasePostJobPoMapper extends feihua.jdbc.api.dao.CrudDao<BasePostJobPo, String> {
-    java.util.List<BasePostJobPo> searchBasePostJobs(com.feihua.framework.base.modules.postjob.dto.SearchBasePostJobsConditionDto dto);
+    java.util.List<BasePostJobPo> searchBasePostJobs(SearchPostJobsConditionDsfDto dto);
 }

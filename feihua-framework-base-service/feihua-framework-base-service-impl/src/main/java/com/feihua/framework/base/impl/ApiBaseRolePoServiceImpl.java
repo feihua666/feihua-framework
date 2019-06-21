@@ -63,8 +63,7 @@ public class ApiBaseRolePoServiceImpl extends ApiBaseTreeServiceImpl<BaseRolePo,
     private ApiBaseRoleDataScopeDefineSelfPoService apiBaseRoleDataScopeDefineSelfPoService;
     @Autowired
     private ApiBasePostRoleRelPoService apiBasePostRoleRelPoService;
-    @Autowired
-    private ApiBasePostPoService apiBasePostPoService;
+
     /**
      * 搜索角色
      * @param dto

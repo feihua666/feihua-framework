@@ -168,11 +168,18 @@ public class DictEnum {
         all,                                // 所有
         publics ,                           // 公共
         publics_useroffice,          //公共 + 用户所在机构
+        publics_userofficedown,          //公共 + 用户所在机构及以下机构
         useroffice,                  // 用户所在机构
+        userofficedown,                  // 用户所在机构及以下机构
         publics_userroleoffice,      //公共 + 用户角色所在机构
+        publics_userroleofficedown,      //公共 + 用户角色所在机构及以下机构
         userroleoffice,              // 用户角色所在机构
+        userroleofficedown,              // 用户角色所在机构及以下机构
         publics_userpostoffice,      //公共 + 用户岗位所在机构
+        publics_userpostofficedown,      //公共 + 用户岗位所在机构及以下机构
         userpostoffice,              // 用户岗位所在机构
+        userpostofficedown,              // 用户岗位所在机构及以下机构
+        userpostdatascopebind,              // 用户岗位数据范围绑定的职务
         no     // 无权限
     }
     /**
@@ -182,11 +189,41 @@ public class DictEnum {
         all,                                // 所有
         publics ,                           // 公共
         publics_useroffice,          //公共 + 用户所在机构
+        publics_userofficedown,          //公共 + 用户所在机构及以下机构
         useroffice,                  // 用户所在机构
+        userofficedown,                  // 用户所在机构及以下机构
         publics_userroleoffice,      //公共 + 用户角色所在机构
+        publics_userroleofficedown,      //公共 + 用户角色所在机构及以下机构
         userroleoffice,              // 用户角色所在机构
+        userroleofficedown,              // 用户角色所在机构及以下机构
         publics_userpostoffice,      //公共 + 用户岗位所在机构
+        publics_userpostofficedown,      //公共 + 用户岗位所在机构及以下机构
         userpostoffice,              // 用户岗位所在机构
+        userpostofficedown,              // 用户岗位所在机构及以下机构
+        assign,              // 分配的岗位
+        assigndown,              // 分配的岗位
+        no     // 无权限
+    }
+    /**
+     * 用户分组数据范围
+     */
+    public enum UserGroupDataScope {
+        all,                                // 所有
+        publics ,                           // 公共
+        publics_useroffice,          //公共 + 用户所在机构
+        publics_userofficedown,          //公共 + 用户所在机构及以下机构
+        useroffice,                  // 用户所在机构
+        userofficedown,                  // 用户所在机构及以下机构
+        publics_userroleoffice,      //公共 + 用户角色所在机构
+        publics_userroleofficedown,      //公共 + 用户角色所在机构及以下机构
+        userroleoffice,              // 用户角色所在机构
+        userroleofficedown,              // 用户角色所在机构及以下机构
+        publics_userpostoffice,      //公共 + 用户岗位所在机构
+        publics_userpostofficedown,      //公共 + 用户岗位所在机构及以下机构
+        userpostoffice,              // 用户岗位所在机构
+        userpostofficedown,              // 用户岗位所在机构及以下机构
+        self,                         // 自定义
+        assign,               // 按分配的用户分组
         no     // 无权限
     }
     public enum RoleType {
