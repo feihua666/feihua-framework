@@ -131,7 +131,7 @@
         <!-- mysql数据库驱动 -->
         <mysql.version>5.1.46</mysql.version>
         <!-- 定时任务 -->
-        <quartz.version>2.3.0</quartz.version>
+        <quartz.version>2.3.2</quartz.version>
         <dom4j.version>1.6.1</dom4j.version>
     </properties>
 
