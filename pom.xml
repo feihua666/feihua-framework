@@ -89,7 +89,7 @@
         <!-- mail -->
         <mail.version>1.4.7</mail.version>
         <!-- httpclient -->
-        <httpclient.version>4.5.3</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
 
         <!-- poi -->
         <poi.version>4.0.1</poi.version>
