@@ -16,7 +16,7 @@
 
     <properties>
         <com.google.zxing.version>3.3.3</com.google.zxing.version>
-        <pdfbox.version>2.0.3</pdfbox.version>
+        <pdfbox.version>2.0.24</pdfbox.version>
     </properties>
 
     <dependencies>
