@@ -92,7 +92,7 @@
         <httpclient.version>4.5.3</httpclient.version>
 
         <!-- poi -->
-        <poi.version>4.0.1</poi.version>
+        <poi.version>5.2.1</poi.version>
 
         <!-- spring -->
         <spring.version>5.0.7.RELEASE</spring.version>
