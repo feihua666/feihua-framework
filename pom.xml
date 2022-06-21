@@ -129,7 +129,7 @@
         <!-- 数据库连接波 -->
         <druid.version>1.1.10</druid.version>
         <!-- mysql数据库驱动 -->
-        <mysql.version>5.1.46</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <!-- 定时任务 -->
         <quartz.version>2.3.0</quartz.version>
         <dom4j.version>1.6.1</dom4j.version>
