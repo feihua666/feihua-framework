@@ -95,7 +95,7 @@
         <poi.version>4.0.1</poi.version>
 
         <!-- spring -->
-        <spring.version>5.0.7.RELEASE</spring.version>
+        <spring.version>5.2.20.RELEASE</spring.version>
         <spring-rabbit.version>2.1.2.RELEASE</spring-rabbit.version>
 
         <!-- servlet -->
